@@ -1,0 +1,50 @@
+{
+  "name": "user-habit-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "description": "Minimal user-habit interpretation layer for repeated shorthand expressions.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "docs/registry.schema.json",
+    "docs/examples.md",
+    "docs/mvp-spec.md",
+    "docs/registry-authoring.md",
+    "docs/editor-integration.md",
+    "docs/api-reference.md",
+    "docs/versioning.md",
+    "docs/release-checklist.md",
+    "docs/freeze-assessment-0.1.0.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.8.0"
+  },
+  "keywords": [
+    "habit",
+    "intent",
+    "workflow",
+    "shorthand",
+    "interpretation"
+  ],
+  "bin": {
+    "user-habit-pipeline": "./src/cli.js",
+    "validate-habit-registry": "./src/validate-registry-cli.js"
+  },
+  "scripts": {
+    "check": "npm run check-examples-doc && npm test",
+    "release-check": "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
+    "test": "node --test",
+    "demo": "node ./src/demo.js",
+    "interpret": "node ./src/cli.js",
+    "validate-registry": "node ./src/validate-registry-cli.js",
+    "generate-examples-doc": "node ./src/generate-examples-doc.js",
+    "check-examples-doc": "node ./src/generate-examples-doc.js --check",
+    "package-smoke": "npm pack --dry-run"
+  }
+}

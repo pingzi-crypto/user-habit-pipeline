@@ -1,0 +1,8 @@
+[
+  {
+    "phrase": "坏规则",
+    "normalized_intent": "broken_rule",
+    "scenario_bias": "general",
+    "confidence": 1.2
+  }
+]

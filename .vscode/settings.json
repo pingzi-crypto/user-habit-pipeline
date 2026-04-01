@@ -1,0 +1,11 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/src/habit_registry/*.json",
+        "/tests/fixtures/*habits.json"
+      ],
+      "url": "./docs/registry.schema.json"
+    }
+  ]
+}

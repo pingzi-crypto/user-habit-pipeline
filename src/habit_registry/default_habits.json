@@ -1,0 +1,124 @@
+[
+  {
+    "phrase": "帮我入板",
+    "normalized_intent": "add_or_update_board_item",
+    "scenario_bias": ["reviewer", "status_board"],
+    "confidence": 0.94,
+    "match_type": "exact",
+    "preferred_terms": ["status_board"],
+    "disambiguation_hints": [],
+    "notes": ["Common shorthand for adding or updating a board item."]
+  },
+  {
+    "phrase": "入板",
+    "normalized_intent": "add_or_update_board_item",
+    "scenario_bias": ["reviewer", "status_board"],
+    "confidence": 0.88,
+    "match_type": "exact",
+    "preferred_terms": ["status_board"],
+    "disambiguation_hints": [],
+    "notes": ["Usually means add or update a status-board item."]
+  },
+  {
+    "phrase": "更新入板",
+    "normalized_intent": "add_or_update_board_item",
+    "scenario_bias": ["reviewer", "status_board"],
+    "confidence": 0.93,
+    "match_type": "exact",
+    "preferred_terms": ["status_board"],
+    "disambiguation_hints": [],
+    "notes": ["Usually means update an existing board item instead of re-evaluating from scratch."]
+  },
+  {
+    "phrase": "验收",
+    "normalized_intent": "review_acceptance",
+    "scenario_bias": ["reviewer"],
+    "confidence": 0.9,
+    "match_type": "exact",
+    "preferred_terms": ["reviewer"],
+    "disambiguation_hints": [],
+    "notes": ["Usually means reviewer-side acceptance check."]
+  },
+  {
+    "phrase": "继续评审",
+    "normalized_intent": "continue_current_track",
+    "scenario_bias": ["reviewer"],
+    "confidence": 0.9,
+    "match_type": "exact",
+    "preferred_terms": ["reviewer"],
+    "disambiguation_hints": [],
+    "notes": ["Keep reviewer role and continue the current review track."]
+  },
+  {
+    "phrase": "读取最新状态板",
+    "normalized_intent": "refresh_latest_board_state",
+    "scenario_bias": ["reviewer", "executor", "status_board"],
+    "confidence": 0.96,
+    "match_type": "exact",
+    "preferred_terms": ["status_board"],
+    "disambiguation_hints": [],
+    "notes": ["Explicit request to reload the current board truth."]
+  },
+  {
+    "phrase": "session-close",
+    "normalized_intent": "close_session",
+    "scenario_bias": ["session_close"],
+    "confidence": 0.97,
+    "match_type": "exact",
+    "preferred_terms": ["session_close"],
+    "disambiguation_hints": [],
+    "notes": ["Explicit request to produce a conclude record for the current thread."]
+  },
+  {
+    "phrase": "收口",
+    "normalized_intent": "close_session",
+    "scenario_bias": ["session_close"],
+    "confidence": 0.84,
+    "match_type": "exact",
+    "preferred_terms": ["session_close"],
+    "disambiguation_hints": ["Need confirmation that the user wants to close or wrap the current session."],
+    "notes": ["Often means wrap up the current thread or produce session close output."]
+  },
+  {
+    "phrase": "帮我起草",
+    "normalized_intent": "draft_text_artifact",
+    "scenario_bias": ["reviewer", "executor", "general"],
+    "confidence": 0.9,
+    "match_type": "exact",
+    "preferred_terms": ["general"],
+    "disambiguation_hints": [],
+    "notes": ["Request to draft a text artifact rather than execute implementation."]
+  },
+  {
+    "phrase": "提示词",
+    "normalized_intent": "draft_text_artifact",
+    "scenario_bias": ["general"],
+    "confidence": 0.85,
+    "match_type": "exact",
+    "preferred_terms": ["general"],
+    "disambiguation_hints": [],
+    "notes": ["Usually means generate or revise prompt text."]
+  },
+  {
+    "phrase": "下一条",
+    "normalized_intent": "move_to_next_item",
+    "scenario_bias": ["reviewer", "status_board"],
+    "confidence": 0.76,
+    "match_type": "exact",
+    "clarify_below": 0.8,
+    "preferred_terms": ["status_board"],
+    "disambiguation_hints": ["Need to know whether \"next item\" refers to board order or another active queue."],
+    "notes": ["Usually means move to the next board item or next clearly active item."]
+  },
+  {
+    "phrase": "继续",
+    "normalized_intent": "continue_current_track",
+    "scenario_bias": ["reviewer", "executor", "general"],
+    "confidence": 0.68,
+    "match_type": "exact",
+    "clarify_below": 0.8,
+    "preferred_terms": ["general"],
+    "disambiguation_hints": ["Need clearer local target for \"continue\"."],
+    "notes": ["Meaning depends on local context and may require clarification if context is weak."]
+  }
+]

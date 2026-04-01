@@ -1,0 +1,149 @@
+[
+  {
+    "title": "帮我入板",
+    "name": "帮我入板 maps to add_or_update_board_item",
+    "input": {
+      "message": "帮我入板",
+      "scenario": "reviewer"
+    },
+    "expected": {
+      "normalized_intent": "add_or_update_board_item",
+      "should_ask_clarifying_question": false
+    },
+    "why": "This is a stable shorthand for board action, not for general planning."
+  },
+  {
+    "title": "更新入板",
+    "name": "更新入板 maps to add_or_update_board_item",
+    "input": {
+      "message": "更新入板",
+      "scenario": "status_board"
+    },
+    "expected": {
+      "normalized_intent": "add_or_update_board_item",
+      "should_ask_clarifying_question": false
+    },
+    "why": "The phrase strongly implies updating an existing board entry."
+  },
+  {
+    "title": "验收",
+    "name": "验收 maps to review_acceptance",
+    "input": {
+      "message": "验收",
+      "scenario": "reviewer"
+    },
+    "expected": {
+      "normalized_intent": "review_acceptance",
+      "should_ask_clarifying_question": false
+    },
+    "why": "In this workflow, the phrase typically means reviewer-side acceptance check."
+  },
+  {
+    "title": "session-close",
+    "name": "session-close maps to close_session",
+    "input": {
+      "message": "session-close",
+      "scenario": "session_close"
+    },
+    "expected": {
+      "normalized_intent": "close_session",
+      "should_ask_clarifying_question": false
+    },
+    "why": "This is an explicit request to close the current session."
+  },
+  {
+    "title": "下一条",
+    "name": "下一条 maps to move_to_next_item",
+    "input": {
+      "message": "下一条",
+      "scenario": "status_board"
+    },
+    "expected": {
+      "normalized_intent": "move_to_next_item",
+      "should_ask_clarifying_question": false
+    },
+    "why": "Within board-oriented context, this usually means move to the next active item."
+  },
+  {
+    "title": "继续",
+    "name": "继续 stays conservative in general scenario",
+    "input": {
+      "message": "继续",
+      "scenario": "general"
+    },
+    "expected": {
+      "normalized_intent": "continue_current_track",
+      "should_ask_clarifying_question": true,
+      "confidence_lt": 0.8
+    },
+    "why": "The phrase is high-frequency but under-specified and should not be overcommitted without context."
+  },
+  {
+    "title": "提示词",
+    "name": "提示词 maps to draft_text_artifact",
+    "input": {
+      "message": "提示词",
+      "scenario": "general"
+    },
+    "expected": {
+      "normalized_intent": "draft_text_artifact",
+      "should_ask_clarifying_question": false
+    },
+    "why": "This usually means draft or revise prompt text, not execute implementation."
+  },
+  {
+    "title": "请帮我更新入板",
+    "name": "longer overlapping phrase wins for 请帮我更新入板",
+    "input": {
+      "message": "请帮我更新入板",
+      "scenario": "status_board"
+    },
+    "expected": {
+      "normalized_intent": "add_or_update_board_item",
+      "should_ask_clarifying_question": false,
+      "top_phrase": "更新入板"
+    },
+    "why": "When a longer and shorter shorthand overlap, the longer phrase should win."
+  },
+  {
+    "title": "请继续评审这个任务",
+    "name": "explicit reviewer phrase outranks 继续",
+    "input": {
+      "message": "请继续评审这个任务",
+      "scenario": "reviewer"
+    },
+    "expected": {
+      "normalized_intent": "continue_current_track",
+      "should_ask_clarifying_question": false,
+      "top_phrase": "继续评审"
+    },
+    "why": "An explicit reviewer-track phrase should outrank the shorter ambiguous phrase `继续`."
+  },
+  {
+    "title": "继续 with supporting context",
+    "name": "supporting recent context raises confidence but stays conservative",
+    "input": {
+      "message": "继续",
+      "scenario": "general",
+      "recent_context": ["继续当前评审", "review the next issue after this"]
+    },
+    "expected": {
+      "normalized_intent": "continue_current_track",
+      "should_ask_clarifying_question": true,
+      "confidence_gt": 0.7
+    },
+    "why": "Recent context may support an existing ambiguous shorthand, but should not remove the need for conservative interpretation."
+  },
+  {
+    "title": "Unknown shorthand",
+    "name": "unknown input returns unknown intent",
+    "input": {
+      "message": "去处理一下"
+    },
+    "expected": {
+      "normalized_intent": "unknown",
+      "should_ask_clarifying_question": true
+    },
+    "why": "The interpreter should not invent a workflow hint when no explicit shorthand rule matches."
+  }
+]

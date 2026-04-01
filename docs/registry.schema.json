@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/user-habit-pipeline/registry.schema.json",
+  "title": "User Habit Registry",
+  "description": "Schema for explicit habit registry rules used by the user-habit interpretation layer.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "phrase",
+      "normalized_intent",
+      "scenario_bias",
+      "confidence"
+    ],
+    "properties": {
+      "phrase": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The explicit shorthand phrase to match."
+      },
+      "normalized_intent": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Project-agnostic intent hint produced when the phrase matches."
+      },
+      "scenario_bias": {
+        "type": "array",
+        "description": "Scenario hints that can slightly increase confidence for this rule.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "confidence": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Base confidence score for the rule before scenario or context bonuses."
+      },
+      "match_type": {
+        "type": "string",
+        "enum": ["exact", "substring"],
+        "description": "Optional preferred match type for the rule."
+      },
+      "preferred_terms": {
+        "type": "array",
+        "description": "Optional downstream-preferred labels associated with this rule.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "disambiguation_hints": {
+        "type": "array",
+        "description": "Optional hints explaining what clarification would reduce ambiguity.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "array",
+        "description": "Optional short notes explaining why the rule exists.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "clarify_below": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Optional per-rule clarification threshold for under-specified phrases."
+      }
+    }
+  }
+}

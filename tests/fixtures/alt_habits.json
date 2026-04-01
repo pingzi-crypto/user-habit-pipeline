@@ -1,0 +1,22 @@
+[
+  {
+    "phrase": "归档一下",
+    "normalized_intent": "archive_current_thread",
+    "scenario_bias": ["general", "session_close"],
+    "confidence": 0.91,
+    "match_type": "exact",
+    "preferred_terms": ["archive"],
+    "disambiguation_hints": [],
+    "notes": ["Alternative project registry for archive requests."]
+  },
+  {
+    "phrase": "下一个卡片",
+    "normalized_intent": "move_to_next_learning_card",
+    "scenario_bias": ["general", "learning"],
+    "confidence": 0.86,
+    "match_type": "exact",
+    "preferred_terms": ["learning"],
+    "disambiguation_hints": [],
+    "notes": ["Alternative registry phrase for moving to the next learning card."]
+  }
+]
