@@ -270,6 +270,12 @@ Use a custom registry file:
 npm run interpret -- --message "归档一下" --scenario session_close --registry .\tests\fixtures\alt_habits.json
 ```
 
+Use a custom user-habits overlay file:
+
+```powershell
+npm run interpret -- --message "收尾一下" --scenario session_close --user-registry .\data\user_habits.json
+```
+
 Validate a registry file before using it:
 
 ```powershell
@@ -309,6 +315,36 @@ Project the output through the `growth-hub` adapter:
 npm run interpret -- --message "验收" --scenario reviewer --adapter growth-hub
 ```
 
+### User-Managed Habit Phrases
+
+Add a user habit with structured flags:
+
+```powershell
+npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
+```
+
+Remove a phrase from the effective registry:
+
+```powershell
+npm run manage-habits -- --remove --phrase "验收"
+```
+
+List the current user-defined additions and removals:
+
+```powershell
+npm run manage-habits -- --list
+```
+
+Use a lightweight prompt-like request instead of flags:
+
+```powershell
+npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
+npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
+npm run manage-habits -- --request "列出用户习惯短句"
+```
+
+This writes user-managed phrases into a separate overlay file and leaves the default registry untouched.
+
 ### CLI contract
 
 - `--message` is required
@@ -316,5 +352,6 @@ npm run interpret -- --message "验收" --scenario reviewer --adapter growth-hub
 - repeat `--context` to supply short recent-context items
 - `--adapter growth-hub` projects the interpretation into downstream hint fields
 - `--registry <path>` loads a different habit registry file for this invocation
+- `--user-registry <path>` loads a user-habits overlay file for this invocation
 
 The CLI prints JSON only.

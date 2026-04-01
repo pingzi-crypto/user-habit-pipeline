@@ -12,7 +12,7 @@ const exampleFixtures = JSON.parse(fs.readFileSync(EXAMPLES_PATH, "utf8"));
 
 for (const fixture of exampleFixtures) {
   test(`fixture: ${fixture.name || fixture.title}`, () => {
-    const result = interpretHabit(fixture.input);
+    const result = interpretHabit(fixture.input, { includeUserRegistry: false });
 
     assert.equal(result.normalized_intent, fixture.expected.normalized_intent);
     assert.equal(

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { interpretHabit, toGrowthHubHint } = require("./index");
+const { USER_REGISTRY_PATH } = require("./habit_registry/user_registry");
 
 function parseArgs(argv) {
   const parsed = {
@@ -9,6 +10,7 @@ function parseArgs(argv) {
     recent_context: [],
     adapter: null,
     registryPath: null,
+    userRegistryPath: USER_REGISTRY_PATH,
     help: false
   };
 
@@ -45,6 +47,12 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--user-registry") {
+      parsed.userRegistryPath = argv[index + 1] ?? USER_REGISTRY_PATH;
+      index += 1;
+      continue;
+    }
+
     if (token === "--help" || token === "-h") {
       parsed.help = true;
     }
@@ -55,14 +63,15 @@ function parseArgs(argv) {
 
 function getUsageText() {
   return [
-    "Usage: user-habit-pipeline --message <text> [--scenario <name>] [--context <text>] [--adapter growth-hub] [--registry <path>]",
+    "Usage: user-habit-pipeline --message <text> [--scenario <name>] [--context <text>] [--adapter growth-hub] [--registry <path>] [--user-registry <path>]",
     "",
     "Options:",
     "  --message <text>          Required shorthand message to interpret.",
     "  --scenario <name>         Optional scenario bias hint.",
     "  --context <text>          Optional recent-context item. Repeatable.",
     "  --adapter growth-hub      Project the result through the growth-hub adapter.",
-    "  --registry <path>         Load a custom registry file for this invocation.",
+    "  --registry <path>         Load a full custom registry file for this invocation.",
+    `  --user-registry <path>    Load a user-habits overlay file. Default: ${USER_REGISTRY_PATH}`,
     "  --help, -h                Show this help text."
   ].join("\n");
 }
@@ -87,7 +96,8 @@ function main() {
     scenario: args.scenario,
     recent_context: args.recent_context
   }, {
-    registryPath: args.registryPath
+    registryPath: args.registryPath,
+    userRegistryPath: args.userRegistryPath
   });
 
   const output = args.adapter === "growth-hub"

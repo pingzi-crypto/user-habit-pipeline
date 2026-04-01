@@ -9,11 +9,17 @@ function main() {
   const demos = [
     {
       label: "default_explicit",
-      output: interpretHabit({ message: "更新入板", scenario: "status_board" })
+      output: interpretHabit(
+        { message: "更新入板", scenario: "status_board" },
+        { includeUserRegistry: false }
+      )
     },
     {
       label: "default_ambiguous",
-      output: interpretHabit({ message: "继续", scenario: "general" })
+      output: interpretHabit(
+        { message: "继续", scenario: "general" },
+        { includeUserRegistry: false }
+      )
     },
     {
       label: "alternate_registry",

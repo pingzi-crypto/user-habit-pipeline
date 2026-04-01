@@ -1,17 +1,25 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 const CLI_PATH = path.join(__dirname, "..", "src", "cli.js");
+function createTempUserRegistryPath() {
+  return path.join(fs.mkdtempSync(path.join(os.tmpdir(), "uhp-interpret-cli-")), "user_habits.json");
+}
 
 test("cli prints interpreted JSON", () => {
+  const userRegistryPath = createTempUserRegistryPath();
   const result = spawnSync(process.execPath, [
     CLI_PATH,
     "--message",
     "更新入板",
     "--scenario",
-    "status_board"
+    "status_board",
+    "--user-registry",
+    userRegistryPath
   ], {
     encoding: "utf8"
   });
@@ -23,6 +31,7 @@ test("cli prints interpreted JSON", () => {
 });
 
 test("cli can project through the growth-hub adapter", () => {
+  const userRegistryPath = createTempUserRegistryPath();
   const result = spawnSync(process.execPath, [
     CLI_PATH,
     "--message",
@@ -30,7 +39,9 @@ test("cli can project through the growth-hub adapter", () => {
     "--scenario",
     "reviewer",
     "--adapter",
-    "growth-hub"
+    "growth-hub",
+    "--user-registry",
+    userRegistryPath
   ], {
     encoding: "utf8"
   });
@@ -42,6 +53,7 @@ test("cli can project through the growth-hub adapter", () => {
 });
 
 test("cli can switch to a custom registry file", () => {
+  const userRegistryPath = createTempUserRegistryPath();
   const result = spawnSync(process.execPath, [
     CLI_PATH,
     "--message",
@@ -49,7 +61,9 @@ test("cli can switch to a custom registry file", () => {
     "--scenario",
     "session_close",
     "--registry",
-    path.join(__dirname, "fixtures", "alt_habits.json")
+    path.join(__dirname, "fixtures", "alt_habits.json"),
+    "--user-registry",
+    userRegistryPath
   ], {
     encoding: "utf8"
   });
@@ -77,4 +91,5 @@ test("cli prints help and exits zero", () => {
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Usage: user-habit-pipeline/);
   assert.match(result.stdout, /--registry <path>/);
+  assert.match(result.stdout, /--user-registry <path>/);
 });

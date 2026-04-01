@@ -18,12 +18,14 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   });
   assert.equal(pkg.bin["user-habit-pipeline"], "./src/cli.js");
   assert.equal(pkg.bin["validate-habit-registry"], "./src/validate-registry-cli.js");
+  assert.equal(pkg.bin["manage-user-habits"], "./src/manage-habits-cli.js");
   assert.equal(pkg.scripts.check, "npm run check-examples-doc && npm test");
   assert.equal(
     pkg.scripts["release-check"],
     "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"
   );
   assert.equal(pkg.scripts.demo, "node ./src/demo.js");
+  assert.equal(pkg.scripts["manage-habits"], "node ./src/manage-habits-cli.js");
   assert.equal(pkg.scripts["package-smoke"], "npm pack --dry-run");
 });
 
@@ -34,6 +36,7 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.equal(pkg.engines.node, ">=18.8.0");
   assert.ok(Array.isArray(pkg.files));
   assert.ok(pkg.files.includes("src"));
+  assert.ok(pkg.files.includes("data/.gitkeep"));
   assert.ok(pkg.files.includes("CHANGELOG.md"));
   assert.ok(pkg.files.includes("docs/registry.schema.json"));
   assert.ok(pkg.files.includes("docs/api-reference.md"));

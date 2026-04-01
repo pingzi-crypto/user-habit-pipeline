@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const { interpretHabit } = require("../src");
 
 test("returns the full output contract for unknown input", () => {
-  const result = interpretHabit({ message: "去处理一下" });
+  const result = interpretHabit({ message: "去处理一下" }, { includeUserRegistry: false });
 
   assert.deepEqual(Object.keys(result), [
     "normalized_intent",
@@ -19,7 +19,10 @@ test("returns the full output contract for unknown input", () => {
 });
 
 test("prefers the longer phrase when substring matches overlap", () => {
-  const result = interpretHabit({ message: "请帮我更新入板", scenario: "status_board" });
+  const result = interpretHabit(
+    { message: "请帮我更新入板", scenario: "status_board" },
+    { includeUserRegistry: false }
+  );
 
   assert.equal(result.normalized_intent, "add_or_update_board_item");
   assert.equal(result.habit_matches[0].phrase, "更新入板");
@@ -27,7 +30,10 @@ test("prefers the longer phrase when substring matches overlap", () => {
 });
 
 test("prefers 继续评审 over 继续 when both substring candidates match", () => {
-  const result = interpretHabit({ message: "请继续评审这个任务", scenario: "reviewer" });
+  const result = interpretHabit(
+    { message: "请继续评审这个任务", scenario: "reviewer" },
+    { includeUserRegistry: false }
+  );
 
   assert.equal(result.normalized_intent, "continue_current_track");
   assert.equal(result.habit_matches[0].phrase, "继续评审");
@@ -39,7 +45,7 @@ test("recent context can support an under-specified phrase without creating a ne
     message: "继续",
     scenario: "general",
     recent_context: ["继续当前评审", "review the next issue after this"]
-  });
+  }, { includeUserRegistry: false });
 
   assert.equal(result.normalized_intent, "continue_current_track");
   assert.ok(result.confidence > 0.7);

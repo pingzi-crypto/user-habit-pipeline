@@ -3,6 +3,7 @@ const path = require("node:path");
 const { normalizeText } = require("./context_rules");
 const { scoreCandidate, shouldAskClarifyingQuestion } = require("./scoring");
 const { validateHabitRules } = require("../habit_registry/validate_registry");
+const { loadMergedHabits, USER_REGISTRY_PATH } = require("../habit_registry/user_registry");
 
 const DEFAULT_REGISTRY_PATH = path.join(__dirname, "..", "habit_registry", "default_habits.json");
 
@@ -96,7 +97,7 @@ function buildNotes(topCandidate) {
 
 /**
  * @param {import("./types").HabitInput} input
- * @param {{ rules?: import("./types").HabitRule[], registryPath?: string }=} options
+ * @param {{ rules?: import("./types").HabitRule[], registryPath?: string, userRegistryPath?: string, includeUserRegistry?: boolean }=} options
  * @returns {import("./types").HabitOutput}
  */
 function interpretHabit(input, options = {}) {
@@ -109,7 +110,9 @@ function interpretHabit(input, options = {}) {
     ? validateHabitRules(options.rules)
     : options.registryPath
       ? loadHabitsFromFile(options.registryPath)
-      : loadDefaultHabits();
+      : options.includeUserRegistry === false
+        ? loadDefaultHabits()
+        : loadMergedHabits(loadDefaultHabits(), options.userRegistryPath || USER_REGISTRY_PATH);
   const candidates = findCandidateRules(message, rules).map((candidate) => scoreCandidate(candidate, input));
   const [topCandidate, secondCandidate] = candidates;
 

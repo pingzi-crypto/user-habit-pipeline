@@ -10,6 +10,7 @@
   },
   "files": [
     "src",
+    "data/.gitkeep",
     "docs/registry.schema.json",
     "docs/examples.md",
     "docs/mvp-spec.md",
@@ -34,7 +35,8 @@
   ],
   "bin": {
     "user-habit-pipeline": "./src/cli.js",
-    "validate-habit-registry": "./src/validate-registry-cli.js"
+    "validate-habit-registry": "./src/validate-registry-cli.js",
+    "manage-user-habits": "./src/manage-habits-cli.js"
   },
   "scripts": {
     "check": "npm run check-examples-doc && npm test",
@@ -42,6 +44,7 @@
     "test": "node --test",
     "demo": "node ./src/demo.js",
     "interpret": "node ./src/cli.js",
+    "manage-habits": "node ./src/manage-habits-cli.js",
     "validate-registry": "node ./src/validate-registry-cli.js",
     "generate-examples-doc": "node ./src/generate-examples-doc.js",
     "check-examples-doc": "node ./src/generate-examples-doc.js --check",

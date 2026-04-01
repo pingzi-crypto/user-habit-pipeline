@@ -24,6 +24,8 @@ Options:
 
 - `options.rules?: HabitRule[]`
 - `options.registryPath?: string`
+- `options.userRegistryPath?: string`
+- `options.includeUserRegistry?: boolean`
 
 Output fields:
 
@@ -39,7 +41,8 @@ Notes:
 
 - if `options.rules` is provided, the interpreter validates and uses that rule set directly
 - if `options.registryPath` is provided, the interpreter loads and validates that file
-- if neither is provided, the default registry is used
+- if neither is provided, the interpreter loads the default registry plus the user-habits overlay
+- `options.includeUserRegistry = false` forces default-registry-only behavior
 
 ### `loadDefaultHabits()`
 
@@ -57,6 +60,35 @@ Throws if the registry is invalid.
 Validate an in-memory registry array.
 Returns the same array if valid.
 Throws if any rule violates the runtime contract.
+
+### `loadUserRegistryState(registryPath?)`
+
+Load the persisted user-habits overlay state.
+Returns an object with:
+
+- `additions`
+- `removals`
+
+### `addUserHabitRule(rule, registryPath?)`
+
+Persist a user-defined habit phrase.
+If the phrase already exists in the user overlay, it is replaced.
+If the same phrase was previously removed, the removal tombstone is cleared.
+
+### `removeUserHabitPhrase(phrase, registryPath?)`
+
+Remove a phrase from the effective registry.
+This removes any matching user-defined addition and records a removal marker so default phrases can also be hidden.
+
+### `parseHabitManagementRequest(message)`
+
+Parse a lightweight habit-management prompt.
+
+Supported examples:
+
+- `添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86`
+- `删除用户习惯短句: 收尾一下`
+- `列出用户习惯短句`
 
 ### `toGrowthHubHint(habitOutput)`
 
@@ -99,6 +131,7 @@ Supported flags:
 - `--context <text>` repeatable
 - `--adapter growth-hub` optional
 - `--registry <path>` optional
+- `--user-registry <path>` optional
 
 The CLI prints JSON only.
 
@@ -126,6 +159,40 @@ Behavior:
 
 - prints structured JSON on success
 - prints a validation error to stderr and exits non-zero on failure
+
+---
+
+## Manage-Habits CLI
+
+The user-habit management CLI entrypoint is:
+
+- [manage-habits-cli.js](/E:/user-habit-pipeline/src/manage-habits-cli.js)
+
+Command:
+
+```powershell
+npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
+```
+
+Structured examples:
+
+```powershell
+npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
+npm run manage-habits -- --remove --phrase "收尾一下"
+npm run manage-habits -- --list
+```
+
+Help:
+
+```powershell
+npm run manage-habits -- --help
+```
+
+Behavior:
+
+- persists user-defined additions in a separate user registry file
+- supports removal markers so default phrases can be hidden
+- allows prompt-based add/remove/list requests without editing JSON manually
 
 ---
 
