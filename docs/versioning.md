@@ -4,8 +4,8 @@ This repository currently follows a simple MVP-first versioning policy.
 
 ## Current Status
 
-- current package version: `0.1.0`
-- current stage: MVP
+- current package version: `0.3.0`
+- current stage: pre-stable MVP expansion
 - compatibility goal: keep the main output contract stable while the implementation is refined
 
 The `0.x` series should be treated as pre-stable.
@@ -13,16 +13,16 @@ Changes can still tighten behavior, documentation, and validation rules without 
 
 ---
 
-## What Should Stay Stable in `0.1.x`
+## What Should Stay Stable in `0.x`
 
-Within the `0.1.x` line, avoid unnecessary changes to:
+Within the current `0.x` line, avoid unnecessary changes to:
 
 - the top-level output field names
 - the default registry format
 - CLI flag names that already exist
 - the meaning of the documented example cases
 
-Allowed changes in `0.1.x`:
+Allowed changes in `0.x`:
 
 - clearer documentation
 - stricter validation
@@ -30,7 +30,7 @@ Allowed changes in `0.1.x`:
 - packaging improvements
 - conservative scoring fixes that align behavior with the spec
 
-Avoid in `0.1.x` unless clearly justified:
+Avoid in `0.x` unless clearly justified:
 
 - renaming `normalized_intent` values already documented
 - changing the output shape
@@ -53,8 +53,8 @@ Before treating a change as a new internal release point:
 
 Possible future milestones:
 
-- `0.2.x` for broader registry authoring and tooling improvements
-- `0.3.x` for more adapter examples or packaging refinement
+- `0.4.x` for broader adapter examples or packaging refinement
+- `0.5.x` for richer registry authoring and project-specific distribution workflows
 - `1.0.0` only after the output contract and intended extension model are considered stable
 
 Do not advance to `1.0.0` just because the implementation exists.

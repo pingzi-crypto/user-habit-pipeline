@@ -304,7 +304,7 @@ Regenerate the examples document after changing the example fixtures:
 npm run generate-examples-doc
 ```
 
-Run a quick end-to-end demo of the current `0.1.0` scope:
+Run a quick end-to-end demo of the current package scope:
 
 ```powershell
 npm run demo

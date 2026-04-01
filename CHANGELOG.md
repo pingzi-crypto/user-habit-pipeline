@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-04-01
 
 - Added user overlay import/export support for persistent habit phrase customizations.
 - Added `replace` and `merge` import modes for user registry state management.
