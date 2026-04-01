@@ -172,6 +172,28 @@ test("manage-habits cli respects prompt import mode=merge", () => {
   );
 });
 
+test("manage-habits cli can read a multiline prompt request from stdin", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: "新增习惯短句 phrase=收尾一下\nintent=close_session\n场景=session_close\n置信度=0.86\n",
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "add");
+  assert.equal(parsed.added_rule.phrase, "收尾一下");
+  assert.equal(parsed.added_rule.normalized_intent, "close_session");
+  assert.deepEqual(parsed.added_rule.scenario_bias, ["session_close"]);
+  assert.equal(parsed.added_rule.confidence, 0.86);
+});
+
 test("manage-habits cli prints help and exits zero", () => {
   const result = spawnSync(process.execPath, [MANAGE_CLI_PATH, "--help"], {
     encoding: "utf8"
@@ -180,6 +202,7 @@ test("manage-habits cli prints help and exits zero", () => {
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Usage: manage-user-habits/);
   assert.match(result.stdout, /--request <text>/);
+  assert.match(result.stdout, /--request-stdin/);
   assert.match(result.stdout, /--export <path>/);
   assert.match(result.stdout, /--import <path>/);
 });

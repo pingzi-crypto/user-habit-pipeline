@@ -95,6 +95,17 @@ If you prefer a lighter, more natural format, use `--request`.
 npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
 ```
 
+For multiline prompt input in PowerShell, use `--request-stdin` instead of `--request`:
+
+```powershell
+@'
+新增习惯短句 phrase=收尾一下
+intent=close_session
+场景=session_close
+置信度=0.86
+'@ | npm run manage-habits -- --request-stdin
+```
+
 ### Remove
 
 ```powershell
@@ -235,8 +246,10 @@ Most failures come from:
 - missing `intent`
 - invalid `confidence`
 - malformed prompt segments
+- trying to pass a multiline `--request` value through `npm run` on Windows
 
 If needed, switch from `--request` to the explicit `--add` flags.
+For multiline prompt input on Windows PowerShell, prefer `--request-stdin`.
 
 ### Import fails
 

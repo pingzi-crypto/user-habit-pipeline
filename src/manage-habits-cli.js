@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require("node:fs");
 const path = require("node:path");
 const {
   USER_REGISTRY_PATH,
@@ -23,6 +24,7 @@ function parseArgs(argv) {
     confidence: null,
     registryPath: USER_REGISTRY_PATH,
     request: null,
+    requestFromStdin: false,
     help: false
   };
 
@@ -109,6 +111,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--request-stdin") {
+      parsed.requestFromStdin = true;
+      continue;
+    }
+
     if (token === "--help" || token === "-h") {
       parsed.help = true;
     }
@@ -117,9 +124,20 @@ function parseArgs(argv) {
   return parsed;
 }
 
+function readRequestFromStdin() {
+  const input = fs.readFileSync(0, "utf8");
+  const trimmed = String(input || "").trim();
+
+  if (!trimmed) {
+    throw new Error("--request-stdin requires non-empty stdin input.");
+  }
+
+  return trimmed;
+}
+
 function getUsageText() {
   return [
-    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --request <text>) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--user-registry <path>]",
+    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--user-registry <path>]",
     "",
     "Examples:",
     "  manage-user-habits --add --phrase \"收尾一下\" --intent close_session --scenario session_close --confidence 0.86",
@@ -130,6 +148,7 @@ function getUsageText() {
     "  manage-user-habits --request \"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86\"",
     "  manage-user-habits --request \"删除用户习惯短句: 收尾一下\"",
     "  manage-user-habits --request \"列出用户习惯短句\"",
+    "  @'\n新增习惯短句 phrase=收尾一下\nintent=close_session\n场景=session_close\n置信度=0.86\n'@ | manage-user-habits --request-stdin",
     "",
     "Options:",
     "  --add                    Add or update a user-defined habit phrase.",
@@ -144,6 +163,7 @@ function getUsageText() {
     "  --scenario <a,b>         Optional comma-separated scenario hints for --add.",
     "  --confidence <0-1>       Optional confidence for --add. Default: 0.85.",
     "  --request <text>         Lightweight prompt-based management request.",
+    "  --request-stdin          Read a lightweight prompt request from stdin.",
     `  --user-registry <path>  Optional user registry path. Default: ${path.relative(process.cwd(), USER_REGISTRY_PATH) || USER_REGISTRY_PATH}`,
     "  --help, -h               Show this help text."
   ].join("\n");
@@ -303,6 +323,10 @@ function executeRequestAction(args) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.requestFromStdin) {
+    args.request = readRequestFromStdin();
+  }
+
   if (args.help) {
     printUsageAndExit(0, process.stdout);
   }

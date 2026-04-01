@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added `--request-stdin` to the habit management CLI so multiline prompt requests work reliably in PowerShell and other shell setups that do not preserve multiline `--request` arguments through `npm run`.
+- Documented the PowerShell here-string testing flow and added regression coverage for stdin-based prompt requests.
+
 ## 0.3.0 - 2026-04-01
 
 - Added user overlay import/export support for persistent habit phrase customizations.

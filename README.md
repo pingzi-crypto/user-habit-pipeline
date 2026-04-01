@@ -360,6 +360,17 @@ npm run manage-habits -- --request "导出用户习惯短句: path=.\backup\user
 npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
 ```
 
+For multiline prompt requests in PowerShell, prefer piping a here-string into `--request-stdin`:
+
+```powershell
+@'
+新增习惯短句 phrase=收尾一下
+intent=close_session
+场景=session_close
+置信度=0.86
+'@ | npm run manage-habits -- --request-stdin
+```
+
 This writes user-managed phrases into a separate overlay file and leaves the default registry untouched.
 
 ### CLI contract
