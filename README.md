@@ -336,12 +336,27 @@ List the current user-defined additions and removals:
 npm run manage-habits -- --list
 ```
 
+Export your current user overlay:
+
+```powershell
+npm run manage-habits -- --export .\backup\user_habits.json
+```
+
+Import a saved overlay:
+
+```powershell
+npm run manage-habits -- --import .\backup\user_habits.json
+npm run manage-habits -- --import .\backup\user_habits.json --mode merge
+```
+
 Use a lightweight prompt-like request instead of flags:
 
 ```powershell
 npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
 npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
 npm run manage-habits -- --request "列出用户习惯短句"
+npm run manage-habits -- --request "导出用户习惯短句: path=.\backup\user_habits.json"
+npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
 ```
 
 This writes user-managed phrases into a separate overlay file and leaves the default registry untouched.

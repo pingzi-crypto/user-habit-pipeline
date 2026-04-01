@@ -8,6 +8,11 @@ The system supports three basic actions:
 - remove a phrase
 - list current user-defined changes
 
+It also supports:
+
+- export your current overlay
+- import an overlay from another file
+
 User-managed phrases are stored in a separate overlay file.
 The default registry stays unchanged.
 
@@ -54,6 +59,24 @@ npm run manage-habits -- --remove --phrase "验收"
 npm run manage-habits -- --list
 ```
 
+### Export your current overlay
+
+```powershell
+npm run manage-habits -- --export .\backup\user_habits.json
+```
+
+### Import an overlay file
+
+```powershell
+npm run manage-habits -- --import .\backup\user_habits.json
+```
+
+### Import with merge mode
+
+```powershell
+npm run manage-habits -- --import .\backup\user_habits.json --mode merge
+```
+
 ### See help
 
 ```powershell
@@ -84,6 +107,19 @@ npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
 npm run manage-habits -- --request "列出用户习惯短句"
 ```
 
+### Export
+
+```powershell
+npm run manage-habits -- --request "导出用户习惯短句: path=.\backup\user_habits.json"
+```
+
+### Import
+
+```powershell
+npm run manage-habits -- --request "导入用户习惯短句: path=.\backup\user_habits.json"
+npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
+```
+
 Supported field names in add requests include:
 
 - `phrase` or `短句`
@@ -95,6 +131,11 @@ Supported field names in add requests include:
 - `disambiguation_hints` / `澄清提示`
 - `clarify_below` / `澄清阈值`
 - `match_type` / `匹配方式`
+
+Supported field names in import/export requests include:
+
+- `path` / `file` / `路径` / `文件`
+- `mode` / `模式`
 
 ---
 
@@ -131,6 +172,20 @@ to either:
 
 - `npm run manage-habits`
 - `npm run interpret`
+
+You can export that file to another location for backup or sharing, then import it later.
+
+## Import Modes
+
+### `replace`
+
+Replace the current user overlay with the imported file.
+
+### `merge`
+
+Merge imported additions and removals into the current user overlay.
+
+Merge is useful when you want to bring in another overlay without losing your current local phrases.
 
 ---
 
@@ -182,6 +237,14 @@ Most failures come from:
 - malformed prompt segments
 
 If needed, switch from `--request` to the explicit `--add` flags.
+
+### Import fails
+
+Check:
+
+- the imported file is a valid user overlay object
+- it contains `additions` and `removals` with the expected shapes
+- you chose the intended import mode
 
 ---
 

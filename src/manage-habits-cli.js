@@ -5,6 +5,8 @@ const {
   USER_REGISTRY_PATH,
   addUserHabitRule,
   ensureUserRegistryFile,
+  exportUserRegistryState,
+  importUserRegistryState,
   loadUserRegistryState,
   removeUserHabitPhrase
 } = require("./habit_registry/user_registry");
@@ -15,6 +17,8 @@ function parseArgs(argv) {
     action: null,
     phrase: null,
     intent: null,
+    filePath: null,
+    mode: null,
     scenario: [],
     confidence: null,
     registryPath: USER_REGISTRY_PATH,
@@ -37,6 +41,20 @@ function parseArgs(argv) {
 
     if (token === "--list") {
       parsed.action = "list";
+      continue;
+    }
+
+    if (token === "--export") {
+      parsed.action = "export";
+      parsed.filePath = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (token === "--import") {
+      parsed.action = "import";
+      parsed.filePath = argv[index + 1] ?? null;
+      index += 1;
       continue;
     }
 
@@ -67,6 +85,18 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--file") {
+      parsed.filePath = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (token === "--mode") {
+      parsed.mode = argv[index + 1] ?? "replace";
+      index += 1;
+      continue;
+    }
+
     if (token === "--user-registry") {
       parsed.registryPath = argv[index + 1] ?? USER_REGISTRY_PATH;
       index += 1;
@@ -89,12 +119,14 @@ function parseArgs(argv) {
 
 function getUsageText() {
   return [
-    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --request <text>) [--scenario <a,b>] [--confidence <0-1>] [--user-registry <path>]",
+    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --request <text>) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--user-registry <path>]",
     "",
     "Examples:",
     "  manage-user-habits --add --phrase \"收尾一下\" --intent close_session --scenario session_close --confidence 0.86",
     "  manage-user-habits --remove --phrase \"收尾一下\"",
     "  manage-user-habits --list",
+    "  manage-user-habits --export .\\backup\\user_habits.json",
+    "  manage-user-habits --import .\\backup\\user_habits.json --mode merge",
     "  manage-user-habits --request \"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86\"",
     "  manage-user-habits --request \"删除用户习惯短句: 收尾一下\"",
     "  manage-user-habits --request \"列出用户习惯短句\"",
@@ -103,8 +135,12 @@ function getUsageText() {
     "  --add                    Add or update a user-defined habit phrase.",
     "  --remove                 Remove a habit phrase from the effective registry.",
     "  --list                   List the current user-defined additions and removals.",
+    "  --export <path>          Export the current user overlay to a JSON file.",
+    "  --import <path>          Import a user overlay JSON file.",
     "  --phrase <text>          Phrase to add or remove.",
     "  --intent <intent>        Normalized intent for --add.",
+    "  --file <path>            Optional file path for prompt-driven import/export.",
+    "  --mode replace|merge     Import mode. Default: replace.",
     "  --scenario <a,b>         Optional comma-separated scenario hints for --add.",
     "  --confidence <0-1>       Optional confidence for --add. Default: 0.85.",
     "  --request <text>         Lightweight prompt-based management request.",
@@ -140,6 +176,38 @@ function executeStructuredAction(args) {
       action: "remove",
       removed_phrase: args.phrase,
       registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
+  if (args.action === "export") {
+    if (!args.filePath) {
+      throw new Error("--export requires a file path.");
+    }
+
+    const state = exportUserRegistryState(args.filePath, args.registryPath);
+    return {
+      action: "export",
+      registry_path: args.registryPath,
+      file_path: args.filePath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
+  if (args.action === "import") {
+    if (!args.filePath) {
+      throw new Error("--import requires a file path.");
+    }
+
+    const mode = args.mode || "replace";
+    const state = importUserRegistryState(args.filePath, args.registryPath, mode);
+    return {
+      action: "import",
+      mode,
+      registry_path: args.registryPath,
+      file_path: args.filePath,
       additions: state.additions,
       removals: state.removals
     };
@@ -192,6 +260,32 @@ function executeRequestAction(args) {
       action: "remove",
       removed_phrase: parsedRequest.phrase,
       registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
+  if (parsedRequest.action === "export") {
+    const exportPath = args.filePath || parsedRequest.path;
+    const state = exportUserRegistryState(exportPath, args.registryPath);
+    return {
+      action: "export",
+      registry_path: args.registryPath,
+      file_path: exportPath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
+  if (parsedRequest.action === "import") {
+    const importPath = args.filePath || parsedRequest.path;
+    const mode = parsedRequest.mode || args.mode || "replace";
+    const state = importUserRegistryState(importPath, args.registryPath, mode);
+    return {
+      action: "import",
+      mode,
+      registry_path: args.registryPath,
+      file_path: importPath,
       additions: state.additions,
       removals: state.removals
     };

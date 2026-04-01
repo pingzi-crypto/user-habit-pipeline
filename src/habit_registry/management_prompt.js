@@ -1,5 +1,5 @@
 function parseListRequest(message) {
-  if (/^\s*(列出|查看)(?:用户)?习惯短句\s*$/u.test(message)) {
+  if (/^\s*(?:列出|查看|看看|看下|看一下)(?:当前)?(?:用户)?习惯短句(?:列表)?\s*$/u.test(message)) {
     return { action: "list" };
   }
 
@@ -7,7 +7,7 @@ function parseListRequest(message) {
 }
 
 function parseRemoveRequest(message) {
-  const match = message.match(/^\s*(?:删除|移除|忘记)(?:用户)?习惯短句[:：]\s*(.+?)\s*$/u);
+  const match = message.match(/^\s*(?:删除|移除|忘记)(?:掉|掉这个)?(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u);
   if (!match) {
     return null;
   }
@@ -26,7 +26,7 @@ function stripWrappingQuotes(value) {
 
 function parseKeyValueSegments(segmentText) {
   const segments = segmentText
-    .split(/[;；]/u)
+    .split(/[;；\n]/u)
     .map((segment) => segment.trim())
     .filter(Boolean);
 
@@ -46,6 +46,27 @@ function parseKeyValueSegments(segmentText) {
   return result;
 }
 
+function parsePathRequest(message, config) {
+  const match = message.match(config.pattern);
+  if (!match) {
+    return null;
+  }
+
+  const fields = parseKeyValueSegments(match[1]);
+  const pathValue = stripWrappingQuotes(fields.path || fields.file || fields["路径"] || fields["文件"]);
+  const modeValue = stripWrappingQuotes(fields.mode || fields["模式"]);
+
+  if (!pathValue) {
+    throw new Error(`${config.label} prompt requires path/file/路径/文件.`);
+  }
+
+  return {
+    action: config.action,
+    path: pathValue,
+    mode: modeValue || undefined
+  };
+}
+
 function toStringArray(value) {
   if (!value) {
     return [];
@@ -58,7 +79,7 @@ function toStringArray(value) {
 }
 
 function parseAddRequest(message) {
-  const match = message.match(/^\s*(?:添加|新增|记住)(?:用户)?习惯短句[:：]\s*(.+?)\s*$/u);
+  const match = message.match(/^\s*(?:添加|新增|记住)(?:一个|这条)?(?:用户)?习惯短句(?:[:：]|\s)\s*([\s\S]+?)\s*$/u);
   if (!match) {
     return null;
   }
@@ -118,6 +139,22 @@ function parseAddRequest(message) {
   };
 }
 
+function parseImportRequest(message) {
+  return parsePathRequest(message, {
+    action: "import",
+    label: "Import-habit",
+    pattern: /^\s*(?:导入|导进去|载入)(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u
+  });
+}
+
+function parseExportRequest(message) {
+  return parsePathRequest(message, {
+    action: "export",
+    label: "Export-habit",
+    pattern: /^\s*(?:导出|导出来|备份)(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u
+  });
+}
+
 function parseHabitManagementRequest(message) {
   const trimmedMessage = String(message || "").trim();
   if (!trimmedMessage) {
@@ -126,6 +163,8 @@ function parseHabitManagementRequest(message) {
 
   return parseListRequest(trimmedMessage)
     || parseRemoveRequest(trimmedMessage)
+    || parseImportRequest(trimmedMessage)
+    || parseExportRequest(trimmedMessage)
     || parseAddRequest(trimmedMessage);
 }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Added user overlay import/export support for persistent habit phrase customizations.
+- Added `replace` and `merge` import modes for user registry state management.
+- Expanded lightweight prompt parsing to better handle Chinese management phrasing and multiline add requests.
+- Added CLI coverage and regression tests for import/export and more tolerant prompt parsing.
+
 ## 0.2.0 - 2026-04-01
 
 - Added a persistent user-habits overlay on top of the default registry.

@@ -63,6 +63,10 @@ function saveUserRegistryState(state, registryPath = USER_REGISTRY_PATH) {
   return validated;
 }
 
+function ensureParentDirectory(filePath) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+}
+
 function mergeHabitRegistries(defaultRules, userRegistryState) {
   const state = validateUserRegistryState(userRegistryState);
   const removedPhrases = new Set(state.removals.map((phrase) => normalizePhrase(phrase)));
@@ -79,6 +83,33 @@ function mergeHabitRegistries(defaultRules, userRegistryState) {
 function loadMergedHabits(defaultRules, registryPath = USER_REGISTRY_PATH) {
   const state = loadUserRegistryState(registryPath);
   return mergeHabitRegistries(defaultRules, state);
+}
+
+function mergeUserRegistryStates(baseState, incomingState) {
+  const base = validateUserRegistryState(baseState);
+  const incoming = validateUserRegistryState(incomingState);
+
+  const additionsMap = new Map();
+  for (const rule of base.additions) {
+    additionsMap.set(normalizePhrase(rule.phrase), rule);
+  }
+  for (const rule of incoming.additions) {
+    additionsMap.set(normalizePhrase(rule.phrase), rule);
+  }
+
+  const removalsMap = new Map();
+  for (const phrase of [...base.removals, ...incoming.removals]) {
+    removalsMap.set(normalizePhrase(phrase), phrase);
+  }
+
+  for (const phrase of additionsMap.keys()) {
+    removalsMap.delete(phrase);
+  }
+
+  return {
+    additions: [...additionsMap.values()],
+    removals: [...removalsMap.values()]
+  };
 }
 
 function addUserHabitRule(rule, registryPath = USER_REGISTRY_PATH) {
@@ -110,13 +141,38 @@ function removeUserHabitPhrase(phrase, registryPath = USER_REGISTRY_PATH) {
   return saveUserRegistryState({ additions, removals }, registryPath);
 }
 
+function exportUserRegistryState(exportPath, registryPath = USER_REGISTRY_PATH) {
+  const state = loadUserRegistryState(registryPath);
+  ensureParentDirectory(exportPath);
+  fs.writeFileSync(exportPath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+  return state;
+}
+
+function importUserRegistryState(importPath, registryPath = USER_REGISTRY_PATH, mode = "replace") {
+  const imported = validateUserRegistryState(JSON.parse(fs.readFileSync(importPath, "utf8")));
+
+  if (mode === "replace") {
+    return saveUserRegistryState(imported, registryPath);
+  }
+
+  if (mode === "merge") {
+    const current = loadUserRegistryState(registryPath);
+    return saveUserRegistryState(mergeUserRegistryStates(current, imported), registryPath);
+  }
+
+  throw new Error('Import mode must be "replace" or "merge".');
+}
+
 module.exports = {
   USER_REGISTRY_PATH,
   addUserHabitRule,
   createEmptyUserRegistry,
   ensureUserRegistryFile,
+  exportUserRegistryState,
+  importUserRegistryState,
   loadMergedHabits,
   loadUserRegistryState,
+  mergeUserRegistryStates,
   mergeHabitRegistries,
   removeUserHabitPhrase,
   saveUserRegistryState,

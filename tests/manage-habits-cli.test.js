@@ -63,6 +63,115 @@ test("manage-habits cli can remove a phrase through a prompt request", () => {
   assert.deepEqual(parsed.removals, ["验收"]);
 });
 
+test("manage-habits cli can export and import overlay files", () => {
+  const sourceRegistryPath = createTempRegistryPath();
+  const destinationRegistryPath = createTempRegistryPath();
+  const exportPath = path.join(path.dirname(sourceRegistryPath), "exported_overlay.json");
+
+  const addResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--add",
+    "--phrase",
+    "收尾一下",
+    "--intent",
+    "close_session",
+    "--scenario",
+    "session_close",
+    "--user-registry",
+    sourceRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(addResult.status, 0);
+
+  const exportResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--export",
+    exportPath,
+    "--user-registry",
+    sourceRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(exportResult.status, 0);
+  const exported = JSON.parse(exportResult.stdout);
+  assert.equal(exported.action, "export");
+
+  const importResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--import",
+    exportPath,
+    "--user-registry",
+    destinationRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(importResult.status, 0);
+  const imported = JSON.parse(importResult.stdout);
+  assert.equal(imported.action, "import");
+  assert.equal(imported.additions.length, 1);
+  assert.equal(imported.additions[0].phrase, "收尾一下");
+});
+
+test("manage-habits cli respects prompt import mode=merge", () => {
+  const sourceRegistryPath = createTempRegistryPath();
+  const destinationRegistryPath = createTempRegistryPath();
+  const exportPath = path.join(path.dirname(sourceRegistryPath), "merge_overlay.json");
+
+  spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--add",
+    "--phrase",
+    "收尾一下",
+    "--intent",
+    "close_session",
+    "--scenario",
+    "session_close",
+    "--user-registry",
+    sourceRegistryPath
+  ], { encoding: "utf8" });
+
+  spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--export",
+    exportPath,
+    "--user-registry",
+    sourceRegistryPath
+  ], { encoding: "utf8" });
+
+  spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--add",
+    "--phrase",
+    "复盘一下",
+    "--intent",
+    "close_session",
+    "--scenario",
+    "session_close",
+    "--user-registry",
+    destinationRegistryPath
+  ], { encoding: "utf8" });
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    `导入习惯短句 路径=${exportPath}; 模式=merge`,
+    "--user-registry",
+    destinationRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "import");
+  assert.equal(parsed.mode, "merge");
+  assert.deepEqual(
+    parsed.additions.map((item) => item.phrase).sort(),
+    ["复盘一下", "收尾一下"].sort()
+  );
+});
+
 test("manage-habits cli prints help and exits zero", () => {
   const result = spawnSync(process.execPath, [MANAGE_CLI_PATH, "--help"], {
     encoding: "utf8"
@@ -71,4 +180,6 @@ test("manage-habits cli prints help and exits zero", () => {
   assert.equal(result.status, 0);
   assert.match(result.stdout, /Usage: manage-user-habits/);
   assert.match(result.stdout, /--request <text>/);
+  assert.match(result.stdout, /--export <path>/);
+  assert.match(result.stdout, /--import <path>/);
 });

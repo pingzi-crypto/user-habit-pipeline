@@ -9,6 +9,8 @@ const {
   USER_REGISTRY_PATH,
   addUserHabitRule,
   ensureUserRegistryFile,
+  exportUserRegistryState,
+  importUserRegistryState,
   loadMergedHabits,
   loadUserRegistryState,
   removeUserHabitPhrase
@@ -19,6 +21,8 @@ module.exports = {
   USER_REGISTRY_PATH,
   addUserHabitRule,
   ensureUserRegistryFile,
+  exportUserRegistryState,
+  importUserRegistryState,
   interpretHabit,
   loadDefaultHabits,
   loadHabitsFromFile,

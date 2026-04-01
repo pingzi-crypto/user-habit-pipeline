@@ -80,6 +80,19 @@ If the same phrase was previously removed, the removal tombstone is cleared.
 Remove a phrase from the effective registry.
 This removes any matching user-defined addition and records a removal marker so default phrases can also be hidden.
 
+### `exportUserRegistryState(exportPath, registryPath?)`
+
+Export the current user overlay to a JSON file.
+
+### `importUserRegistryState(importPath, registryPath?, mode?)`
+
+Import a user overlay from disk.
+
+Supported modes:
+
+- `replace`
+- `merge`
+
 ### `parseHabitManagementRequest(message)`
 
 Parse a lightweight habit-management prompt.
@@ -180,6 +193,8 @@ Structured examples:
 npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
 npm run manage-habits -- --remove --phrase "收尾一下"
 npm run manage-habits -- --list
+npm run manage-habits -- --export .\backup\user_habits.json
+npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 ```
 
 Help:
@@ -192,6 +207,8 @@ Behavior:
 
 - persists user-defined additions in a separate user registry file
 - supports removal markers so default phrases can be hidden
+- supports export/import of the user overlay JSON file
+- supports `replace` and `merge` import modes
 - allows prompt-based add/remove/list requests without editing JSON manually
 
 ---
