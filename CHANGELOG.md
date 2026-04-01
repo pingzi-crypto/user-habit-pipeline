@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 - 2026-04-01
+
+- Added a persistent user-habits overlay on top of the default registry.
+- Added support for user-managed habit phrase add/remove/list operations.
+- Added a lightweight prompt parser so users can manage habits with simple natural-language requests.
+- Added a dedicated `manage-user-habits` CLI and `--user-registry` support on the main interpreter CLI.
+- Added regression tests and documentation for user-managed habit phrases.
+
 ## 0.1.0 - 2026-04-01
 
 - Added a minimal habit interpreter with explicit phrase matching, scoring, and clarification rules.
