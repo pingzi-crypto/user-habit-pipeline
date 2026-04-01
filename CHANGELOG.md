@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-04-01
 
 - Added a minimal habit interpreter with explicit phrase matching, scoring, and clarification rules.
 - Added a `growth-hub` adapter that projects interpretation results into downstream hint fields.
