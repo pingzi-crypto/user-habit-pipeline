@@ -296,6 +296,7 @@ The registry format is also described by a JSON Schema artifact:
 - [versioning.md](/E:/user-habit-pipeline/docs/versioning.md)
 - [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
 - [freeze-assessment-0.1.0.md](/E:/user-habit-pipeline/docs/freeze-assessment-0.1.0.md)
+- [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
 
 Regenerate the examples document after changing the example fixtures:
 
