@@ -20,10 +20,43 @@ function parseSuggestRequest(message) {
   return null;
 }
 
+function parseApplyCandidateOverrides(segmentText) {
+  const overrides = {};
+  const fields = parseKeyValueSegments(segmentText);
+  const intent = stripWrappingQuotes(fields.intent || fields["意图"]);
+  const scenarioValue = stripWrappingQuotes(fields.scenario || fields["场景"]);
+  const confidenceValue = stripWrappingQuotes(fields.confidence || fields["置信度"]);
+
+  if (intent) {
+    overrides.intent = intent;
+  }
+
+  if (scenarioValue) {
+    overrides.scenario_bias = toStringArray(scenarioValue);
+  }
+
+  if (confidenceValue) {
+    overrides.confidence = Number(confidenceValue);
+  }
+
+  const shorthandScenario = String(segmentText || "").match(/([a-z0-9_,-]+)\s*场景/iu);
+  if (!overrides.scenario_bias && shorthandScenario) {
+    overrides.scenario_bias = toStringArray(shorthandScenario[1]);
+  }
+
+  const shorthandIntent = String(segmentText || "").match(/([a-z][a-z0-9_]*)\s*意图/iu);
+  if (!overrides.intent && shorthandIntent) {
+    overrides.intent = shorthandIntent[1];
+  }
+
+  return overrides;
+}
+
 function parseApplyCandidateRequest(message) {
   const patterns = [
-    /^\s*(?:添加|加入|保存|采用)(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:到(?:用户)?习惯短句|到overlay|到用户overlay)?\s*$/u,
-    /^\s*把(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:加到|加入)(?:用户)?习惯短句\s*$/u
+    /^\s*(?:添加|加入|保存|采用)\s*(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:到(?:用户)?习惯短句|到overlay|到用户overlay)?\s*(.*)$/u,
+    /^\s*把\s*(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:加到|加入)(?:用户)?习惯短句?\s*(.*)$/u,
+    /^\s*把\s*(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?\s*(.*)$/u
   ];
 
   for (const pattern of patterns) {
@@ -33,9 +66,11 @@ function parseApplyCandidateRequest(message) {
     }
 
     const index = match[1] || match[2];
+    const overrides = parseApplyCandidateOverrides(match[3] || "");
     return {
       action: "apply-candidate",
-      candidate_ref: `c${Number(index)}`
+      candidate_ref: `c${Number(index)}`,
+      ...overrides
     };
   }
 

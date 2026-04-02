@@ -411,6 +411,13 @@ Prompt-style confirmation is also supported when you already have a suggestion s
 
 ```powershell
 npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --request "把第1条加到 session_close 场景" --suggestions .\data\thread_suggestions.json
+```
+
+If a candidate is review-only, you can still apply it by supplying an explicit intent:
+
+```powershell
+npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close --suggestions .\data\thread_suggestions.json
 ```
 
 ### CLI contract

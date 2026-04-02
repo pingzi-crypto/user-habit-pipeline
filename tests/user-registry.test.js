@@ -112,6 +112,13 @@ test("prompt parser supports add, remove, and list requests", () => {
     action: "apply-candidate",
     candidate_ref: "c1"
   });
+
+  const applyCandidateWithScenario = parseHabitManagementRequest("把第1条加到 session_close 场景");
+  assert.deepEqual(applyCandidateWithScenario, {
+    action: "apply-candidate",
+    candidate_ref: "c1",
+    scenario_bias: ["session_close"]
+  });
 });
 
 test("user registry state can be exported and imported", () => {

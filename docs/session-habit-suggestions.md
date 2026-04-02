@@ -85,6 +85,7 @@ Prompt-style apply:
 
 ```powershell
 npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --request "把第1条加到 session_close 场景" --suggestions .\data\thread_suggestions.json
 ```
 
 ---
@@ -153,7 +154,7 @@ Each candidate may include:
 This is designed so a host application can present candidates and let the user confirm them one by one.
 
 Candidates that include a `suggested_rule` can be added directly after user confirmation.
-Candidates returned as `review_only` still need an explicit rule definition before they can be stored.
+Candidates returned as `review_only` can still be stored if the user supplies an explicit `intent`, and optionally `scenario` or `confidence`, during the apply step.
 
 ---
 

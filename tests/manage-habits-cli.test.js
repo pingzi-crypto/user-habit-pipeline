@@ -327,6 +327,77 @@ test("manage-habits cli can apply a suggested candidate through a prompt request
   assert.equal(parsed.applied_rule.normalized_intent, "close_session");
 });
 
+test("manage-habits cli can override scenario when applying a suggested candidate through a prompt request", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const suggestions = {
+    candidates: [
+      {
+        candidate_id: "c1",
+        phrase: "收尾一下",
+        suggested_rule: {
+          phrase: "收尾一下",
+          normalized_intent: "close_session",
+          scenario_bias: ["general"],
+          confidence: 0.84
+        }
+      }
+    ]
+  };
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "把第1条加到 session_close 场景",
+    "--suggestions-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: JSON.stringify(suggestions),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.deepEqual(parsed.applied_rule.scenario_bias, ["session_close"]);
+});
+
+test("manage-habits cli can apply a review-only candidate when intent is provided", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const suggestions = {
+    candidates: [
+      {
+        candidate_id: "c1",
+        phrase: "收工啦",
+        suggested_rule: null
+      }
+    ]
+  };
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--apply-candidate",
+    "c1",
+    "--intent",
+    "close_session",
+    "--scenario",
+    "session_close",
+    "--suggestions-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: JSON.stringify(suggestions),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.equal(parsed.applied_rule.phrase, "收工啦");
+  assert.equal(parsed.applied_rule.normalized_intent, "close_session");
+  assert.deepEqual(parsed.applied_rule.scenario_bias, ["session_close"]);
+});
+
 test("manage-habits cli can apply a candidate from a noisy npm-style snapshot file", () => {
   const userRegistryPath = createTempRegistryPath();
   const suggestionsPath = path.join(path.dirname(userRegistryPath), "noisy_suggestions.json");
