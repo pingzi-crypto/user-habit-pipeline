@@ -293,6 +293,7 @@ The registry format is also described by a JSON Schema artifact:
 - [registry.schema.json](/E:/user-habit-pipeline/docs/registry.schema.json)
 - [editor-integration.md](/E:/user-habit-pipeline/docs/editor-integration.md)
 - [api-reference.md](/E:/user-habit-pipeline/docs/api-reference.md)
+- [confidence-scoring.md](/E:/user-habit-pipeline/docs/confidence-scoring.md)
 - [project-principles.md](/E:/user-habit-pipeline/docs/project-principles.md)
 - [versioning.md](/E:/user-habit-pipeline/docs/versioning.md)
 - [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a formal confidence-scoring document that separates interpreter confidence from session-suggestion confidence and records the current runtime thresholds and bonuses.
 - Added a formal project-principles document that captures the current interpretation-layer boundary, explicit-confirmation model, and the rule that install/config paths must stay configurable rather than hardcoded.
 - Added persistent suggestion suppression so users can ignore a candidate with `忽略第1条`, `--ignore-candidate c1`, or suppress a noisy phrase with `以后别再建议这个短句`.
 - Added `ignored_suggestions` to the user registry state so noisy phrases stay excluded from future suggestion scans without becoming active habits.

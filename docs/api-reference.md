@@ -317,5 +317,6 @@ Behavior:
 The current intent names and output fields are intended to be stable for the MVP.
 The internal scoring details may still change as long as they remain consistent with:
 
+- [confidence-scoring.md](/E:/user-habit-pipeline/docs/confidence-scoring.md)
 - [mvp-spec.md](/E:/user-habit-pipeline/docs/mvp-spec.md)
 - [examples.md](/E:/user-habit-pipeline/docs/examples.md)
