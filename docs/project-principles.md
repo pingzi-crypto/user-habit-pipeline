@@ -262,3 +262,33 @@ Risky extensions that need strong scrutiny:
 - implicit workflow execution
 
 When in doubt, prefer the smaller feature that preserves explicit control.
+
+---
+
+## 13. Stop Low-ROI Next Steps Early
+
+The project should not keep pushing a next step when the likely payoff is clearly smaller than the user's cost to execute or review it.
+
+This applies especially to:
+
+- speculative polish with weak user value
+- busywork follow-ups after the main value has already been captured
+- low-signal refinement that adds cognitive load without improving control or clarity
+
+Required behavior:
+
+- say clearly when the next suggested action is probably not worth it
+- prefer naming the tradeoff directly instead of mechanically proposing more work
+- offer a very low-friction exit so the user can stop the current direction immediately
+- make it easy to switch attention to a higher-value TODO item
+
+Preferred interaction pattern:
+
+- explicitly state that the current next step is low ROI
+- offer one single-word reply the user can send to stop, such as `停` or `跳过`
+- after that, move to the next higher-value pending item instead of dragging the current thread forward
+
+Short form:
+
+- low-value next steps should be challenged early
+- stopping should be cheaper than continuing

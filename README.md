@@ -20,6 +20,7 @@ It is designed for cases where a user repeatedly uses short prompts such as:
 
 Without a habit layer, downstream systems repeatedly spend effort re-inferring the same meaning.
 This project aims to make that interpretation cheaper, more stable, and easier to review.
+When a proposed next step becomes obviously low-return relative to the user's effort, the preferred behavior is to say so early and offer an easy stop/skip path rather than dragging the user through low-value follow-up work.
 
 ---
 
