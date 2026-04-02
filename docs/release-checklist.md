@@ -7,6 +7,7 @@ Use this checklist before cutting a package or internal milestone from this repo
 - Confirm [mvp-spec.md](/E:/user-habit-pipeline/docs/mvp-spec.md) still matches the shipped runtime behavior.
 - Confirm [examples.md](/E:/user-habit-pipeline/docs/examples.md) still reflects the current fixture source.
 - Confirm [registry-authoring.md](/E:/user-habit-pipeline/docs/registry-authoring.md) still matches the runtime validator and schema.
+- Run the critical path in [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md) when the bridge, skill-facing output, or user overlay flow changed.
 
 ## Validation Commands
 

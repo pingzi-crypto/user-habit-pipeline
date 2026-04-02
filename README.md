@@ -298,6 +298,7 @@ The registry format is also described by a JSON Schema artifact:
 - [project-principles.md](/E:/user-habit-pipeline/docs/project-principles.md)
 - [versioning.md](/E:/user-habit-pipeline/docs/versioning.md)
 - [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
+- [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md)
 - [release-notes-v0.3.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.3.0.md)
 - [session-habit-suggestions.md](/E:/user-habit-pipeline/docs/session-habit-suggestions.md)
 - [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
