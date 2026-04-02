@@ -202,6 +202,39 @@ function buildSuggestFollowUps(candidates) {
   return prompts;
 }
 
+function formatHabitAdditionLine(item, index) {
+  const scenario = Array.isArray(item.scenario_bias) && item.scenario_bias.length > 0
+    ? item.scenario_bias.join(", ")
+    : "general";
+  const confidence = typeof item.confidence === "number"
+    ? item.confidence.toFixed(2)
+    : String(item.confidence ?? "");
+
+  return `${index + 1}. 「${item.phrase}」 -> \`${item.normalized_intent}\`；场景 \`${scenario}\`；置信度 ${confidence}`;
+}
+
+function formatSimplePhraseLine(phrase, index) {
+  return `${index + 1}. 「${phrase}」`;
+}
+
+function buildListFollowUps(additions, removals, ignored) {
+  const prompts = [];
+
+  if (additions.length > 0) {
+    prompts.push(`删除用户习惯短句: ${additions[0].phrase}`);
+  }
+
+  if (ignored.length > 0) {
+    prompts.push("扫描这次会话里的习惯候选");
+  }
+
+  if (prompts.length === 0 && removals.length === 0) {
+    prompts.push("扫描这次会话里的习惯候选");
+  }
+
+  return prompts;
+}
+
 function renderAssistantReply(output) {
   if (!output || typeof output !== "object") {
     return {
@@ -270,12 +303,36 @@ function renderAssistantReply(output) {
     ];
 
     if (additions.length > 0) {
-      lines.push(...additions.slice(0, 5).map((item, index) => `${index + 1}. 「${item.phrase}」 -> \`${item.normalized_intent}\``));
+      lines.push("", "新增短句：");
+      lines.push(...additions.slice(0, 5).map(formatHabitAdditionLine));
+      if (additions.length > 5) {
+        lines.push(`还有 ${additions.length - 5} 条新增短句未展开。`);
+      }
+    }
+
+    if (removals.length > 0) {
+      lines.push("", "已移除短句：");
+      lines.push(...removals.slice(0, 5).map(formatSimplePhraseLine));
+      if (removals.length > 5) {
+        lines.push(`还有 ${removals.length - 5} 条移除记录未展开。`);
+      }
+    }
+
+    if (ignored.length > 0) {
+      lines.push("", "已忽略建议：");
+      lines.push(...ignored.slice(0, 5).map(formatSimplePhraseLine));
+      if (ignored.length > 5) {
+        lines.push(`还有 ${ignored.length - 5} 条忽略记录未展开。`);
+      }
+    }
+
+    if (additions.length === 0 && removals.length === 0 && ignored.length === 0) {
+      lines.push("", "当前还没有任何用户习惯短句或忽略记录。");
     }
 
     return {
       assistant_reply_markdown: lines.join("\n"),
-      suggested_follow_ups: []
+      suggested_follow_ups: buildListFollowUps(additions, removals, ignored)
     };
   }
 

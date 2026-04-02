@@ -121,6 +121,89 @@ test("codex-session-habits cli returns chat-ready follow-ups for review-only can
   ]);
 });
 
+test("codex-session-habits cli groups additions removals and ignored phrases in list replies", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const addResult = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(addResult.status, 0);
+
+  const removeResult = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "删除用户习惯短句: 验收",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(removeResult.status, 0);
+
+  const ignoreResult = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "以后别再建议这个短句: 收工啦",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(ignoreResult.status, 0);
+
+  const listResult = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "列出用户习惯短句",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(listResult.status, 0);
+  const parsed = JSON.parse(listResult.stdout);
+  assert.equal(parsed.action, "list");
+  assert.match(parsed.assistant_reply_markdown, /新增短句/u);
+  assert.match(parsed.assistant_reply_markdown, /已移除短句/u);
+  assert.match(parsed.assistant_reply_markdown, /已忽略建议/u);
+  assert.match(parsed.assistant_reply_markdown, /收尾一下/u);
+  assert.match(parsed.assistant_reply_markdown, /验收/u);
+  assert.match(parsed.assistant_reply_markdown, /收工啦/u);
+  assert.deepEqual(parsed.suggested_follow_ups, [
+    "删除用户习惯短句: 收尾一下",
+    "扫描这次会话里的习惯候选"
+  ]);
+});
+
+test("codex-session-habits cli gives a clear empty-state list reply", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const result = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "列出用户习惯短句",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "list");
+  assert.match(parsed.assistant_reply_markdown, /当前还没有任何用户习惯短句或忽略记录/u);
+  assert.deepEqual(parsed.suggested_follow_ups, [
+    "扫描这次会话里的习惯候选"
+  ]);
+});
+
 test("codex-session-habits cli requires a thread source for current-session scans", () => {
   const userRegistryPath = createTempRegistryPath();
 
