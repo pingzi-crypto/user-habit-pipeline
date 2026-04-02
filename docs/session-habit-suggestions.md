@@ -46,6 +46,8 @@ The intended UI flow is:
 3. the backend returns candidate phrases and evidence
 4. the user explicitly confirms which candidates should be added
 
+The backend also stores the latest suggestion result in a local hidden cache so the follow-up confirmation step can stay short.
+
 The repository backend does not directly read the Codex app's internal thread store.
 The host integration should provide transcript text through stdin or a temporary file.
 
@@ -78,14 +80,14 @@ user: 收尾一下
 Apply a reviewed candidate from a saved snapshot:
 
 ```powershell
-npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --apply-candidate c1
 ```
 
 Prompt-style apply:
 
 ```powershell
-npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
-npm run manage-habits -- --request "把第1条加到 session_close 场景" --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --request "添加第1条"
+npm run manage-habits -- --request "把第1条加到 session_close 场景"
 ```
 
 ---
@@ -155,6 +157,8 @@ This is designed so a host application can present candidates and let the user c
 
 Candidates that include a `suggested_rule` can be added directly after user confirmation.
 Candidates returned as `review_only` can still be stored if the user supplies an explicit `intent`, and optionally `scenario` or `confidence`, during the apply step.
+
+If needed, hosts can still pass an explicit snapshot through `--suggestions <path>` or `--suggestions-stdin`, but the default user-facing flow no longer requires that.
 
 ---
 

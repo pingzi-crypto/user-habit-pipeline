@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Cached the latest session suggestion snapshot locally so follow-up apply actions can use `添加第1条` or `--apply-candidate c1` without an explicit suggestions file path.
 - Added apply-time overrides for suggestion candidates so users can confirm with messages such as `把第1条加到 session_close 场景`, or provide `intent` when applying a review-only candidate.
 - Added explicit suggestion-apply support so reviewed session candidates can be written into the user overlay through `--apply-candidate` or prompt requests such as `添加第1条`.
 - Added read-only session habit suggestion scanning from transcript text, including prompt-triggered `suggest` requests through the manage-habits CLI.

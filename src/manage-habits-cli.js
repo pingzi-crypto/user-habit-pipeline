@@ -17,6 +17,11 @@ const {
   findSuggestedCandidate,
   suggestSessionHabitCandidates
 } = require("./session_suggestions/extract_candidates");
+const {
+  deriveSuggestionCachePath,
+  loadSuggestionSnapshot,
+  saveSuggestionSnapshot
+} = require("./session_suggestions/cache");
 
 function parseArgs(argv) {
   const parsed = {
@@ -272,7 +277,8 @@ function readSuggestionsInput(args) {
     return parseJsonPayload(trimmed, "--suggestions file");
   }
 
-  throw new Error("Applying a suggestion requires --suggestions <path> or --suggestions-stdin.");
+  const cached = loadSuggestionSnapshot(args.registryPath);
+  return cached.snapshot;
 }
 
 function resolveScenarioBias(baseRule, args, overrides = {}) {
@@ -466,12 +472,14 @@ function executeStructuredAction(args) {
       userRegistryPath: args.registryPath,
       maxCandidates: Number.isFinite(args.maxCandidates) ? Math.max(1, Math.trunc(args.maxCandidates)) : DEFAULT_MAX_CANDIDATES
     });
+    const suggestionsCachePath = saveSuggestionSnapshot(result, args.registryPath);
 
     return {
       action: "suggest",
       registry_path: args.registryPath,
       transcript_path: args.transcriptPath || null,
       transcript_source: args.transcriptFromStdin ? "stdin" : "file",
+      suggestions_cache_path: suggestionsCachePath,
       candidate_count: result.candidates.length,
       transcript_stats: result.transcript_stats,
       candidates: result.candidates
@@ -492,6 +500,7 @@ function executeStructuredAction(args) {
       candidate_id: candidate.candidate_id,
       applied_rule: rule,
       registry_path: args.registryPath,
+      suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
       additions: state.additions,
       removals: state.removals
     };
@@ -559,6 +568,7 @@ function executeRequestAction(args) {
       userRegistryPath: args.registryPath,
       maxCandidates: Number.isFinite(args.maxCandidates) ? Math.max(1, Math.trunc(args.maxCandidates)) : DEFAULT_MAX_CANDIDATES
     });
+    const suggestionsCachePath = saveSuggestionSnapshot(result, args.registryPath);
 
     return {
       action: "suggest",
@@ -566,6 +576,7 @@ function executeRequestAction(args) {
       registry_path: args.registryPath,
       transcript_path: args.transcriptPath || null,
       transcript_source: args.transcriptFromStdin ? "stdin" : "file",
+      suggestions_cache_path: suggestionsCachePath,
       candidate_count: result.candidates.length,
       transcript_stats: result.transcript_stats,
       candidates: result.candidates
@@ -582,6 +593,7 @@ function executeRequestAction(args) {
       candidate_id: candidate.candidate_id,
       applied_rule: rule,
       registry_path: args.registryPath,
+      suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
       additions: state.additions,
       removals: state.removals
     };

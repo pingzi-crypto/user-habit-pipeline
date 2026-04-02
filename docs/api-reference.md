@@ -245,8 +245,8 @@ npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --
 npm run manage-habits -- --remove --phrase "收尾一下"
 npm run manage-habits -- --list
 npm run manage-habits -- --suggest --transcript .\data\thread.txt
-npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
-npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --apply-candidate c1
+npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close
 npm run manage-habits -- --export .\backup\user_habits.json
 npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 ```
@@ -262,6 +262,7 @@ Behavior:
 - persists user-defined additions in a separate user registry file
 - supports removal markers so default phrases can be hidden
 - supports read-only session suggestion scans from transcript text
+- caches the latest suggestion snapshot locally for follow-up apply actions
 - supports explicit apply-from-suggestion actions after user review
 - supports apply-time overrides for `intent`, `scenario`, and `confidence`
 - supports export/import of the user overlay JSON file

@@ -400,24 +400,25 @@ user: 收尾一下
 
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
+It also saves the latest suggestion snapshot into a local hidden cache so the next apply step does not need a manual file path.
 
 After reviewing the candidates, you can explicitly add one:
 
 ```powershell
-npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --apply-candidate c1
 ```
 
-Prompt-style confirmation is also supported when you already have a suggestion snapshot:
+Prompt-style confirmation is also supported:
 
 ```powershell
-npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
-npm run manage-habits -- --request "把第1条加到 session_close 场景" --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --request "添加第1条"
+npm run manage-habits -- --request "把第1条加到 session_close 场景"
 ```
 
 If a candidate is review-only, you can still apply it by supplying an explicit intent:
 
 ```powershell
-npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close
 ```
 
 ### CLI contract

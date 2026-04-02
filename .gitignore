@@ -4,4 +4,5 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 data/user_habits.json
+data/.last_session_habit_suggestions.json
 .codex/

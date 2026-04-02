@@ -4,9 +4,12 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const {
+  deriveSuggestionCachePath,
   findSuggestedCandidate,
+  loadSuggestionSnapshot,
   parseCandidateReference,
   parseSessionTranscript,
+  saveSuggestionSnapshot,
   suggestSessionHabitCandidates
 } = require("../src");
 
@@ -93,4 +96,22 @@ test("findSuggestedCandidate returns the referenced candidate from a snapshot", 
   const candidate = findSuggestedCandidate(snapshot, "第2条");
   assert.equal(candidate.candidate_id, "c2");
   assert.equal(candidate.phrase, "复盘一下");
+});
+
+test("suggestion snapshots can be saved and loaded from the derived cache path", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const snapshot = {
+    schema_version: "1.0",
+    record_type: "session_habit_suggestions",
+    candidates: [
+      { candidate_id: "c1", phrase: "收尾一下", suggested_rule: { phrase: "收尾一下" } }
+    ]
+  };
+
+  const cachePath = saveSuggestionSnapshot(snapshot, userRegistryPath);
+  assert.equal(cachePath, deriveSuggestionCachePath(userRegistryPath));
+
+  const loaded = loadSuggestionSnapshot(userRegistryPath);
+  assert.equal(loaded.cachePath, cachePath);
+  assert.equal(loaded.snapshot.candidates[0].candidate_id, "c1");
 });

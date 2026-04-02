@@ -93,8 +93,8 @@ npm run manage-habits -- --suggest --transcript .\data\thread.txt
 ### Apply one suggestion after review
 
 ```powershell
-npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
-npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json --scenario session_close
+npm run manage-habits -- --apply-candidate c1
+npm run manage-habits -- --apply-candidate c1 --scenario session_close
 ```
 
 ---
@@ -164,8 +164,8 @@ user: 收尾一下
 ### Apply one reviewed suggestion
 
 ```powershell
-npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
-npm run manage-habits -- --request "把第1条加到 session_close 场景" --suggestions .\data\thread_suggestions.json
+npm run manage-habits -- --request "添加第1条"
+npm run manage-habits -- --request "把第1条加到 session_close 场景"
 ```
 
 Supported field names in add requests include:
@@ -192,11 +192,12 @@ Suggestion scans currently use transcript input from:
 
 They do not write anything automatically.
 They only return candidate phrases and evidence for review.
+The latest suggestion result is also cached locally so the next apply step can omit a suggestion file path.
 
 To turn a suggestion into an active user habit:
 
-- use `--apply-candidate <id>` with a saved suggestion snapshot
-- or use a prompt request like `添加第1条` with `--suggestions <path>` or `--suggestions-stdin`
+- use `--apply-candidate <id>` after a recent suggestion scan
+- or use a prompt request like `添加第1条`
 - use `--intent` and optional `--scenario` / `--confidence` overrides if the candidate is review-only or needs adjustment
 
 Review-only candidates without a `suggested_rule` can still be applied if you provide an explicit `intent`.

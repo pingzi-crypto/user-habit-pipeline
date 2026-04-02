@@ -220,6 +220,8 @@ test("manage-habits cli can suggest habit candidates from a transcript file", ()
   assert.equal(parsed.candidate_count, 1);
   assert.equal(parsed.candidates[0].phrase, "收尾一下");
   assert.equal(parsed.candidates[0].suggested_rule.normalized_intent, "close_session");
+  assert.ok(parsed.suggestions_cache_path);
+  assert.ok(fs.existsSync(parsed.suggestions_cache_path));
 });
 
 test("manage-habits cli can trigger session suggestion scans through a prompt request", () => {
@@ -325,6 +327,46 @@ test("manage-habits cli can apply a suggested candidate through a prompt request
   assert.equal(parsed.action, "apply-candidate");
   assert.equal(parsed.candidate_id, "c1");
   assert.equal(parsed.applied_rule.normalized_intent, "close_session");
+});
+
+test("manage-habits cli can apply the latest cached suggestion without a suggestions file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcriptPath = path.join(path.dirname(userRegistryPath), "cached_thread.txt");
+  fs.writeFileSync(transcriptPath, [
+    "user: 以后我说“收尾一下”就是 close_session",
+    "assistant: 收到。",
+    "user: 收尾一下"
+  ].join("\n"), "utf8");
+
+  const suggestResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--transcript",
+    transcriptPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(suggestResult.status, 0);
+
+  const applyResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "添加第1条",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(applyResult.status, 0);
+  const parsed = JSON.parse(applyResult.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.equal(parsed.candidate_id, "c1");
+  assert.equal(parsed.applied_rule.phrase, "收尾一下");
+  assert.ok(parsed.suggestions_cache_path);
 });
 
 test("manage-habits cli can override scenario when applying a suggested candidate through a prompt request", () => {

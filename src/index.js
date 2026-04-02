@@ -22,6 +22,12 @@ const {
   parseCandidateReference,
   suggestSessionHabitCandidates
 } = require("./session_suggestions/extract_candidates");
+const {
+  DEFAULT_SUGGESTION_CACHE_FILENAME,
+  deriveSuggestionCachePath,
+  loadSuggestionSnapshot,
+  saveSuggestionSnapshot
+} = require("./session_suggestions/cache");
 
 module.exports = {
   USER_REGISTRY_PATH,
@@ -31,14 +37,18 @@ module.exports = {
   findSuggestedCandidate,
   importUserRegistryState,
   interpretHabit,
+  DEFAULT_SUGGESTION_CACHE_FILENAME,
+  deriveSuggestionCachePath,
   loadDefaultHabits,
   loadHabitsFromFile,
   loadMergedHabits,
+  loadSuggestionSnapshot,
   loadUserRegistryState,
   parseHabitManagementRequest,
   parseCandidateReference,
   parseSessionTranscript,
   removeUserHabitPhrase,
+  saveSuggestionSnapshot,
   suggestSessionHabitCandidates,
   validateHabitRules,
   toGrowthHubHint
