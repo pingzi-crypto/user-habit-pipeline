@@ -59,6 +59,49 @@ test("suggestSessionHabitCandidates extracts explicit add and definition candida
   assert.equal(definitionCandidate.suggested_rule.normalized_intent, "close_session");
 });
 
+test("explicit add request confidence is boosted and capped at 0.98", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 新增习惯短句 phrase=收尾一下",
+    "intent=close_session",
+    "场景=session_close",
+    "置信度=0.95"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].source_type, "explicit_add_request");
+  assert.equal(result.candidates[0].confidence, 0.98);
+  assert.equal(result.candidates[0].suggested_rule.confidence, 0.95);
+});
+
+test("explicit definitions score differently depending on scenario specificity", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 以后我说“收尾一下”就是 close_session",
+    "user: 以后我说“复盘一下”就是 close_session 场景=session_close"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  const generalCandidate = result.candidates.find((item) => item.phrase === "收尾一下");
+  const scenarioCandidate = result.candidates.find((item) => item.phrase === "复盘一下");
+
+  assert.ok(generalCandidate);
+  assert.ok(scenarioCandidate);
+  assert.equal(generalCandidate.confidence, 0.84);
+  assert.deepEqual(generalCandidate.risk_flags, ["scenario_unspecified"]);
+  assert.equal(scenarioCandidate.confidence, 0.88);
+  assert.deepEqual(scenarioCandidate.risk_flags, []);
+});
+
 test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as review-only candidates", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcript = [
@@ -78,6 +121,28 @@ test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as r
   assert.equal(result.candidates[0].action, "review_only");
   assert.equal(result.candidates[0].suggested_rule, null);
   assert.deepEqual(result.candidates[0].risk_flags, ["single_thread_only", "missing_intent"]);
+});
+
+test("repeated phrase confidence grows with repetition and then caps", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 收工啦",
+    "assistant: 你是想结束当前线程吗？",
+    "user: 收工啦",
+    "user: 收工啦",
+    "user: 收工啦",
+    "user: 收工啦"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].source_type, "repeated_phrase");
+  assert.equal(result.candidates[0].confidence, 0.7);
+  assert.equal(result.candidates[0].evidence.occurrence_count, 5);
 });
 
 test("suggestSessionHabitCandidates skips phrases that the user suppressed from suggestions", () => {
