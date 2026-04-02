@@ -5,4 +5,6 @@ npm-debug.log*
 Thumbs.db
 data/user_habits.json
 data/.last_session_habit_suggestions.json
+data/tmp-session-transcript.txt
+data/tmp-*.txt
 .codex/
