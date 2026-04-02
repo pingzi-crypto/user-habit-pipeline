@@ -288,6 +288,14 @@ Preferred interaction pattern:
 - offer one single-word reply the user can send to stop, such as `停` or `跳过`
 - after that, move to the next higher-value pending item instead of dragging the current thread forward
 
+Preferred wording example:
+
+```text
+这一步继续做的收益不高，可能不太划算。
+如果你想停掉这个方向，直接回“停”。
+我就改看更高价值的 TODO。
+```
+
 Short form:
 
 - low-value next steps should be challenged early
