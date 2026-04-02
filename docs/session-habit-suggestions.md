@@ -106,6 +106,13 @@ npm run manage-habits -- --request "添加第1条"
 npm run manage-habits -- --request "把第1条加到 session_close 场景"
 ```
 
+Prompt-style ignore:
+
+```powershell
+npm run manage-habits -- --request "忽略第1条"
+npm run manage-habits -- --request "以后别再建议这个短句: 收工啦"
+```
+
 ---
 
 ## Transcript Format
@@ -173,6 +180,7 @@ This is designed so a host application can present candidates and let the user c
 
 Candidates that include a `suggested_rule` can be added directly after user confirmation.
 Candidates returned as `review_only` can still be stored if the user supplies an explicit `intent`, and optionally `scenario` or `confidence`, during the apply step.
+Candidates can also be suppressed from future suggestion scans if the user explicitly ignores them.
 
 If needed, hosts can still pass an explicit snapshot through `--suggestions <path>` or `--suggestions-stdin`, but the default user-facing flow no longer requires that.
 

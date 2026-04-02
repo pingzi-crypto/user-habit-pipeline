@@ -13,7 +13,8 @@ const {
   importUserRegistryState,
   loadMergedHabits,
   loadUserRegistryState,
-  removeUserHabitPhrase
+  removeUserHabitPhrase,
+  suppressSuggestionPhrase
 } = require("./habit_registry/user_registry");
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
 const {
@@ -48,6 +49,7 @@ module.exports = {
   parseCandidateReference,
   parseSessionTranscript,
   removeUserHabitPhrase,
+  suppressSuggestionPhrase,
   saveSuggestionSnapshot,
   suggestSessionHabitCandidates,
   validateHabitRules,

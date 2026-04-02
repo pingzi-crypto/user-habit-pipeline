@@ -61,6 +61,27 @@ test("manage-habits cli can remove a phrase through a prompt request", () => {
   const parsed = JSON.parse(result.stdout);
   assert.equal(parsed.action, "remove");
   assert.deepEqual(parsed.removals, ["验收"]);
+  assert.deepEqual(parsed.ignored_suggestions, []);
+});
+
+test("manage-habits cli can suppress a phrase from future suggestions", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--ignore-phrase",
+    "收工啦",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "ignore-phrase");
+  assert.equal(parsed.ignored_phrase, "收工啦");
+  assert.deepEqual(parsed.ignored_suggestions, ["收工啦"]);
 });
 
 test("manage-habits cli can export and import overlay files", () => {
@@ -250,6 +271,43 @@ test("manage-habits cli can trigger session suggestion scans through a prompt re
   assert.equal(parsed.candidates[0].phrase, "收工啦");
 });
 
+test("manage-habits cli skips phrases that were suppressed from suggestions", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const ignoreResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--ignore-phrase",
+    "收工啦",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(ignoreResult.status, 0);
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--transcript-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: [
+      "user: 收工啦",
+      "assistant: 你是想结束当前线程吗？",
+      "user: 收工啦"
+    ].join("\n"),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "suggest");
+  assert.equal(parsed.candidate_count, 0);
+  assert.deepEqual(parsed.candidates, []);
+});
+
 test("manage-habits cli can apply a suggested candidate from a snapshot file", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcriptPath = path.join(path.dirname(userRegistryPath), "apply_thread.txt");
@@ -367,6 +425,46 @@ test("manage-habits cli can apply the latest cached suggestion without a suggest
   assert.equal(parsed.candidate_id, "c1");
   assert.equal(parsed.applied_rule.phrase, "收尾一下");
   assert.ok(parsed.suggestions_cache_path);
+});
+
+test("manage-habits cli can ignore the latest cached suggestion without a suggestions file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcriptPath = path.join(path.dirname(userRegistryPath), "ignored_cached_thread.txt");
+  fs.writeFileSync(transcriptPath, [
+    "user: 收工啦",
+    "assistant: 你是想结束当前线程吗？",
+    "user: 收工啦"
+  ].join("\n"), "utf8");
+
+  const suggestResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--transcript",
+    transcriptPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(suggestResult.status, 0);
+
+  const ignoreResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "忽略第1条",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(ignoreResult.status, 0);
+  const parsed = JSON.parse(ignoreResult.stdout);
+  assert.equal(parsed.action, "ignore-candidate");
+  assert.equal(parsed.candidate_id, "c1");
+  assert.equal(parsed.ignored_phrase, "收工啦");
+  assert.deepEqual(parsed.ignored_suggestions, ["收工啦"]);
 });
 
 test("manage-habits cli can override scenario when applying a suggested candidate through a prompt request", () => {
@@ -493,6 +591,8 @@ test("manage-habits cli prints help and exits zero", () => {
   assert.match(result.stdout, /--request-stdin/);
   assert.match(result.stdout, /--suggest/);
   assert.match(result.stdout, /--apply-candidate/);
+  assert.match(result.stdout, /--ignore-candidate/);
+  assert.match(result.stdout, /--ignore-phrase/);
   assert.match(result.stdout, /--transcript-stdin/);
   assert.match(result.stdout, /--suggestions-stdin/);
   assert.match(result.stdout, /--export <path>/);

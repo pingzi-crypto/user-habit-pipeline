@@ -9,7 +9,8 @@ const {
   exportUserRegistryState,
   importUserRegistryState,
   loadUserRegistryState,
-  removeUserHabitPhrase
+  removeUserHabitPhrase,
+  suppressSuggestionPhrase
 } = require("./habit_registry/user_registry");
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
 const {
@@ -74,6 +75,13 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--ignore-candidate") {
+      parsed.action = "ignore-candidate";
+      parsed.candidateRef = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
     if (token === "--export") {
       parsed.action = "export";
       parsed.filePath = argv[index + 1] ?? null;
@@ -89,6 +97,13 @@ function parseArgs(argv) {
     }
 
     if (token === "--phrase") {
+      parsed.phrase = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (token === "--ignore-phrase") {
+      parsed.action = "ignore-phrase";
       parsed.phrase = argv[index + 1] ?? null;
       index += 1;
       continue;
@@ -334,7 +349,7 @@ function buildRuleFromSuggestedCandidate(candidate, args, overrides = {}) {
 
 function getUsageText() {
   return [
-    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --suggest | --apply-candidate <id> | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--transcript <path> | --transcript-stdin] [--suggestions <path> | --suggestions-stdin] [--max-candidates <n>] [--user-registry <path>]",
+    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --ignore-phrase <text> | --export <path> | --import <path> | --suggest | --apply-candidate <id> | --ignore-candidate <id> | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--transcript <path> | --transcript-stdin] [--suggestions <path> | --suggestions-stdin] [--max-candidates <n>] [--user-registry <path>]",
     "",
     "Examples:",
     "  manage-user-habits --add --phrase \"收尾一下\" --intent close_session --scenario session_close --confidence 0.86",
@@ -344,10 +359,14 @@ function getUsageText() {
     "  manage-user-habits --import .\\backup\\user_habits.json --mode merge",
     "  manage-user-habits --suggest --transcript .\\data\\thread.txt",
     "  manage-user-habits --apply-candidate c1 --suggestions .\\data\\thread_suggestions.json",
+    "  manage-user-habits --ignore-candidate c1 --suggestions .\\data\\thread_suggestions.json",
+    "  manage-user-habits --ignore-phrase \"收工啦\"",
     "  manage-user-habits --apply-candidate c1 --suggestions .\\data\\thread_suggestions.json --scenario session_close",
     "  manage-user-habits --request \"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86\"",
     "  manage-user-habits --request \"扫描这次会话里的习惯候选\" --transcript .\\data\\thread.txt",
     "  manage-user-habits --request \"添加第1条\" --suggestions .\\data\\thread_suggestions.json",
+    "  manage-user-habits --request \"忽略第1条\" --suggestions .\\data\\thread_suggestions.json",
+    "  manage-user-habits --request \"以后别再建议这个短句: 收工啦\"",
     "  manage-user-habits --request \"把第1条加到 session_close 场景\" --suggestions .\\data\\thread_suggestions.json",
     "  manage-user-habits --request \"删除用户习惯短句: 收尾一下\"",
     "  manage-user-habits --request \"列出用户习惯短句\"",
@@ -357,12 +376,14 @@ function getUsageText() {
     "Options:",
     "  --add                    Add or update a user-defined habit phrase.",
     "  --remove                 Remove a habit phrase from the effective registry.",
-    "  --list                   List the current user-defined additions and removals.",
+    "  --list                   List the current user-defined additions, removals, and ignored suggestions.",
     "  --suggest                Suggest candidate habit phrases from a session transcript.",
     "  --apply-candidate <id>   Add one suggested candidate to the user overlay.",
+    "  --ignore-candidate <id>  Suppress one suggested candidate from future suggestion scans.",
     "  --export <path>          Export the current user overlay to a JSON file.",
     "  --import <path>          Import a user overlay JSON file.",
     "  --phrase <text>          Phrase to add or remove.",
+    "  --ignore-phrase <text>   Suppress a phrase from future suggestion scans.",
     "  --intent <intent>        Normalized intent for --add or --apply-candidate.",
     "  --file <path>            Optional file path for prompt-driven import/export.",
     "  --transcript <path>      Session transcript file for --suggest or prompt-driven suggestion scans.",
@@ -393,7 +414,8 @@ function executeStructuredAction(args) {
       action: "list",
       registry_path: args.registryPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -408,7 +430,24 @@ function executeStructuredAction(args) {
       removed_phrase: args.phrase,
       registry_path: args.registryPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
+    };
+  }
+
+  if (args.action === "ignore-phrase") {
+    if (!args.phrase) {
+      throw new Error("--ignore-phrase requires a phrase.");
+    }
+
+    const state = suppressSuggestionPhrase(args.phrase, args.registryPath);
+    return {
+      action: "ignore-phrase",
+      ignored_phrase: args.phrase,
+      registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -423,7 +462,8 @@ function executeStructuredAction(args) {
       registry_path: args.registryPath,
       file_path: args.filePath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -440,7 +480,8 @@ function executeStructuredAction(args) {
       registry_path: args.registryPath,
       file_path: args.filePath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -462,7 +503,8 @@ function executeStructuredAction(args) {
       added_rule: rule,
       registry_path: args.registryPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -502,11 +544,32 @@ function executeStructuredAction(args) {
       registry_path: args.registryPath,
       suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
-  throw new Error("One of --list, --add, --remove, --suggest, --apply-candidate, or --request is required.");
+  if (args.action === "ignore-candidate") {
+    if (!args.candidateRef) {
+      throw new Error("--ignore-candidate requires a candidate id such as c1.");
+    }
+
+    const snapshot = readSuggestionsInput(args);
+    const candidate = findSuggestedCandidate(snapshot, args.candidateRef);
+    const state = suppressSuggestionPhrase(candidate.phrase, args.registryPath);
+    return {
+      action: "ignore-candidate",
+      candidate_id: candidate.candidate_id,
+      ignored_phrase: candidate.phrase,
+      registry_path: args.registryPath,
+      suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
+      additions: state.additions,
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
+    };
+  }
+
+  throw new Error("One of --list, --add, --remove, --ignore-phrase, --suggest, --apply-candidate, --ignore-candidate, or --request is required.");
 }
 
 function executeRequestAction(args) {
@@ -521,7 +584,8 @@ function executeRequestAction(args) {
       action: "list",
       registry_path: args.registryPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -532,7 +596,20 @@ function executeRequestAction(args) {
       removed_phrase: parsedRequest.phrase,
       registry_path: args.registryPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
+    };
+  }
+
+  if (parsedRequest.action === "ignore-phrase") {
+    const state = suppressSuggestionPhrase(parsedRequest.phrase, args.registryPath);
+    return {
+      action: "ignore-phrase",
+      ignored_phrase: parsedRequest.phrase,
+      registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -544,7 +621,8 @@ function executeRequestAction(args) {
       registry_path: args.registryPath,
       file_path: exportPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -558,7 +636,8 @@ function executeRequestAction(args) {
       registry_path: args.registryPath,
       file_path: importPath,
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -595,7 +674,24 @@ function executeRequestAction(args) {
       registry_path: args.registryPath,
       suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
       additions: state.additions,
-      removals: state.removals
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
+    };
+  }
+
+  if (parsedRequest.action === "ignore-candidate") {
+    const snapshot = readSuggestionsInput(args);
+    const candidate = findSuggestedCandidate(snapshot, parsedRequest.candidate_ref);
+    const state = suppressSuggestionPhrase(candidate.phrase, args.registryPath);
+    return {
+      action: "ignore-candidate",
+      candidate_id: candidate.candidate_id,
+      ignored_phrase: candidate.phrase,
+      registry_path: args.registryPath,
+      suggestions_cache_path: deriveSuggestionCachePath(args.registryPath),
+      additions: state.additions,
+      removals: state.removals,
+      ignored_suggestions: state.ignored_suggestions
     };
   }
 
@@ -605,7 +701,8 @@ function executeRequestAction(args) {
     added_rule: parsedRequest.rule,
     registry_path: args.registryPath,
     additions: state.additions,
-    removals: state.removals
+    removals: state.removals,
+    ignored_suggestions: state.ignored_suggestions
   };
 }
 

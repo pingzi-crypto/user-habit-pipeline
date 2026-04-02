@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const {
+  suppressSuggestionPhrase,
   deriveSuggestionCachePath,
   findSuggestedCandidate,
   loadSuggestionSnapshot,
@@ -77,6 +78,23 @@ test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as r
   assert.equal(result.candidates[0].action, "review_only");
   assert.equal(result.candidates[0].suggested_rule, null);
   assert.deepEqual(result.candidates[0].risk_flags, ["single_thread_only", "missing_intent"]);
+});
+
+test("suggestSessionHabitCandidates skips phrases that the user suppressed from suggestions", () => {
+  const userRegistryPath = createTempRegistryPath();
+  suppressSuggestionPhrase("收工啦", userRegistryPath);
+  const transcript = [
+    "user: 收工啦",
+    "assistant: 你是想结束当前线程吗？",
+    "user: 收工啦"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 0);
 });
 
 test("candidate references support cN and 第N条 forms", () => {

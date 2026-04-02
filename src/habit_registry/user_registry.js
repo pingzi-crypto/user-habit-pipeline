@@ -11,7 +11,8 @@ function normalizePhrase(phrase) {
 function createEmptyUserRegistry() {
   return {
     additions: [],
-    removals: []
+    removals: [],
+    ignored_suggestions: []
   };
 }
 
@@ -22,6 +23,9 @@ function validateUserRegistryState(state) {
 
   const additions = Object.prototype.hasOwnProperty.call(state, "additions") ? state.additions : [];
   const removals = Object.prototype.hasOwnProperty.call(state, "removals") ? state.removals : [];
+  const ignoredSuggestions = Object.prototype.hasOwnProperty.call(state, "ignored_suggestions")
+    ? state.ignored_suggestions
+    : [];
 
   validateHabitRules(additions);
 
@@ -29,9 +33,14 @@ function validateUserRegistryState(state) {
     throw new Error('User habit registry "removals" must be an array of strings.');
   }
 
+  if (!Array.isArray(ignoredSuggestions) || ignoredSuggestions.some((item) => typeof item !== "string")) {
+    throw new Error('User habit registry "ignored_suggestions" must be an array of strings.');
+  }
+
   return {
     additions,
-    removals
+    removals,
+    ignored_suggestions: ignoredSuggestions
   };
 }
 
@@ -106,9 +115,19 @@ function mergeUserRegistryStates(baseState, incomingState) {
     removalsMap.delete(phrase);
   }
 
+  const ignoredSuggestionsMap = new Map();
+  for (const phrase of [...base.ignored_suggestions, ...incoming.ignored_suggestions]) {
+    ignoredSuggestionsMap.set(normalizePhrase(phrase), phrase);
+  }
+
+  for (const phrase of additionsMap.keys()) {
+    ignoredSuggestionsMap.delete(phrase);
+  }
+
   return {
     additions: [...additionsMap.values()],
-    removals: [...removalsMap.values()]
+    removals: [...removalsMap.values()],
+    ignored_suggestions: [...ignoredSuggestionsMap.values()]
   };
 }
 
@@ -121,8 +140,10 @@ function addUserHabitRule(rule, registryPath = USER_REGISTRY_PATH) {
   additions.push(validatedRule);
 
   const removals = state.removals.filter((phrase) => normalizePhrase(phrase) !== normalizedPhrase);
+  const ignoredSuggestions = state.ignored_suggestions
+    .filter((phrase) => normalizePhrase(phrase) !== normalizedPhrase);
 
-  return saveUserRegistryState({ additions, removals }, registryPath);
+  return saveUserRegistryState({ additions, removals, ignored_suggestions: ignoredSuggestions }, registryPath);
 }
 
 function removeUserHabitPhrase(phrase, registryPath = USER_REGISTRY_PATH) {
@@ -138,7 +159,31 @@ function removeUserHabitPhrase(phrase, registryPath = USER_REGISTRY_PATH) {
   const removalExists = state.removals.some((item) => normalizePhrase(item) === normalizedPhrase);
   const removals = removalExists ? state.removals : [...state.removals, trimmedPhrase];
 
-  return saveUserRegistryState({ additions, removals }, registryPath);
+  return saveUserRegistryState({
+    additions,
+    removals,
+    ignored_suggestions: state.ignored_suggestions
+  }, registryPath);
+}
+
+function suppressSuggestionPhrase(phrase, registryPath = USER_REGISTRY_PATH) {
+  const trimmedPhrase = String(phrase || "").trim();
+  if (!trimmedPhrase) {
+    throw new Error("A non-empty phrase is required for suggestion suppression.");
+  }
+
+  const normalizedPhrase = normalizePhrase(trimmedPhrase);
+  const state = loadUserRegistryState(registryPath);
+  const ignoredExists = state.ignored_suggestions.some((item) => normalizePhrase(item) === normalizedPhrase);
+  const ignoredSuggestions = ignoredExists
+    ? state.ignored_suggestions
+    : [...state.ignored_suggestions, trimmedPhrase];
+
+  return saveUserRegistryState({
+    additions: state.additions,
+    removals: state.removals,
+    ignored_suggestions: ignoredSuggestions
+  }, registryPath);
 }
 
 function exportUserRegistryState(exportPath, registryPath = USER_REGISTRY_PATH) {
@@ -175,6 +220,7 @@ module.exports = {
   mergeUserRegistryStates,
   mergeHabitRegistries,
   removeUserHabitPhrase,
+  suppressSuggestionPhrase,
   saveUserRegistryState,
   validateUserRegistryState
 };

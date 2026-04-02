@@ -54,6 +54,12 @@ npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --
 npm run manage-habits -- --remove --phrase "验收"
 ```
 
+### Suppress a phrase from future suggestion scans
+
+```powershell
+npm run manage-habits -- --ignore-phrase "收工啦"
+```
+
 ### List your current overlay
 
 ```powershell
@@ -97,6 +103,12 @@ npm run manage-habits -- --apply-candidate c1
 npm run manage-habits -- --apply-candidate c1 --scenario session_close
 ```
 
+### Ignore one suggestion after review
+
+```powershell
+npm run manage-habits -- --ignore-candidate c1
+```
+
 ---
 
 ## Prompt-Style Requests
@@ -124,6 +136,12 @@ intent=close_session
 
 ```powershell
 npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
+```
+
+### Suppress suggestion
+
+```powershell
+npm run manage-habits -- --request "以后别再建议这个短句: 收工啦"
 ```
 
 ### List
@@ -168,6 +186,12 @@ npm run manage-habits -- --request "添加第1条"
 npm run manage-habits -- --request "把第1条加到 session_close 场景"
 ```
 
+### Ignore one reviewed suggestion
+
+```powershell
+npm run manage-habits -- --request "忽略第1条"
+```
+
 Supported field names in add requests include:
 
 - `phrase` or `短句`
@@ -199,6 +223,11 @@ To turn a suggestion into an active user habit:
 - use `--apply-candidate <id>` after a recent suggestion scan
 - or use a prompt request like `添加第1条`
 - use `--intent` and optional `--scenario` / `--confidence` overrides if the candidate is review-only or needs adjustment
+
+To keep a noisy suggestion from reappearing without adding it:
+
+- use `--ignore-candidate <id>` after a recent suggestion scan
+- or use a prompt request like `忽略第1条`
 
 Review-only candidates without a `suggested_rule` can still be applied if you provide an explicit `intent`.
 

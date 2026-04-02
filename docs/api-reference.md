@@ -68,6 +68,7 @@ Returns an object with:
 
 - `additions`
 - `removals`
+- `ignored_suggestions`
 
 ### `addUserHabitRule(rule, registryPath?)`
 
@@ -79,6 +80,11 @@ If the same phrase was previously removed, the removal tombstone is cleared.
 
 Remove a phrase from the effective registry.
 This removes any matching user-defined addition and records a removal marker so default phrases can also be hidden.
+
+### `suppressSuggestionPhrase(phrase, registryPath?)`
+
+Persist a phrase in the user registry's suggestion-ignore list.
+Ignored phrases are skipped by future session suggestion scans, but they do not become active habit rules.
 
 ### `exportUserRegistryState(exportPath, registryPath?)`
 
@@ -101,6 +107,7 @@ Supported examples:
 
 - `添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86`
 - `删除用户习惯短句: 收尾一下`
+- `以后别再建议这个短句: 收工啦`
 - `列出用户习惯短句`
 - `扫描这次会话里的习惯候选`
 
@@ -247,6 +254,8 @@ npm run manage-habits -- --list
 npm run manage-habits -- --suggest --transcript .\data\thread.txt
 npm run manage-habits -- --apply-candidate c1
 npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close
+npm run manage-habits -- --ignore-candidate c1
+npm run manage-habits -- --ignore-phrase "收工啦"
 npm run manage-habits -- --export .\backup\user_habits.json
 npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 ```
@@ -264,6 +273,7 @@ Behavior:
 - supports read-only session suggestion scans from transcript text
 - caches the latest suggestion snapshot locally for follow-up apply actions
 - supports explicit apply-from-suggestion actions after user review
+- supports explicit ignore-from-suggestion actions after user review
 - supports apply-time overrides for `intent`, `scenario`, and `confidence`
 - supports export/import of the user overlay JSON file
 - supports `replace` and `merge` import modes

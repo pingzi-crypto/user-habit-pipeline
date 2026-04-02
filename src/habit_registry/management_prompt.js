@@ -77,6 +77,49 @@ function parseApplyCandidateRequest(message) {
   return null;
 }
 
+function parseIgnoreCandidateRequest(message) {
+  const patterns = [
+    /^\s*(?:忽略|跳过|先忽略|先跳过|别再建议|不要再建议)\s*(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?\s*$/u,
+    /^\s*(?:把\s*)?(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?\s*(?:忽略|跳过|先忽略|先跳过)\s*$/u
+  ];
+
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (!match) {
+      continue;
+    }
+
+    const index = match[1] || match[2];
+    return {
+      action: "ignore-candidate",
+      candidate_ref: `c${Number(index)}`
+    };
+  }
+
+  return null;
+}
+
+function parseIgnorePhraseRequest(message) {
+  const patterns = [
+    /^\s*(?:以后)?(?:别再建议|不要再建议)(?:这个|该)?(?:短句|习惯短句|候选短句)?(?:[:：]|\s)\s*(.+?)\s*$/u,
+    /^\s*(?:忽略|屏蔽)(?:这个|该)?(?:短句|习惯短句|候选短句)(?:[:：]|\s)\s*(.+?)\s*$/u
+  ];
+
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (!match) {
+      continue;
+    }
+
+    return {
+      action: "ignore-phrase",
+      phrase: stripWrappingQuotes(match[1])
+    };
+  }
+
+  return null;
+}
+
 function parseRemoveRequest(message) {
   const match = message.match(/^\s*(?:删除|移除|忘记)(?:掉|掉这个)?(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u);
   if (!match) {
@@ -235,6 +278,8 @@ function parseHabitManagementRequest(message) {
   return parseListRequest(trimmedMessage)
     || parseSuggestRequest(trimmedMessage)
     || parseApplyCandidateRequest(trimmedMessage)
+    || parseIgnoreCandidateRequest(trimmedMessage)
+    || parseIgnorePhraseRequest(trimmedMessage)
     || parseRemoveRequest(trimmedMessage)
     || parseImportRequest(trimmedMessage)
     || parseExportRequest(trimmedMessage)

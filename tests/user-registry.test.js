@@ -10,7 +10,8 @@ const {
   interpretHabit,
   loadUserRegistryState,
   parseHabitManagementRequest,
-  removeUserHabitPhrase
+  removeUserHabitPhrase,
+  suppressSuggestionPhrase
 } = require("../src");
 
 function createTempRegistryPath() {
@@ -65,6 +66,18 @@ test("user registry state tracks additions and removals separately", () => {
   assert.equal(state.additions.length, 1);
   assert.equal(state.additions[0].phrase, "收尾一下");
   assert.deepEqual(state.removals, ["验收"]);
+  assert.deepEqual(state.ignored_suggestions, []);
+});
+
+test("ignored suggestion phrases are tracked separately from additions and removals", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  suppressSuggestionPhrase("收工啦", userRegistryPath);
+
+  const state = loadUserRegistryState(userRegistryPath);
+  assert.deepEqual(state.additions, []);
+  assert.deepEqual(state.removals, []);
+  assert.deepEqual(state.ignored_suggestions, ["收工啦"]);
 });
 
 test("prompt parser supports add, remove, and list requests", () => {
@@ -118,6 +131,18 @@ test("prompt parser supports add, remove, and list requests", () => {
     action: "apply-candidate",
     candidate_ref: "c1",
     scenario_bias: ["session_close"]
+  });
+
+  const ignoreCandidateRequest = parseHabitManagementRequest("忽略第1条");
+  assert.deepEqual(ignoreCandidateRequest, {
+    action: "ignore-candidate",
+    candidate_ref: "c1"
+  });
+
+  const ignorePhraseRequest = parseHabitManagementRequest("以后别再建议这个短句: 收工啦");
+  assert.deepEqual(ignorePhraseRequest, {
+    action: "ignore-phrase",
+    phrase: "收工啦"
   });
 });
 

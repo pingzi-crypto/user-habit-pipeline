@@ -333,6 +333,12 @@ Remove a phrase from the effective registry:
 npm run manage-habits -- --remove --phrase "验收"
 ```
 
+Suppress a noisy suggestion phrase without making it an active habit:
+
+```powershell
+npm run manage-habits -- --ignore-phrase "收工啦"
+```
+
 List the current user-defined additions and removals:
 
 ```powershell
@@ -357,6 +363,7 @@ Use a lightweight prompt-like request instead of flags:
 ```powershell
 npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
 npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
+npm run manage-habits -- --request "以后别再建议这个短句: 收工啦"
 npm run manage-habits -- --request "列出用户习惯短句"
 npm run manage-habits -- --request "导出用户习惯短句: path=.\backup\user_habits.json"
 npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
@@ -424,6 +431,7 @@ Prompt-style confirmation is also supported:
 ```powershell
 npm run manage-habits -- --request "添加第1条"
 npm run manage-habits -- --request "把第1条加到 session_close 场景"
+npm run manage-habits -- --request "忽略第1条"
 npm run codex-session-habits -- --request "添加第1条"
 npm run codex-session-habits -- --request "把第1条加到 session_close 场景"
 ```
@@ -432,6 +440,13 @@ If a candidate is review-only, you can still apply it by supplying an explicit i
 
 ```powershell
 npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close
+```
+
+If a candidate is noisy and should not be suggested again, suppress it instead of adding it:
+
+```powershell
+npm run manage-habits -- --ignore-candidate c1
+npm run manage-habits -- --request "忽略第1条"
 ```
 
 ### CLI contract

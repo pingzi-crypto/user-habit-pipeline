@@ -131,6 +131,10 @@ function buildKnownPhraseSet(registryPath) {
     phrases.add(normalizePhrase(phrase));
   }
 
+  for (const phrase of state.ignored_suggestions) {
+    phrases.add(normalizePhrase(phrase));
+  }
+
   return phrases;
 }
 

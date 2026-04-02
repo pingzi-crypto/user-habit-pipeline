@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added persistent suggestion suppression so users can ignore a candidate with `忽略第1条`, `--ignore-candidate c1`, or suppress a noisy phrase with `以后别再建议这个短句`.
+- Added `ignored_suggestions` to the user registry state so noisy phrases stay excluded from future suggestion scans without becoming active habits.
 - Added a Codex-facing session bridge CLI so in-app skills can pass the current conversation transcript through `--thread-stdin` and reuse the existing prompt-based management flow.
 - Added documentation for the installed Codex skill entry path and the current-session one-sentence flow inside the Codex app.
 - Cached the latest session suggestion snapshot locally so follow-up apply actions can use `添加第1条` or `--apply-candidate c1` without an explicit suggestions file path.
