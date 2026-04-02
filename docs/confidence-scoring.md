@@ -262,6 +262,15 @@ Examples:
 
 A phrase with moderate confidence plus strong risk flags should still be reviewed conservatively.
 
+The suggestion output now also includes `confidence_details` on each candidate so UIs and skills can show:
+
+- the base score
+- the applied bonus or cap rules
+- the final score
+- a short human-readable summary
+
+This keeps the scoring inspectable at the result level instead of only in implementation docs.
+
 ---
 
 ## 7. Ignored Suggestions And Confidence

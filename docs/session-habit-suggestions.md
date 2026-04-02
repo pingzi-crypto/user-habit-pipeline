@@ -172,9 +172,26 @@ Each candidate may include:
 - `source_type`
 - `action`
 - `confidence`
+- `confidence_details`
 - `suggested_rule`
 - `evidence`
 - `risk_flags`
+
+`confidence_details` is a structured explanation of why the candidate received its current session-suggestion score.
+It currently includes:
+
+- `domain`
+- `source_type`
+- `base_score`
+- `adjustments`
+- `final_score`
+- `summary`
+
+This makes it easier for a host UI or Codex skill to explain:
+
+- what base evidence the score started from
+- which bonus or cap rules were applied
+- why a candidate is still only review-only even when it surfaced prominently
 
 This is designed so a host application can present candidates and let the user confirm them one by one.
 

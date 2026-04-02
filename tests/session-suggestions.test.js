@@ -53,10 +53,16 @@ test("suggestSessionHabitCandidates extracts explicit add and definition candida
   assert.equal(result.candidates[0].action, "suggest_add");
   assert.equal(result.candidates[0].suggested_rule.phrase, "复盘一下");
   assert.equal(result.candidates[0].suggested_rule.normalized_intent, "close_session");
+  assert.equal(result.candidates[0].confidence_details.domain, "session_suggestion");
+  assert.equal(result.candidates[0].confidence_details.source_type, "explicit_add_request");
+  assert.equal(result.candidates[0].confidence_details.base_score, 0.87);
+  assert.equal(result.candidates[0].confidence_details.final_score, 0.95);
 
   const definitionCandidate = result.candidates.find((item) => item.phrase === "收尾一下");
   assert.ok(definitionCandidate);
   assert.equal(definitionCandidate.suggested_rule.normalized_intent, "close_session");
+  assert.equal(definitionCandidate.confidence_details.base_score, 0.84);
+  assert.match(definitionCandidate.confidence_details.summary, /general/u);
 });
 
 test("explicit add request confidence is boosted and capped at 0.98", () => {
@@ -77,6 +83,9 @@ test("explicit add request confidence is boosted and capped at 0.98", () => {
   assert.equal(result.candidates[0].source_type, "explicit_add_request");
   assert.equal(result.candidates[0].confidence, 0.98);
   assert.equal(result.candidates[0].suggested_rule.confidence, 0.95);
+  assert.equal(result.candidates[0].confidence_details.final_score, 0.98);
+  assert.equal(result.candidates[0].confidence_details.adjustments[1].type, "suggestion_cap");
+  assert.equal(result.candidates[0].confidence_details.adjustments[1].applied, true);
 });
 
 test("explicit definitions score differently depending on scenario specificity", () => {
@@ -98,8 +107,11 @@ test("explicit definitions score differently depending on scenario specificity",
   assert.ok(scenarioCandidate);
   assert.equal(generalCandidate.confidence, 0.84);
   assert.deepEqual(generalCandidate.risk_flags, ["scenario_unspecified"]);
+  assert.equal(generalCandidate.confidence_details.adjustments[0].applied, false);
   assert.equal(scenarioCandidate.confidence, 0.88);
   assert.deepEqual(scenarioCandidate.risk_flags, []);
+  assert.equal(scenarioCandidate.confidence_details.adjustments[0].type, "scenario_specificity_bonus");
+  assert.equal(scenarioCandidate.confidence_details.adjustments[0].delta, 0.04);
 });
 
 test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as review-only candidates", () => {
@@ -121,6 +133,8 @@ test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as r
   assert.equal(result.candidates[0].action, "review_only");
   assert.equal(result.candidates[0].suggested_rule, null);
   assert.deepEqual(result.candidates[0].risk_flags, ["single_thread_only", "missing_intent"]);
+  assert.equal(result.candidates[0].confidence_details.base_score, 0.55);
+  assert.equal(result.candidates[0].confidence_details.adjustments[0].type, "repetition_bonus");
 });
 
 test("repeated phrase confidence grows with repetition and then caps", () => {
@@ -143,6 +157,8 @@ test("repeated phrase confidence grows with repetition and then caps", () => {
   assert.equal(result.candidates[0].source_type, "repeated_phrase");
   assert.equal(result.candidates[0].confidence, 0.7);
   assert.equal(result.candidates[0].evidence.occurrence_count, 5);
+  assert.equal(result.candidates[0].confidence_details.final_score, 0.7);
+  assert.equal(result.candidates[0].confidence_details.adjustments[0].delta, 0.15);
 });
 
 test("suggestSessionHabitCandidates skips phrases that the user suppressed from suggestions", () => {

@@ -421,6 +421,7 @@ user: 收尾一下
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
 It also saves the latest suggestion snapshot into a local hidden cache so the next apply step does not need a manual file path.
+Each returned candidate now also includes `confidence_details`, so a Codex skill or other host can explain why that score was assigned instead of only showing a bare number.
 
 After reviewing the candidates, you can explicitly add one:
 

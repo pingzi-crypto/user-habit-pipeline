@@ -145,9 +145,20 @@ Candidate records may include:
 - `source_type`
 - `action`
 - `confidence`
+- `confidence_details`
 - `suggested_rule`
 - `evidence`
 - `risk_flags`
+
+`confidence_details` is a structured explanation object for session suggestion scoring.
+It includes:
+
+- `domain`
+- `source_type`
+- `base_score`
+- `adjustments`
+- `final_score`
+- `summary`
 
 ### `parseCandidateReference(value)`
 

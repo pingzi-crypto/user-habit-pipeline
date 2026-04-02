@@ -17,6 +17,28 @@ function clampScore(value) {
   return Math.max(0, Math.min(1, Number(Number(value).toFixed(2))));
 }
 
+function buildConfidenceDetails({
+  sourceType,
+  baseScore,
+  adjustments = [],
+  finalScore,
+  summary
+}) {
+  return {
+    domain: "session_suggestion",
+    source_type: sourceType,
+    base_score: clampScore(baseScore),
+    adjustments: adjustments.map((item) => ({
+      type: item.type,
+      delta: clampScore(item.delta),
+      applied: item.applied !== false,
+      note: item.note
+    })),
+    final_score: clampScore(finalScore),
+    summary: String(summary || "").trim()
+  };
+}
+
 function normalizePhrase(value) {
   return normalizeText(String(value || ""));
 }
@@ -203,6 +225,7 @@ function buildCandidateRecord(phrase, candidate) {
     source_type: candidate.source_type,
     action: candidate.action,
     confidence: clampScore(candidate.confidence),
+    confidence_details: candidate.confidence_details,
     suggested_rule: candidate.suggested_rule || null,
     evidence: candidate.evidence,
     risk_flags: candidate.risk_flags
@@ -275,10 +298,31 @@ function extractExplicitCandidates(messages, knownPhrases) {
     if (parsedRequest && parsedRequest.action === "add") {
       const phrase = parsedRequest.rule.phrase;
       if (!knownPhrases.has(normalizePhrase(phrase))) {
+        const uncappedConfidence = parsedRequest.rule.confidence + 0.08;
+        const finalConfidence = Math.min(uncappedConfidence, 0.98);
         addOrReplaceCandidate(candidates, phrase, {
           source_type: "explicit_add_request",
           action: "suggest_add",
-          confidence: Math.min(parsedRequest.rule.confidence + 0.08, 0.98),
+          confidence: finalConfidence,
+          confidence_details: buildConfidenceDetails({
+            sourceType: "explicit_add_request",
+            baseScore: parsedRequest.rule.confidence,
+            adjustments: [
+              {
+                type: "structured_request_bonus",
+                delta: 0.08,
+                note: "Transcript already contains a management-compatible add request."
+              },
+              {
+                type: "suggestion_cap",
+                delta: uncappedConfidence > 0.98 ? uncappedConfidence - finalConfidence : 0,
+                applied: uncappedConfidence > 0.98,
+                note: "Suggestion confidence is capped at 0.98 even for very strong add requests."
+              }
+            ],
+            finalScore: finalConfidence,
+            summary: "Structured add request found in the transcript, so this candidate is ready for explicit review."
+          }),
           suggested_rule: parsedRequest.rule,
           evidence: {
             occurrence_count: countPhraseOccurrences(messages, phrase),
@@ -304,6 +348,22 @@ function extractExplicitCandidates(messages, knownPhrases) {
       source_type: "explicit_definition",
       action: "suggest_add",
       confidence: explicitRule.confidence,
+      confidence_details: buildConfidenceDetails({
+        sourceType: "explicit_definition",
+        baseScore: 0.84,
+        adjustments: [
+          {
+            type: "scenario_specificity_bonus",
+            delta: explicitRule.scenario_bias.includes("general") ? 0 : 0.04,
+            applied: !explicitRule.scenario_bias.includes("general"),
+            note: "Explicit scenario information makes the definition more specific than a general-only mapping."
+          }
+        ],
+        finalScore: explicitRule.confidence,
+        summary: explicitRule.scenario_bias.includes("general")
+          ? "Explicit phrase-to-intent definition found, but the scenario is still general."
+          : "Explicit phrase-to-intent definition found with scenario-specific evidence."
+      }),
       suggested_rule: explicitRule,
       evidence: {
         occurrence_count: countPhraseOccurrences(messages, explicitRule.phrase),
@@ -368,6 +428,25 @@ function extractRepeatedPhraseCandidates(messages, knownPhrases, explicitCandida
       source_type: "repeated_phrase",
       action: "review_only",
       confidence: 0.55 + Math.min((entry.count - MIN_REPEATED_PHRASE_COUNT) * 0.05, 0.15),
+      confidence_details: buildConfidenceDetails({
+        sourceType: "repeated_phrase",
+        baseScore: 0.55,
+        adjustments: [
+          {
+            type: "repetition_bonus",
+            delta: Math.min((entry.count - MIN_REPEATED_PHRASE_COUNT) * 0.05, 0.15),
+            note: `Observed ${entry.count} user-side occurrences in the current transcript.`
+          },
+          {
+            type: "single_thread_limit",
+            delta: 0,
+            applied: false,
+            note: "Repetition evidence stays review-only because it comes from a single thread and may still lack intent."
+          }
+        ],
+        finalScore: 0.55 + Math.min((entry.count - MIN_REPEATED_PHRASE_COUNT) * 0.05, 0.15),
+        summary: "Repeated short phrase surfaced for review, not direct activation."
+      }),
       suggested_rule: null,
       evidence: {
         occurrence_count: entry.count,

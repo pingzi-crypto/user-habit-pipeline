@@ -35,6 +35,8 @@ test("codex-session-habits cli can scan the current session from stdin", () => {
   assert.equal(parsed.action, "suggest");
   assert.equal(parsed.candidate_count, 1);
   assert.equal(parsed.candidates[0].phrase, "收尾一下");
+  assert.equal(parsed.candidates[0].confidence_details.domain, "session_suggestion");
+  assert.equal(parsed.candidates[0].confidence_details.final_score, 0.84);
 });
 
 test("codex-session-habits cli can apply the latest cached suggestion with a short follow-up request", () => {

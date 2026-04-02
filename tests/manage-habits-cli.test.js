@@ -241,6 +241,8 @@ test("manage-habits cli can suggest habit candidates from a transcript file", ()
   assert.equal(parsed.candidate_count, 1);
   assert.equal(parsed.candidates[0].phrase, "收尾一下");
   assert.equal(parsed.candidates[0].suggested_rule.normalized_intent, "close_session");
+  assert.equal(parsed.candidates[0].confidence_details.domain, "session_suggestion");
+  assert.equal(parsed.candidates[0].confidence_details.final_score, 0.84);
   assert.ok(parsed.suggestions_cache_path);
   assert.ok(fs.existsSync(parsed.suggestions_cache_path));
 });
