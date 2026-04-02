@@ -271,6 +271,37 @@ Behavior:
 
 ---
 
+## Codex Session Bridge CLI
+
+The Codex-oriented bridge CLI entrypoint is:
+
+- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+
+Command:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin
+```
+
+Follow-up apply example:
+
+```powershell
+npm run codex-session-habits -- --request "添加第1条"
+```
+
+Behavior:
+
+- forwards prompt-style requests into the manage-habits backend
+- maps Codex-oriented transcript flags `--thread <path>` and `--thread-stdin` onto the existing transcript contract
+- keeps the follow-up confirm flow short by relying on the latest local suggestion cache
+- is intended for skills or host integrations that can access the current conversation context directly
+
+---
+
 ## Stability Notes
 
 The current intent names and output fields are intended to be stable for the MVP.

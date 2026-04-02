@@ -297,6 +297,7 @@ The registry format is also described by a JSON Schema artifact:
 - [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
 - [release-notes-v0.3.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.3.0.md)
 - [session-habit-suggestions.md](/E:/user-habit-pipeline/docs/session-habit-suggestions.md)
+- [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
 - [freeze-assessment-0.1.0.md](/E:/user-habit-pipeline/docs/freeze-assessment-0.1.0.md)
 - [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
 
@@ -398,6 +399,16 @@ user: 收尾一下
 '@ | npm run manage-habits -- --suggest --transcript-stdin
 ```
 
+For Codex-side in-app triggering, use the session bridge CLI so the current conversation can be piped in directly:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin
+```
+
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
 It also saves the latest suggestion snapshot into a local hidden cache so the next apply step does not need a manual file path.
@@ -413,6 +424,8 @@ Prompt-style confirmation is also supported:
 ```powershell
 npm run manage-habits -- --request "添加第1条"
 npm run manage-habits -- --request "把第1条加到 session_close 场景"
+npm run codex-session-habits -- --request "添加第1条"
+npm run codex-session-habits -- --request "把第1条加到 session_close 场景"
 ```
 
 If a candidate is review-only, you can still apply it by supplying an explicit intent:

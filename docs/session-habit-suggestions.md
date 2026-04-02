@@ -51,6 +51,12 @@ The backend also stores the latest suggestion result in a local hidden cache so 
 The repository backend does not directly read the Codex app's internal thread store.
 The host integration should provide transcript text through stdin or a temporary file.
 
+The repository now also includes a Codex-facing bridge CLI:
+
+- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+
+This bridge accepts the same prompt-style requests, but uses `--thread <path>` or `--thread-stdin` so a Codex skill can map directly from the current thread context into the suggestion backend.
+
 ---
 
 ## CLI Examples
@@ -75,6 +81,16 @@ user: 以后我说“收尾一下”就是 close_session
 assistant: 收到。
 user: 收尾一下
 '@ | npm run manage-habits -- --suggest --transcript-stdin
+```
+
+Codex-facing bridge example:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
 
 Apply a reviewed candidate from a saved snapshot:
@@ -162,6 +178,12 @@ If needed, hosts can still pass an explicit snapshot through `--suggestions <pat
 
 ---
 
-## Known Gap
+## Current Integration Gap
 
-The repository now contains the suggestion backend, but the direct in-app one-sentence trigger still requires a Codex-side skill or host integration to pass the current thread transcript into this backend.
+The repository now contains both the suggestion backend and a Codex-facing bridge CLI.
+
+The remaining app-side dependency is still the same one boundary:
+
+- a Codex skill or host integration must turn the visible current conversation into transcript text and pass it into the bridge
+
+The project still does not read Codex private thread storage directly.

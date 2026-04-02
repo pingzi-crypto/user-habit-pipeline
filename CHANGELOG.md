@@ -2,12 +2,14 @@
 
 ## Unreleased
 
+- Added a Codex-facing session bridge CLI so in-app skills can pass the current conversation transcript through `--thread-stdin` and reuse the existing prompt-based management flow.
+- Added documentation for the installed Codex skill entry path and the current-session one-sentence flow inside the Codex app.
 - Cached the latest session suggestion snapshot locally so follow-up apply actions can use `添加第1条` or `--apply-candidate c1` without an explicit suggestions file path.
 - Added apply-time overrides for suggestion candidates so users can confirm with messages such as `把第1条加到 session_close 场景`, or provide `intent` when applying a review-only candidate.
 - Added explicit suggestion-apply support so reviewed session candidates can be written into the user overlay through `--apply-candidate` or prompt requests such as `添加第1条`.
 - Added read-only session habit suggestion scanning from transcript text, including prompt-triggered `suggest` requests through the manage-habits CLI.
 - Added transcript parsing and candidate extraction for explicit add requests, explicit phrase definitions, and repeated short phrases that are not already registered.
-- Added documentation for the Codex-oriented transcript-scan backend and clarified that direct in-app triggering still needs host-side transcript injection.
+- Added documentation for the Codex-oriented transcript-scan backend and clarified that the remaining app boundary is transcript injection from visible conversation context.
 - Added `--request-stdin` to the habit management CLI so multiline prompt requests work reliably in PowerShell and other shell setups that do not preserve multiline `--request` arguments through `npm run`.
 - Documented the PowerShell here-string testing flow and added regression coverage for stdin-based prompt requests.
 

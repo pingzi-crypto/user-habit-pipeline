@@ -21,6 +21,7 @@
     "docs/release-checklist.md",
     "docs/release-notes-v0.3.0.md",
     "docs/session-habit-suggestions.md",
+    "docs/codex-skill-integration.md",
     "docs/freeze-assessment-0.1.0.md",
     "docs/user-habit-management.md",
     "README.md",
@@ -39,10 +40,12 @@
   "bin": {
     "user-habit-pipeline": "./src/cli.js",
     "validate-habit-registry": "./src/validate-registry-cli.js",
-    "manage-user-habits": "./src/manage-habits-cli.js"
+    "manage-user-habits": "./src/manage-habits-cli.js",
+    "codex-session-habits": "./src/codex-session-habits-cli.js"
   },
   "scripts": {
     "check": "npm run check-examples-doc && npm test",
+    "codex-session-habits": "node ./src/codex-session-habits-cli.js",
     "release-check": "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
     "test": "node --test",
     "demo": "node ./src/demo.js",
