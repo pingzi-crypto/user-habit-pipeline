@@ -12,6 +12,10 @@ const {
   removeUserHabitPhrase
 } = require("./habit_registry/user_registry");
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
+const {
+  DEFAULT_MAX_CANDIDATES,
+  suggestSessionHabitCandidates
+} = require("./session_suggestions/extract_candidates");
 
 function parseArgs(argv) {
   const parsed = {
@@ -19,12 +23,15 @@ function parseArgs(argv) {
     phrase: null,
     intent: null,
     filePath: null,
+    transcriptPath: null,
     mode: null,
+    maxCandidates: DEFAULT_MAX_CANDIDATES,
     scenario: [],
     confidence: null,
     registryPath: USER_REGISTRY_PATH,
     request: null,
     requestFromStdin: false,
+    transcriptFromStdin: false,
     help: false
   };
 
@@ -43,6 +50,11 @@ function parseArgs(argv) {
 
     if (token === "--list") {
       parsed.action = "list";
+      continue;
+    }
+
+    if (token === "--suggest") {
+      parsed.action = "suggest";
       continue;
     }
 
@@ -93,6 +105,17 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--transcript") {
+      parsed.transcriptPath = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (token === "--transcript-stdin") {
+      parsed.transcriptFromStdin = true;
+      continue;
+    }
+
     if (token === "--mode") {
       parsed.mode = argv[index + 1] ?? "replace";
       index += 1;
@@ -116,6 +139,12 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--max-candidates") {
+      parsed.maxCandidates = Number(argv[index + 1] ?? DEFAULT_MAX_CANDIDATES);
+      index += 1;
+      continue;
+    }
+
     if (token === "--help" || token === "-h") {
       parsed.help = true;
     }
@@ -135,9 +164,35 @@ function readRequestFromStdin() {
   return trimmed;
 }
 
+function readTranscriptInput(args) {
+  if (args.transcriptFromStdin) {
+    const input = fs.readFileSync(0, "utf8");
+    const trimmed = String(input || "").trim();
+
+    if (!trimmed) {
+      throw new Error("--transcript-stdin requires non-empty stdin input.");
+    }
+
+    return trimmed;
+  }
+
+  if (args.transcriptPath) {
+    const content = fs.readFileSync(args.transcriptPath, "utf8");
+    const trimmed = String(content || "").trim();
+
+    if (!trimmed) {
+      throw new Error("--transcript requires a non-empty file.");
+    }
+
+    return trimmed;
+  }
+
+  throw new Error("Session suggestion scanning requires --transcript <path> or --transcript-stdin.");
+}
+
 function getUsageText() {
   return [
-    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--user-registry <path>]",
+    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --suggest | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--transcript <path> | --transcript-stdin] [--max-candidates <n>] [--user-registry <path>]",
     "",
     "Examples:",
     "  manage-user-habits --add --phrase \"收尾一下\" --intent close_session --scenario session_close --confidence 0.86",
@@ -145,20 +200,27 @@ function getUsageText() {
     "  manage-user-habits --list",
     "  manage-user-habits --export .\\backup\\user_habits.json",
     "  manage-user-habits --import .\\backup\\user_habits.json --mode merge",
+    "  manage-user-habits --suggest --transcript .\\data\\thread.txt",
     "  manage-user-habits --request \"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86\"",
+    "  manage-user-habits --request \"扫描这次会话里的习惯候选\" --transcript .\\data\\thread.txt",
     "  manage-user-habits --request \"删除用户习惯短句: 收尾一下\"",
     "  manage-user-habits --request \"列出用户习惯短句\"",
     "  @'\n新增习惯短句 phrase=收尾一下\nintent=close_session\n场景=session_close\n置信度=0.86\n'@ | manage-user-habits --request-stdin",
+    "  @'\nuser: 以后我说“收尾一下”就是 close_session\nuser: 收尾一下\n'@ | manage-user-habits --suggest --transcript-stdin",
     "",
     "Options:",
     "  --add                    Add or update a user-defined habit phrase.",
     "  --remove                 Remove a habit phrase from the effective registry.",
     "  --list                   List the current user-defined additions and removals.",
+    "  --suggest                Suggest candidate habit phrases from a session transcript.",
     "  --export <path>          Export the current user overlay to a JSON file.",
     "  --import <path>          Import a user overlay JSON file.",
     "  --phrase <text>          Phrase to add or remove.",
     "  --intent <intent>        Normalized intent for --add.",
     "  --file <path>            Optional file path for prompt-driven import/export.",
+    "  --transcript <path>      Session transcript file for --suggest or prompt-driven suggestion scans.",
+    "  --transcript-stdin       Read a session transcript from stdin.",
+    `  --max-candidates <n>    Maximum suggestion candidates to return. Default: ${DEFAULT_MAX_CANDIDATES}.`,
     "  --mode replace|merge     Import mode. Default: replace.",
     "  --scenario <a,b>         Optional comma-separated scenario hints for --add.",
     "  --confidence <0-1>       Optional confidence for --add. Default: 0.85.",
@@ -255,7 +317,25 @@ function executeStructuredAction(args) {
     };
   }
 
-  throw new Error("One of --list, --add, --remove, or --request is required.");
+  if (args.action === "suggest") {
+    const transcript = readTranscriptInput(args);
+    const result = suggestSessionHabitCandidates(transcript, {
+      userRegistryPath: args.registryPath,
+      maxCandidates: Number.isFinite(args.maxCandidates) ? Math.max(1, Math.trunc(args.maxCandidates)) : DEFAULT_MAX_CANDIDATES
+    });
+
+    return {
+      action: "suggest",
+      registry_path: args.registryPath,
+      transcript_path: args.transcriptPath || null,
+      transcript_source: args.transcriptFromStdin ? "stdin" : "file",
+      candidate_count: result.candidates.length,
+      transcript_stats: result.transcript_stats,
+      candidates: result.candidates
+    };
+  }
+
+  throw new Error("One of --list, --add, --remove, --suggest, or --request is required.");
 }
 
 function executeRequestAction(args) {
@@ -311,6 +391,25 @@ function executeRequestAction(args) {
     };
   }
 
+  if (parsedRequest.action === "suggest") {
+    const transcript = readTranscriptInput(args);
+    const result = suggestSessionHabitCandidates(transcript, {
+      userRegistryPath: args.registryPath,
+      maxCandidates: Number.isFinite(args.maxCandidates) ? Math.max(1, Math.trunc(args.maxCandidates)) : DEFAULT_MAX_CANDIDATES
+    });
+
+    return {
+      action: "suggest",
+      scope: parsedRequest.scope,
+      registry_path: args.registryPath,
+      transcript_path: args.transcriptPath || null,
+      transcript_source: args.transcriptFromStdin ? "stdin" : "file",
+      candidate_count: result.candidates.length,
+      transcript_stats: result.transcript_stats,
+      candidates: result.candidates
+    };
+  }
+
   const state = addUserHabitRule(parsedRequest.rule, args.registryPath);
   return {
     action: "add",
@@ -323,12 +422,16 @@ function executeRequestAction(args) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (args.requestFromStdin) {
-    args.request = readRequestFromStdin();
-  }
-
   if (args.help) {
     printUsageAndExit(0, process.stdout);
+  }
+
+  if (args.requestFromStdin && args.transcriptFromStdin) {
+    throw new Error("Use only one stdin source at a time: --request-stdin or --transcript-stdin.");
+  }
+
+  if (args.requestFromStdin) {
+    args.request = readRequestFromStdin();
   }
 
   const output = args.request

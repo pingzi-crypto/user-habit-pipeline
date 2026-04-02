@@ -102,6 +102,45 @@ Supported examples:
 - `添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86`
 - `删除用户习惯短句: 收尾一下`
 - `列出用户习惯短句`
+- `扫描这次会话里的习惯候选`
+
+### `parseSessionTranscript(transcriptText)`
+
+Parse a role-prefixed session transcript into message objects.
+
+Expected transcript style:
+
+- `user: ...`
+- `assistant: ...`
+- `system: ...`
+- `tool: ...`
+
+Chinese role prefixes such as `用户:` and `助手:` are also accepted.
+
+### `suggestSessionHabitCandidates(transcriptText, options?)`
+
+Suggest candidate habit phrases from a current-thread transcript without changing the user overlay.
+
+Options:
+
+- `options.userRegistryPath?: string`
+- `options.maxCandidates?: number`
+
+Output fields:
+
+- `transcript_stats`
+- `candidates`
+
+Candidate records may include:
+
+- `candidate_id`
+- `phrase`
+- `source_type`
+- `action`
+- `confidence`
+- `suggested_rule`
+- `evidence`
+- `risk_flags`
 
 ### `toGrowthHubHint(habitOutput)`
 
@@ -193,6 +232,7 @@ Structured examples:
 npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
 npm run manage-habits -- --remove --phrase "收尾一下"
 npm run manage-habits -- --list
+npm run manage-habits -- --suggest --transcript .\data\thread.txt
 npm run manage-habits -- --export .\backup\user_habits.json
 npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 ```
@@ -207,9 +247,10 @@ Behavior:
 
 - persists user-defined additions in a separate user registry file
 - supports removal markers so default phrases can be hidden
+- supports read-only session suggestion scans from transcript text
 - supports export/import of the user overlay JSON file
 - supports `replace` and `merge` import modes
-- allows prompt-based add/remove/list requests without editing JSON manually
+- allows prompt-based add/remove/list/suggest requests without editing JSON manually
 
 ---
 

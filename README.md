@@ -296,6 +296,7 @@ The registry format is also described by a JSON Schema artifact:
 - [versioning.md](/E:/user-habit-pipeline/docs/versioning.md)
 - [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
 - [release-notes-v0.3.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.3.0.md)
+- [session-habit-suggestions.md](/E:/user-habit-pipeline/docs/session-habit-suggestions.md)
 - [freeze-assessment-0.1.0.md](/E:/user-habit-pipeline/docs/freeze-assessment-0.1.0.md)
 - [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
 
@@ -372,6 +373,33 @@ intent=close_session
 ```
 
 This writes user-managed phrases into a separate overlay file and leaves the default registry untouched.
+
+### Session Habit Suggestions
+
+Scan a current-thread transcript for habit candidates without writing anything to the overlay:
+
+```powershell
+npm run manage-habits -- --suggest --transcript .\data\thread.txt
+```
+
+You can also trigger the same scan through a natural-language request:
+
+```powershell
+npm run manage-habits -- --request "扫描这次会话里的习惯候选" --transcript .\data\thread.txt
+```
+
+For PowerShell here-string input:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npm run manage-habits -- --suggest --transcript-stdin
+```
+
+This suggestion flow is intentionally read-only.
+It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
 
 ### CLI contract
 

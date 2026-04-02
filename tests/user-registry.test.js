@@ -100,6 +100,12 @@ test("prompt parser supports add, remove, and list requests", () => {
     path: "./backup.json",
     mode: "merge"
   });
+
+  const suggestRequest = parseHabitManagementRequest("扫描这次会话里的习惯候选");
+  assert.deepEqual(suggestRequest, {
+    action: "suggest",
+    scope: "current_session"
+  });
 });
 
 test("user registry state can be exported and imported", () => {

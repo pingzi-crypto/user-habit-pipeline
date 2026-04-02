@@ -12,6 +12,7 @@ It also supports:
 
 - export your current overlay
 - import an overlay from another file
+- scan a current session transcript for habit candidates
 
 User-managed phrases are stored in a separate overlay file.
 The default registry stays unchanged.
@@ -83,6 +84,12 @@ npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 npm run manage-habits -- --help
 ```
 
+### Scan a session transcript for habit candidates
+
+```powershell
+npm run manage-habits -- --suggest --transcript .\data\thread.txt
+```
+
 ---
 
 ## Prompt-Style Requests
@@ -131,6 +138,22 @@ npm run manage-habits -- --request "导入用户习惯短句: path=.\backup\user
 npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
 ```
 
+### Suggest candidates from the current session transcript
+
+```powershell
+npm run manage-habits -- --request "扫描这次会话里的习惯候选" --transcript .\data\thread.txt
+```
+
+For PowerShell transcript input, use `--transcript-stdin`:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npm run manage-habits -- --request "扫描这次会话里的习惯候选" --transcript-stdin
+```
+
 Supported field names in add requests include:
 
 - `phrase` or `短句`
@@ -147,6 +170,14 @@ Supported field names in import/export requests include:
 
 - `path` / `file` / `路径` / `文件`
 - `mode` / `模式`
+
+Suggestion scans currently use transcript input from:
+
+- `--transcript <path>`
+- `--transcript-stdin`
+
+They do not write anything automatically.
+They only return candidate phrases and evidence for review.
 
 ---
 

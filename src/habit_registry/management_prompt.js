@@ -6,6 +6,20 @@ function parseListRequest(message) {
   return null;
 }
 
+function parseSuggestRequest(message) {
+  if (
+    /^\s*(?:扫描|整理|看看|查看)(?:这次|当前)?(?:会话|对话|线程)(?:里|中)?(?:的)?(?:习惯候选|常用短句|纠正说法|用户习惯候选)\s*$/u.test(message)
+    || /^\s*(?:根据|按)(?:这次|当前)?(?:会话|对话|线程)(?:内容)?建议我新增哪些(?:用户)?习惯短句\s*$/u.test(message)
+  ) {
+    return {
+      action: "suggest",
+      scope: "current_session"
+    };
+  }
+
+  return null;
+}
+
 function parseRemoveRequest(message) {
   const match = message.match(/^\s*(?:删除|移除|忘记)(?:掉|掉这个)?(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u);
   if (!match) {
@@ -162,6 +176,7 @@ function parseHabitManagementRequest(message) {
   }
 
   return parseListRequest(trimmedMessage)
+    || parseSuggestRequest(trimmedMessage)
     || parseRemoveRequest(trimmedMessage)
     || parseImportRequest(trimmedMessage)
     || parseExportRequest(trimmedMessage)

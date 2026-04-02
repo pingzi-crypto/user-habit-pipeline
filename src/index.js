@@ -16,6 +16,10 @@ const {
   removeUserHabitPhrase
 } = require("./habit_registry/user_registry");
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
+const {
+  parseSessionTranscript,
+  suggestSessionHabitCandidates
+} = require("./session_suggestions/extract_candidates");
 
 module.exports = {
   USER_REGISTRY_PATH,
@@ -29,7 +33,9 @@ module.exports = {
   loadMergedHabits,
   loadUserRegistryState,
   parseHabitManagementRequest,
+  parseSessionTranscript,
   removeUserHabitPhrase,
+  suggestSessionHabitCandidates,
   validateHabitRules,
   toGrowthHubHint
 };

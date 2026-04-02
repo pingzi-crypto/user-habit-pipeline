@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added read-only session habit suggestion scanning from transcript text, including prompt-triggered `suggest` requests through the manage-habits CLI.
+- Added transcript parsing and candidate extraction for explicit add requests, explicit phrase definitions, and repeated short phrases that are not already registered.
+- Added documentation for the Codex-oriented transcript-scan backend and clarified that direct in-app triggering still needs host-side transcript injection.
 - Added `--request-stdin` to the habit management CLI so multiline prompt requests work reliably in PowerShell and other shell setups that do not preserve multiline `--request` arguments through `npm run`.
 - Documented the PowerShell here-string testing flow and added regression coverage for stdin-based prompt requests.
 
