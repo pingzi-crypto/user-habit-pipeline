@@ -25,6 +25,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
     "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"
   );
   assert.equal(pkg.scripts.demo, "node ./src/demo.js");
+  assert.equal(pkg.scripts["manual-e2e-smoke"], "pwsh -File ./scripts/manual-e2e-smoke.ps1");
   assert.equal(pkg.scripts["manage-habits"], "node ./src/manage-habits-cli.js");
   assert.equal(pkg.scripts["package-smoke"], "npm pack --dry-run");
 });
@@ -36,6 +37,7 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.equal(pkg.engines.node, ">=18.8.0");
   assert.ok(Array.isArray(pkg.files));
   assert.ok(pkg.files.includes("src"));
+  assert.ok(pkg.files.includes("scripts/manual-e2e-smoke.ps1"));
   assert.ok(pkg.files.includes("data/.gitkeep"));
   assert.ok(pkg.files.includes("CHANGELOG.md"));
   assert.ok(pkg.files.includes("docs/registry.schema.json"));

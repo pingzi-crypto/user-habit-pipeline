@@ -10,6 +10,7 @@
   },
   "files": [
     "src",
+    "scripts/manual-e2e-smoke.ps1",
     "data/.gitkeep",
     "docs/registry.schema.json",
     "docs/examples.md",
@@ -52,6 +53,7 @@
     "release-check": "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
     "test": "node --test",
     "demo": "node ./src/demo.js",
+    "manual-e2e-smoke": "pwsh -File ./scripts/manual-e2e-smoke.ps1",
     "interpret": "node ./src/cli.js",
     "manage-habits": "node ./src/manage-habits-cli.js",
     "validate-registry": "node ./src/validate-registry-cli.js",

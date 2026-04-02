@@ -13,6 +13,14 @@ It is intentionally focused on the paths that matter most in real usage:
 
 Use a temporary registry path so these checks do not disturb your normal local state.
 
+If you want the shortest path, run the bundled smoke script first:
+
+```powershell
+npm run manual-e2e-smoke
+```
+
+Then use the checklist below only when you need to inspect one step manually.
+
 ---
 
 ## Scope

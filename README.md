@@ -311,6 +311,12 @@ Regenerate the examples document after changing the example fixtures:
 npm run generate-examples-doc
 ```
 
+Run the bundled end-to-end smoke script:
+
+```powershell
+npm run manual-e2e-smoke
+```
+
 Run a quick end-to-end demo of the current package scope:
 
 ```powershell

@@ -14,6 +14,7 @@ Use this checklist before cutting a package or internal milestone from this repo
 Run these commands from the repository root:
 
 ```powershell
+npm run manual-e2e-smoke
 npm run release-check
 ```
 
