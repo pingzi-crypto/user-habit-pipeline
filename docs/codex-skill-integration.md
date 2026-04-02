@@ -41,6 +41,12 @@ $transcript | node E:\user-habit-pipeline\src\codex-session-habits-cli.js --requ
 ```
 
 The bridge CLI forwards the request into the existing backend and caches the latest suggestion snapshot locally next to the user registry.
+On successful responses it now also returns:
+
+- `assistant_reply_markdown`
+- `suggested_follow_ups`
+
+These fields are intended for Codex skill / chat-UI rendering so the skill can show a natural Chinese summary instead of re-deriving one from raw candidate JSON.
 
 ### 2. Confirm a candidate with a short follow-up prompt
 

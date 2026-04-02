@@ -110,6 +110,202 @@ function validateArgs(args) {
   }
 }
 
+function parseJsonOutput(text) {
+  const normalized = String(text || "").trim();
+  if (!normalized) {
+    throw new Error("Backend returned empty stdout.");
+  }
+
+  return JSON.parse(normalized);
+}
+
+function formatAdjustmentZh(adjustment) {
+  const delta = typeof adjustment.delta === "number" ? adjustment.delta.toFixed(2) : "0.00";
+
+  if (adjustment.type === "structured_request_bonus") {
+    return `包含结构化新增请求，加 ${delta}`;
+  }
+
+  if (adjustment.type === "suggestion_cap" && adjustment.applied) {
+    return "命中建议分数上限 0.98";
+  }
+
+  if (adjustment.type === "scenario_specificity_bonus") {
+    return adjustment.applied
+      ? `包含明确场景信息，加 ${delta}`
+      : "未提供明确场景，保持通用候选";
+  }
+
+  if (adjustment.type === "repetition_bonus") {
+    return `当前会话重复带来加分 ${delta}`;
+  }
+
+  if (adjustment.type === "single_thread_limit") {
+    return "仅来自当前会话，暂不直接提升为可自动添加";
+  }
+
+  return adjustment.note || adjustment.type;
+}
+
+function formatRiskFlagsZh(riskFlags) {
+  const labels = {
+    scenario_unspecified: "场景未指定",
+    single_thread_only: "仅单会话证据",
+    missing_intent: "缺少显式 intent"
+  };
+
+  return (Array.isArray(riskFlags) ? riskFlags : [])
+    .map((item) => labels[item] || item);
+}
+
+function formatCandidateLine(candidate, index) {
+  const ordinal = index + 1;
+  const intent = candidate.suggested_rule?.normalized_intent
+    ? `，意图 \`${candidate.suggested_rule.normalized_intent}\``
+    : "，尚无显式意图";
+  const action = candidate.action === "review_only" ? "复核候选" : "建议添加";
+  const score = typeof candidate.confidence === "number" ? candidate.confidence.toFixed(2) : String(candidate.confidence);
+  const summary = candidate.confidence_details?.summary
+    ? `；${candidate.confidence_details.summary}`
+    : "";
+  const adjustments = Array.isArray(candidate.confidence_details?.adjustments)
+    ? candidate.confidence_details.adjustments
+        .filter((item) => item.applied || item.type === "single_thread_limit")
+        .map(formatAdjustmentZh)
+        .filter(Boolean)
+    : [];
+  const riskFlags = formatRiskFlagsZh(candidate.risk_flags);
+  const tail = [
+    adjustments.length > 0 ? `评分依据：${adjustments.join("，")}` : null,
+    riskFlags.length > 0 ? `风险：${riskFlags.join("、")}` : null
+  ].filter(Boolean).join("；");
+
+  return `${ordinal}. \`${candidate.candidate_id}\`「${candidate.phrase}」${intent}，${action}，置信度 ${score}${summary}${tail ? `；${tail}` : ""}`;
+}
+
+function buildSuggestFollowUps(candidates) {
+  if (!Array.isArray(candidates) || candidates.length === 0) {
+    return [];
+  }
+
+  const prompts = [];
+  const first = candidates[0];
+  prompts.push("添加第1条");
+  prompts.push("忽略第1条");
+
+  if (first.action === "review_only") {
+    prompts.push("把第1条加到 session_close 场景; intent=close_session");
+  } else {
+    prompts.push("把第1条加到 session_close 场景");
+  }
+
+  return prompts;
+}
+
+function renderAssistantReply(output) {
+  if (!output || typeof output !== "object") {
+    return {
+      assistant_reply_markdown: "",
+      suggested_follow_ups: []
+    };
+  }
+
+  if (output.action === "suggest") {
+    if (!Array.isArray(output.candidates) || output.candidates.length === 0) {
+      return {
+        assistant_reply_markdown: "这次会话里没有发现值得加入的用户习惯短句候选。",
+        suggested_follow_ups: []
+      };
+    }
+
+    const candidateLines = output.candidates.map(formatCandidateLine);
+    const followUps = buildSuggestFollowUps(output.candidates);
+
+    return {
+      assistant_reply_markdown: [
+        `这次会话共发现 ${output.candidate_count} 条习惯候选：`,
+        ...candidateLines,
+        "",
+        "你接下来可以直接说：",
+        ...followUps.map((item) => `- \`${item}\``)
+      ].join("\n"),
+      suggested_follow_ups: followUps
+    };
+  }
+
+  if (output.action === "apply-candidate") {
+    const scenario = Array.isArray(output.applied_rule?.scenario_bias)
+      ? output.applied_rule.scenario_bias.join(", ")
+      : "general";
+    const confidence = typeof output.applied_rule?.confidence === "number"
+      ? output.applied_rule.confidence.toFixed(2)
+      : String(output.applied_rule?.confidence || "");
+
+    return {
+      assistant_reply_markdown: `已添加用户习惯短句「${output.applied_rule?.phrase}」，意图 \`${output.applied_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
+      suggested_follow_ups: [
+        "列出用户习惯短句",
+        `删除用户习惯短句: ${output.applied_rule?.phrase}`
+      ]
+    };
+  }
+
+  if (output.action === "ignore-candidate" || output.action === "ignore-phrase") {
+    const phrase = output.ignored_phrase || "";
+    return {
+      assistant_reply_markdown: `已忽略短句「${phrase}」，后续扫描将不再重复建议它。`,
+      suggested_follow_ups: [
+        "列出用户习惯短句"
+      ]
+    };
+  }
+
+  if (output.action === "list") {
+    const additions = Array.isArray(output.additions) ? output.additions : [];
+    const removals = Array.isArray(output.removals) ? output.removals : [];
+    const ignored = Array.isArray(output.ignored_suggestions) ? output.ignored_suggestions : [];
+
+    const lines = [
+      `当前记录：新增 ${additions.length} 条，移除 ${removals.length} 条，忽略建议 ${ignored.length} 条。`
+    ];
+
+    if (additions.length > 0) {
+      lines.push(...additions.slice(0, 5).map((item, index) => `${index + 1}. 「${item.phrase}」 -> \`${item.normalized_intent}\``));
+    }
+
+    return {
+      assistant_reply_markdown: lines.join("\n"),
+      suggested_follow_ups: []
+    };
+  }
+
+  if (output.action === "remove") {
+    return {
+      assistant_reply_markdown: `已删除用户习惯短句「${output.removed_phrase}」。`,
+      suggested_follow_ups: ["列出用户习惯短句"]
+    };
+  }
+
+  if (output.action === "add") {
+    const scenario = Array.isArray(output.added_rule?.scenario_bias)
+      ? output.added_rule.scenario_bias.join(", ")
+      : "general";
+    const confidence = typeof output.added_rule?.confidence === "number"
+      ? output.added_rule.confidence.toFixed(2)
+      : String(output.added_rule?.confidence || "");
+
+    return {
+      assistant_reply_markdown: `已添加用户习惯短句「${output.added_rule?.phrase}」，意图 \`${output.added_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
+      suggested_follow_ups: ["列出用户习惯短句"]
+    };
+  }
+
+  return {
+    assistant_reply_markdown: "",
+    suggested_follow_ups: []
+  };
+}
+
 function forwardToManageHabits(args) {
   const commandArgs = [
     MANAGE_HABITS_CLI_PATH,
@@ -146,6 +342,16 @@ function forwardToManageHabits(args) {
   });
 
   if (result.stdout) {
+    if ((result.status ?? 1) === 0) {
+      const parsed = parseJsonOutput(result.stdout);
+      const presentation = renderAssistantReply(parsed);
+      process.stdout.write(`${JSON.stringify({
+        ...parsed,
+        ...presentation
+      }, null, 2)}\n`);
+      process.exit(0);
+    }
+
     process.stdout.write(result.stdout);
   }
 
@@ -174,6 +380,8 @@ module.exports = {
   forwardToManageHabits,
   getUsageText,
   main,
+  parseJsonOutput,
   parseArgs,
+  renderAssistantReply,
   validateArgs
 };

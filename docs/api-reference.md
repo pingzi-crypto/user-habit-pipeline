@@ -320,6 +320,7 @@ Behavior:
 - maps Codex-oriented transcript flags `--thread <path>` and `--thread-stdin` onto the existing transcript contract
 - keeps the follow-up confirm flow short by relying on the latest local suggestion cache
 - is intended for skills or host integrations that can access the current conversation context directly
+- enriches successful results with `assistant_reply_markdown` and `suggested_follow_ups` for chat-oriented presentation
 
 ---
 
