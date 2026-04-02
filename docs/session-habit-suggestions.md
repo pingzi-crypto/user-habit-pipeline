@@ -75,6 +75,18 @@ user: 收尾一下
 '@ | npm run manage-habits -- --suggest --transcript-stdin
 ```
 
+Apply a reviewed candidate from a saved snapshot:
+
+```powershell
+npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
+```
+
+Prompt-style apply:
+
+```powershell
+npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
+```
+
 ---
 
 ## Transcript Format
@@ -139,6 +151,9 @@ Each candidate may include:
 - `risk_flags`
 
 This is designed so a host application can present candidates and let the user confirm them one by one.
+
+Candidates that include a `suggested_rule` can be added directly after user confirmation.
+Candidates returned as `review_only` still need an explicit rule definition before they can be stored.
 
 ---
 

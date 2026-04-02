@@ -18,6 +18,8 @@ const {
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
 const {
   parseSessionTranscript,
+  findSuggestedCandidate,
+  parseCandidateReference,
   suggestSessionHabitCandidates
 } = require("./session_suggestions/extract_candidates");
 
@@ -26,6 +28,7 @@ module.exports = {
   addUserHabitRule,
   ensureUserRegistryFile,
   exportUserRegistryState,
+  findSuggestedCandidate,
   importUserRegistryState,
   interpretHabit,
   loadDefaultHabits,
@@ -33,6 +36,7 @@ module.exports = {
   loadMergedHabits,
   loadUserRegistryState,
   parseHabitManagementRequest,
+  parseCandidateReference,
   parseSessionTranscript,
   removeUserHabitPhrase,
   suggestSessionHabitCandidates,

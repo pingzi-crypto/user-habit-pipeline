@@ -248,6 +248,127 @@ test("manage-habits cli can trigger session suggestion scans through a prompt re
   assert.equal(parsed.candidates[0].phrase, "收工啦");
 });
 
+test("manage-habits cli can apply a suggested candidate from a snapshot file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcriptPath = path.join(path.dirname(userRegistryPath), "apply_thread.txt");
+  const suggestionsPath = path.join(path.dirname(userRegistryPath), "suggestions.json");
+  fs.writeFileSync(transcriptPath, [
+    "user: 以后我说“收尾一下”就是 close_session",
+    "assistant: 收到。",
+    "user: 收尾一下"
+  ].join("\n"), "utf8");
+
+  const suggestResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--suggest",
+    "--transcript",
+    transcriptPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+  assert.equal(suggestResult.status, 0);
+  fs.writeFileSync(suggestionsPath, suggestResult.stdout, "utf8");
+
+  const applyResult = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--apply-candidate",
+    "c1",
+    "--suggestions",
+    suggestionsPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(applyResult.status, 0);
+  const parsed = JSON.parse(applyResult.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.equal(parsed.candidate_id, "c1");
+  assert.equal(parsed.applied_rule.phrase, "收尾一下");
+  assert.equal(parsed.additions.length, 1);
+});
+
+test("manage-habits cli can apply a suggested candidate through a prompt request", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const suggestions = {
+    candidates: [
+      {
+        candidate_id: "c1",
+        phrase: "收尾一下",
+        suggested_rule: {
+          phrase: "收尾一下",
+          normalized_intent: "close_session",
+          scenario_bias: ["general"],
+          confidence: 0.84
+        }
+      }
+    ]
+  };
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--request",
+    "添加第1条",
+    "--suggestions-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: JSON.stringify(suggestions),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.equal(parsed.candidate_id, "c1");
+  assert.equal(parsed.applied_rule.normalized_intent, "close_session");
+});
+
+test("manage-habits cli can apply a candidate from a noisy npm-style snapshot file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const suggestionsPath = path.join(path.dirname(userRegistryPath), "noisy_suggestions.json");
+  fs.writeFileSync(suggestionsPath, [
+    "> user-habit-pipeline@0.3.0 manage-habits",
+    "> node ./src/manage-habits-cli.js --suggest --transcript .\\data\\thread.txt",
+    "",
+    JSON.stringify({
+      action: "suggest",
+      candidates: [
+        {
+          candidate_id: "c1",
+          phrase: "收尾一下",
+          suggested_rule: {
+            phrase: "收尾一下",
+            normalized_intent: "close_session",
+            scenario_bias: ["general"],
+            confidence: 0.84
+          }
+        }
+      ]
+    }, null, 2)
+  ].join("\n"), "utf8");
+
+  const result = spawnSync(process.execPath, [
+    MANAGE_CLI_PATH,
+    "--apply-candidate",
+    "1",
+    "--suggestions",
+    suggestionsPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "apply-candidate");
+  assert.equal(parsed.applied_rule.phrase, "收尾一下");
+});
+
 test("manage-habits cli prints help and exits zero", () => {
   const result = spawnSync(process.execPath, [MANAGE_CLI_PATH, "--help"], {
     encoding: "utf8"
@@ -258,7 +379,9 @@ test("manage-habits cli prints help and exits zero", () => {
   assert.match(result.stdout, /--request <text>/);
   assert.match(result.stdout, /--request-stdin/);
   assert.match(result.stdout, /--suggest/);
+  assert.match(result.stdout, /--apply-candidate/);
   assert.match(result.stdout, /--transcript-stdin/);
+  assert.match(result.stdout, /--suggestions-stdin/);
   assert.match(result.stdout, /--export <path>/);
   assert.match(result.stdout, /--import <path>/);
 });

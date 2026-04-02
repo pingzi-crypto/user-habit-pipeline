@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added explicit suggestion-apply support so reviewed session candidates can be written into the user overlay through `--apply-candidate` or prompt requests such as `添加第1条`.
 - Added read-only session habit suggestion scanning from transcript text, including prompt-triggered `suggest` requests through the manage-habits CLI.
 - Added transcript parsing and candidate extraction for explicit add requests, explicit phrase definitions, and repeated short phrases that are not already registered.
 - Added documentation for the Codex-oriented transcript-scan backend and clarified that direct in-app triggering still needs host-side transcript injection.

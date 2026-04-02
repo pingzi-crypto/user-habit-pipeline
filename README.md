@@ -401,6 +401,18 @@ user: 收尾一下
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
 
+After reviewing the candidates, you can explicitly add one:
+
+```powershell
+npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
+```
+
+Prompt-style confirmation is also supported when you already have a suggestion snapshot:
+
+```powershell
+npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
+```
+
 ### CLI contract
 
 - `--message` is required

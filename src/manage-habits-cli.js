@@ -14,6 +14,7 @@ const {
 const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
 const {
   DEFAULT_MAX_CANDIDATES,
+  findSuggestedCandidate,
   suggestSessionHabitCandidates
 } = require("./session_suggestions/extract_candidates");
 
@@ -22,8 +23,10 @@ function parseArgs(argv) {
     action: null,
     phrase: null,
     intent: null,
+    candidateRef: null,
     filePath: null,
     transcriptPath: null,
+    suggestionsPath: null,
     mode: null,
     maxCandidates: DEFAULT_MAX_CANDIDATES,
     scenario: [],
@@ -32,6 +35,7 @@ function parseArgs(argv) {
     request: null,
     requestFromStdin: false,
     transcriptFromStdin: false,
+    suggestionsFromStdin: false,
     help: false
   };
 
@@ -55,6 +59,13 @@ function parseArgs(argv) {
 
     if (token === "--suggest") {
       parsed.action = "suggest";
+      continue;
+    }
+
+    if (token === "--apply-candidate") {
+      parsed.action = "apply-candidate";
+      parsed.candidateRef = argv[index + 1] ?? null;
+      index += 1;
       continue;
     }
 
@@ -116,6 +127,17 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (token === "--suggestions") {
+      parsed.suggestionsPath = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (token === "--suggestions-stdin") {
+      parsed.suggestionsFromStdin = true;
+      continue;
+    }
+
     if (token === "--mode") {
       parsed.mode = argv[index + 1] ?? "replace";
       index += 1;
@@ -164,6 +186,43 @@ function readRequestFromStdin() {
   return trimmed;
 }
 
+function parseJsonPayload(text, sourceLabel) {
+  const normalized = String(text || "").replace(/^\uFEFF/u, "").trim();
+  if (!normalized) {
+    throw new Error(`${sourceLabel} is empty.`);
+  }
+
+  try {
+    return JSON.parse(normalized);
+  } catch {
+    const firstObjectStart = normalized.indexOf("{");
+    const lastObjectEnd = normalized.lastIndexOf("}");
+    const firstArrayStart = normalized.indexOf("[");
+    const lastArrayEnd = normalized.lastIndexOf("]");
+
+    const objectCandidate = firstObjectStart >= 0 && lastObjectEnd > firstObjectStart
+      ? normalized.slice(firstObjectStart, lastObjectEnd + 1)
+      : null;
+    const arrayCandidate = firstArrayStart >= 0 && lastArrayEnd > firstArrayStart
+      ? normalized.slice(firstArrayStart, lastArrayEnd + 1)
+      : null;
+
+    for (const candidate of [objectCandidate, arrayCandidate]) {
+      if (!candidate) {
+        continue;
+      }
+
+      try {
+        return JSON.parse(candidate);
+      } catch {
+        continue;
+      }
+    }
+
+    throw new Error(`${sourceLabel} does not contain valid JSON.`);
+  }
+}
+
 function readTranscriptInput(args) {
   if (args.transcriptFromStdin) {
     const input = fs.readFileSync(0, "utf8");
@@ -190,9 +249,35 @@ function readTranscriptInput(args) {
   throw new Error("Session suggestion scanning requires --transcript <path> or --transcript-stdin.");
 }
 
+function readSuggestionsInput(args) {
+  if (args.suggestionsFromStdin) {
+    const input = fs.readFileSync(0, "utf8");
+    const trimmed = String(input || "").trim();
+
+    if (!trimmed) {
+      throw new Error("--suggestions-stdin requires non-empty stdin input.");
+    }
+
+    return parseJsonPayload(trimmed, "--suggestions-stdin input");
+  }
+
+  if (args.suggestionsPath) {
+    const content = fs.readFileSync(args.suggestionsPath, "utf8");
+    const trimmed = String(content || "").trim();
+
+    if (!trimmed) {
+      throw new Error("--suggestions requires a non-empty file.");
+    }
+
+    return parseJsonPayload(trimmed, "--suggestions file");
+  }
+
+  throw new Error("Applying a suggestion requires --suggestions <path> or --suggestions-stdin.");
+}
+
 function getUsageText() {
   return [
-    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --suggest | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--transcript <path> | --transcript-stdin] [--max-candidates <n>] [--user-registry <path>]",
+    "Usage: manage-user-habits (--list | --add --phrase <text> --intent <intent> | --remove --phrase <text> | --export <path> | --import <path> | --suggest | --apply-candidate <id> | --request <text> | --request-stdin) [--scenario <a,b>] [--confidence <0-1>] [--mode replace|merge] [--transcript <path> | --transcript-stdin] [--suggestions <path> | --suggestions-stdin] [--max-candidates <n>] [--user-registry <path>]",
     "",
     "Examples:",
     "  manage-user-habits --add --phrase \"收尾一下\" --intent close_session --scenario session_close --confidence 0.86",
@@ -201,8 +286,10 @@ function getUsageText() {
     "  manage-user-habits --export .\\backup\\user_habits.json",
     "  manage-user-habits --import .\\backup\\user_habits.json --mode merge",
     "  manage-user-habits --suggest --transcript .\\data\\thread.txt",
+    "  manage-user-habits --apply-candidate c1 --suggestions .\\data\\thread_suggestions.json",
     "  manage-user-habits --request \"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86\"",
     "  manage-user-habits --request \"扫描这次会话里的习惯候选\" --transcript .\\data\\thread.txt",
+    "  manage-user-habits --request \"添加第1条\" --suggestions .\\data\\thread_suggestions.json",
     "  manage-user-habits --request \"删除用户习惯短句: 收尾一下\"",
     "  manage-user-habits --request \"列出用户习惯短句\"",
     "  @'\n新增习惯短句 phrase=收尾一下\nintent=close_session\n场景=session_close\n置信度=0.86\n'@ | manage-user-habits --request-stdin",
@@ -213,6 +300,7 @@ function getUsageText() {
     "  --remove                 Remove a habit phrase from the effective registry.",
     "  --list                   List the current user-defined additions and removals.",
     "  --suggest                Suggest candidate habit phrases from a session transcript.",
+    "  --apply-candidate <id>   Add one suggested candidate to the user overlay.",
     "  --export <path>          Export the current user overlay to a JSON file.",
     "  --import <path>          Import a user overlay JSON file.",
     "  --phrase <text>          Phrase to add or remove.",
@@ -220,6 +308,8 @@ function getUsageText() {
     "  --file <path>            Optional file path for prompt-driven import/export.",
     "  --transcript <path>      Session transcript file for --suggest or prompt-driven suggestion scans.",
     "  --transcript-stdin       Read a session transcript from stdin.",
+    "  --suggestions <path>     Suggestion snapshot file for --apply-candidate or prompt-driven candidate apply.",
+    "  --suggestions-stdin      Read a suggestion snapshot from stdin.",
     `  --max-candidates <n>    Maximum suggestion candidates to return. Default: ${DEFAULT_MAX_CANDIDATES}.`,
     "  --mode replace|merge     Import mode. Default: replace.",
     "  --scenario <a,b>         Optional comma-separated scenario hints for --add.",
@@ -335,7 +425,30 @@ function executeStructuredAction(args) {
     };
   }
 
-  throw new Error("One of --list, --add, --remove, --suggest, or --request is required.");
+  if (args.action === "apply-candidate") {
+    if (!args.candidateRef) {
+      throw new Error("--apply-candidate requires a candidate id such as c1.");
+    }
+
+    const snapshot = readSuggestionsInput(args);
+    const candidate = findSuggestedCandidate(snapshot, args.candidateRef);
+
+    if (!candidate.suggested_rule) {
+      throw new Error(`Candidate "${args.candidateRef}" is review-only and cannot be added without an explicit rule.`);
+    }
+
+    const state = addUserHabitRule(candidate.suggested_rule, args.registryPath);
+    return {
+      action: "apply-candidate",
+      candidate_id: candidate.candidate_id,
+      applied_rule: candidate.suggested_rule,
+      registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
+  throw new Error("One of --list, --add, --remove, --suggest, --apply-candidate, or --request is required.");
 }
 
 function executeRequestAction(args) {
@@ -410,6 +523,25 @@ function executeRequestAction(args) {
     };
   }
 
+  if (parsedRequest.action === "apply-candidate") {
+    const snapshot = readSuggestionsInput(args);
+    const candidate = findSuggestedCandidate(snapshot, parsedRequest.candidate_ref);
+
+    if (!candidate.suggested_rule) {
+      throw new Error(`Candidate "${parsedRequest.candidate_ref}" is review-only and cannot be added without an explicit rule.`);
+    }
+
+    const state = addUserHabitRule(candidate.suggested_rule, args.registryPath);
+    return {
+      action: "apply-candidate",
+      candidate_id: candidate.candidate_id,
+      applied_rule: candidate.suggested_rule,
+      registry_path: args.registryPath,
+      additions: state.additions,
+      removals: state.removals
+    };
+  }
+
   const state = addUserHabitRule(parsedRequest.rule, args.registryPath);
   return {
     action: "add",
@@ -426,8 +558,14 @@ function main() {
     printUsageAndExit(0, process.stdout);
   }
 
-  if (args.requestFromStdin && args.transcriptFromStdin) {
-    throw new Error("Use only one stdin source at a time: --request-stdin or --transcript-stdin.");
+  const stdinSources = [
+    args.requestFromStdin,
+    args.transcriptFromStdin,
+    args.suggestionsFromStdin
+  ].filter(Boolean).length;
+
+  if (stdinSources > 1) {
+    throw new Error("Use only one stdin source at a time: --request-stdin, --transcript-stdin, or --suggestions-stdin.");
   }
 
   if (args.requestFromStdin) {

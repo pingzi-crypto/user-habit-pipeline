@@ -90,6 +90,12 @@ npm run manage-habits -- --help
 npm run manage-habits -- --suggest --transcript .\data\thread.txt
 ```
 
+### Apply one suggestion after review
+
+```powershell
+npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
+```
+
 ---
 
 ## Prompt-Style Requests
@@ -154,6 +160,12 @@ user: 收尾一下
 '@ | npm run manage-habits -- --request "扫描这次会话里的习惯候选" --transcript-stdin
 ```
 
+### Apply one reviewed suggestion
+
+```powershell
+npm run manage-habits -- --request "添加第1条" --suggestions .\data\thread_suggestions.json
+```
+
 Supported field names in add requests include:
 
 - `phrase` or `短句`
@@ -178,6 +190,14 @@ Suggestion scans currently use transcript input from:
 
 They do not write anything automatically.
 They only return candidate phrases and evidence for review.
+
+To turn a suggestion into an active user habit:
+
+- use `--apply-candidate <id>` with a saved suggestion snapshot
+- or use a prompt request like `添加第1条` with `--suggestions <path>` or `--suggestions-stdin`
+
+Review-only candidates without a `suggested_rule` cannot be applied directly.
+Those still require an explicit add request.
 
 ---
 

@@ -142,6 +142,18 @@ Candidate records may include:
 - `evidence`
 - `risk_flags`
 
+### `parseCandidateReference(value)`
+
+Normalize candidate references such as:
+
+- `c1`
+- `1`
+- `第1条`
+
+### `findSuggestedCandidate(snapshot, reference)`
+
+Find one candidate from a suggestion snapshot by candidate id or ordinal reference.
+
 ### `toGrowthHubHint(habitOutput)`
 
 Project a standard interpretation result into a thin `growth-hub` hint shape.
@@ -233,6 +245,7 @@ npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --
 npm run manage-habits -- --remove --phrase "收尾一下"
 npm run manage-habits -- --list
 npm run manage-habits -- --suggest --transcript .\data\thread.txt
+npm run manage-habits -- --apply-candidate c1 --suggestions .\data\thread_suggestions.json
 npm run manage-habits -- --export .\backup\user_habits.json
 npm run manage-habits -- --import .\backup\user_habits.json --mode merge
 ```
@@ -248,6 +261,7 @@ Behavior:
 - persists user-defined additions in a separate user registry file
 - supports removal markers so default phrases can be hidden
 - supports read-only session suggestion scans from transcript text
+- supports explicit apply-from-suggestion actions after user review
 - supports export/import of the user overlay JSON file
 - supports `replace` and `merge` import modes
 - allows prompt-based add/remove/list/suggest requests without editing JSON manually

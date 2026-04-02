@@ -418,6 +418,8 @@ function suggestSessionHabitCandidates(transcriptText, options = {}) {
     }));
 
   return {
+    schema_version: "1.0",
+    record_type: "session_habit_suggestions",
     transcript_stats: {
       message_count: messages.length,
       user_message_count: messages.filter((item) => item.role === "user" || item.role === "unknown").length
@@ -426,8 +428,49 @@ function suggestSessionHabitCandidates(transcriptText, options = {}) {
   };
 }
 
+function parseCandidateReference(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    throw new Error("Candidate reference is required.");
+  }
+
+  const numberedMatch = raw.match(/^(?:c)?(\d+)$/iu) || raw.match(/^第\s*(\d+)\s*条$/u);
+  if (numberedMatch) {
+    return `c${Number(numberedMatch[1])}`;
+  }
+
+  return raw;
+}
+
+function validateSuggestionSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    throw new Error("Suggestion snapshot must be a JSON object.");
+  }
+
+  if (!Array.isArray(snapshot.candidates)) {
+    throw new Error('Suggestion snapshot must include a "candidates" array.');
+  }
+
+  return snapshot;
+}
+
+function findSuggestedCandidate(snapshot, reference) {
+  const validated = validateSuggestionSnapshot(snapshot);
+  const candidateId = parseCandidateReference(reference);
+  const candidate = validated.candidates.find((item) => item && item.candidate_id === candidateId);
+
+  if (!candidate) {
+    throw new Error(`Unable to find suggestion candidate "${reference}".`);
+  }
+
+  return candidate;
+}
+
 module.exports = {
   DEFAULT_MAX_CANDIDATES,
+  findSuggestedCandidate,
+  parseCandidateReference,
   parseSessionTranscript,
-  suggestSessionHabitCandidates
+  suggestSessionHabitCandidates,
+  validateSuggestionSnapshot
 };

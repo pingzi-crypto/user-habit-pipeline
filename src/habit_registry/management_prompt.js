@@ -20,6 +20,28 @@ function parseSuggestRequest(message) {
   return null;
 }
 
+function parseApplyCandidateRequest(message) {
+  const patterns = [
+    /^\s*(?:添加|加入|保存|采用)(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:到(?:用户)?习惯短句|到overlay|到用户overlay)?\s*$/u,
+    /^\s*把(?:第\s*(\d+)\s*条|c(\d+))(?:候选|习惯候选)?(?:加到|加入)(?:用户)?习惯短句\s*$/u
+  ];
+
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (!match) {
+      continue;
+    }
+
+    const index = match[1] || match[2];
+    return {
+      action: "apply-candidate",
+      candidate_ref: `c${Number(index)}`
+    };
+  }
+
+  return null;
+}
+
 function parseRemoveRequest(message) {
   const match = message.match(/^\s*(?:删除|移除|忘记)(?:掉|掉这个)?(?:用户)?习惯短句(?:[:：]|\s)\s*(.+?)\s*$/u);
   if (!match) {
@@ -177,6 +199,7 @@ function parseHabitManagementRequest(message) {
 
   return parseListRequest(trimmedMessage)
     || parseSuggestRequest(trimmedMessage)
+    || parseApplyCandidateRequest(trimmedMessage)
     || parseRemoveRequest(trimmedMessage)
     || parseImportRequest(trimmedMessage)
     || parseExportRequest(trimmedMessage)

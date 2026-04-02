@@ -4,6 +4,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const {
+  findSuggestedCandidate,
+  parseCandidateReference,
   parseSessionTranscript,
   suggestSessionHabitCandidates
 } = require("../src");
@@ -72,4 +74,23 @@ test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as r
   assert.equal(result.candidates[0].action, "review_only");
   assert.equal(result.candidates[0].suggested_rule, null);
   assert.deepEqual(result.candidates[0].risk_flags, ["single_thread_only", "missing_intent"]);
+});
+
+test("candidate references support cN and 第N条 forms", () => {
+  assert.equal(parseCandidateReference("c2"), "c2");
+  assert.equal(parseCandidateReference("2"), "c2");
+  assert.equal(parseCandidateReference("第 3 条"), "c3");
+});
+
+test("findSuggestedCandidate returns the referenced candidate from a snapshot", () => {
+  const snapshot = {
+    candidates: [
+      { candidate_id: "c1", phrase: "收尾一下", suggested_rule: { phrase: "收尾一下" } },
+      { candidate_id: "c2", phrase: "复盘一下", suggested_rule: { phrase: "复盘一下" } }
+    ]
+  };
+
+  const candidate = findSuggestedCandidate(snapshot, "第2条");
+  assert.equal(candidate.candidate_id, "c2");
+  assert.equal(candidate.phrase, "复盘一下");
 });
