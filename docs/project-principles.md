@@ -296,6 +296,17 @@ Preferred wording example:
 我就改看更高价值的 TODO。
 ```
 
+Pre-suggestion checklist:
+
+Before proposing a next step, check:
+
+1. Does this step create clear user value, or is it mostly polish?
+2. What will the user need to spend: time, manual commands, review effort, attention?
+3. Is there a different pending item with clearly better value per unit of effort?
+4. If the answer is unfavorable, have you offered a one-word stop path such as `停` or `跳过`?
+
+If this checklist suggests low ROI, do not keep pushing the current path by default.
+
 Short form:
 
 - low-value next steps should be challenged early
