@@ -62,7 +62,7 @@ test("suggestSessionHabitCandidates extracts explicit add and definition candida
   assert.ok(definitionCandidate);
   assert.equal(definitionCandidate.suggested_rule.normalized_intent, "close_session");
   assert.equal(definitionCandidate.confidence_details.base_score, 0.84);
-  assert.match(definitionCandidate.confidence_details.summary, /general/u);
+  assert.match(definitionCandidate.confidence_details.summary, /通用/u);
 });
 
 test("explicit add request confidence is boosted and capped at 0.98", () => {

@@ -311,17 +311,17 @@ function extractExplicitCandidates(messages, knownPhrases) {
               {
                 type: "structured_request_bonus",
                 delta: 0.08,
-                note: "Transcript already contains a management-compatible add request."
+                note: "会话中已经出现兼容习惯管理格式的新增请求。"
               },
               {
                 type: "suggestion_cap",
                 delta: uncappedConfidence > 0.98 ? uncappedConfidence - finalConfidence : 0,
                 applied: uncappedConfidence > 0.98,
-                note: "Suggestion confidence is capped at 0.98 even for very strong add requests."
+                note: "即使是很强的新增请求，建议分也会封顶在 0.98。"
               }
             ],
             finalScore: finalConfidence,
-            summary: "Structured add request found in the transcript, so this candidate is ready for explicit review."
+            summary: "会话里出现了结构化新增请求，这条候选已经接近可直接确认。"
           }),
           suggested_rule: parsedRequest.rule,
           evidence: {
@@ -356,13 +356,13 @@ function extractExplicitCandidates(messages, knownPhrases) {
             type: "scenario_specificity_bonus",
             delta: explicitRule.scenario_bias.includes("general") ? 0 : 0.04,
             applied: !explicitRule.scenario_bias.includes("general"),
-            note: "Explicit scenario information makes the definition more specific than a general-only mapping."
+            note: "带有明确场景信息的定义，比仅有通用场景的映射更具体。"
           }
         ],
         finalScore: explicitRule.confidence,
         summary: explicitRule.scenario_bias.includes("general")
-          ? "Explicit phrase-to-intent definition found, but the scenario is still general."
-          : "Explicit phrase-to-intent definition found with scenario-specific evidence."
+          ? "会话里出现了明确的短句定义，但场景仍然偏通用。"
+          : "会话里出现了带明确场景的短句定义，证据较强。"
       }),
       suggested_rule: explicitRule,
       evidence: {
@@ -435,17 +435,17 @@ function extractRepeatedPhraseCandidates(messages, knownPhrases, explicitCandida
           {
             type: "repetition_bonus",
             delta: Math.min((entry.count - MIN_REPEATED_PHRASE_COUNT) * 0.05, 0.15),
-            note: `Observed ${entry.count} user-side occurrences in the current transcript.`
+            note: `当前会话中观察到 ${entry.count} 次用户侧重复出现。`
           },
           {
             type: "single_thread_limit",
             delta: 0,
             applied: false,
-            note: "Repetition evidence stays review-only because it comes from a single thread and may still lack intent."
+            note: "这类重复证据只来自当前会话，而且可能仍缺少明确 intent，因此保持为复核候选。"
           }
         ],
         finalScore: 0.55 + Math.min((entry.count - MIN_REPEATED_PHRASE_COUNT) * 0.05, 0.15),
-        summary: "Repeated short phrase surfaced for review, not direct activation."
+        summary: "当前会话里短句重复出现，值得复核，但还不适合直接启用。"
       }),
       suggested_rule: null,
       evidence: {

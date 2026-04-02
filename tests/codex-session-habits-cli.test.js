@@ -39,6 +39,7 @@ test("codex-session-habits cli can scan the current session from stdin", () => {
   assert.equal(parsed.candidates[0].confidence_details.final_score, 0.84);
   assert.match(parsed.assistant_reply_markdown, /发现 1 条习惯候选/u);
   assert.match(parsed.assistant_reply_markdown, /添加第1条/u);
+  assert.doesNotMatch(parsed.assistant_reply_markdown, /Explicit|Repeated|Structured/u);
   assert.deepEqual(parsed.suggested_follow_ups, [
     "添加第1条",
     "忽略第1条",
@@ -112,6 +113,7 @@ test("codex-session-habits cli returns chat-ready follow-ups for review-only can
   const parsed = JSON.parse(result.stdout);
   assert.equal(parsed.candidates[0].action, "review_only");
   assert.match(parsed.assistant_reply_markdown, /复核候选/u);
+  assert.doesNotMatch(parsed.assistant_reply_markdown, /Explicit|Repeated|Structured/u);
   assert.deepEqual(parsed.suggested_follow_ups, [
     "添加第1条",
     "忽略第1条",
