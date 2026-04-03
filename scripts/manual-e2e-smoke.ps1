@@ -177,6 +177,15 @@ user: 收工啦
     "ignore flow verified"
   }
 
+  Test-Step -Results $results -Name "low_roi_stop_request" -Action {
+    $parsed = Invoke-JsonCommand -Executable $nodeCommand -Arguments ($sharedArgs + @("--request", "停"))
+    Assert-True ($parsed.action -eq "stop") "Expected stop action."
+    Assert-True ($parsed.stop_request -eq "停") "Expected stop_request 停."
+    Assert-True ($parsed.assistant_reply_markdown -match "当前这个方向先停") "Expected local stop confirmation markdown."
+    Assert-True ($parsed.next_step_assessment.level -eq "stopped") "Expected stopped assessment level."
+    "one-word stop path verified"
+  }
+
   Test-Step -Results $results -Name "list_additions_and_ignored" -Action {
     $parsed = Invoke-JsonCommand -Executable $nodeCommand -Arguments ($sharedArgs + @("--request", "列出用户习惯短句"))
     Assert-True ($parsed.action -eq "list") "Expected list action."

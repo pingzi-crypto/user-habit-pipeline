@@ -7,6 +7,7 @@ It is intentionally focused on the paths that matter most in real usage:
 - scan the current session
 - add a suggested habit
 - ignore a noisy suggestion
+- stop the current low-ROI direction with one word
 - list current state
 - verify the added phrase can be interpreted
 - confirm the low-ROI stop rule wording exists in the project guidance
@@ -224,7 +225,25 @@ Expected:
 
 ---
 
-## 8. Remove One Phrase And Re-List
+## 8. Verify The One-Word Stop Path
+
+Run:
+
+```powershell
+npm run codex-session-habits -- --request "停" --user-registry $userRegistry
+```
+
+Expected:
+
+- command exits successfully
+- JSON includes `action = "stop"`
+- `stop_request = "停"`
+- `assistant_reply_markdown` confirms the current direction has stopped
+- `next_step_assessment.level = "stopped"`
+
+---
+
+## 9. Remove One Phrase And Re-List
 
 Run:
 
@@ -243,7 +262,7 @@ Expected:
 
 ---
 
-## 9. Confirm Low-ROI Stop Guidance Exists
+## 10. Confirm Low-ROI Stop Guidance Exists
 
 This is a documentation acceptance check.
 
@@ -261,7 +280,7 @@ Expected:
 
 ---
 
-## 10. Optional Skill-Level Smoke Check
+## 11. Optional Skill-Level Smoke Check
 
 If the local skill repo is installed and configured, you can also run:
 
@@ -285,6 +304,7 @@ Treat the manual acceptance as passing when:
 - cached apply works
 - repeated review-only scan works
 - ignore works
+- one-word stop works
 - list output reflects additions / removals / ignored suggestions clearly
 - interpretation reflects the applied rule
 - low-ROI stop guidance is present in both project and skill guidance

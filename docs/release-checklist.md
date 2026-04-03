@@ -8,6 +8,7 @@ Use this checklist before cutting a package or internal milestone from this repo
 - Confirm [examples.md](/E:/user-habit-pipeline/docs/examples.md) still reflects the current fixture source.
 - Confirm [registry-authoring.md](/E:/user-habit-pipeline/docs/registry-authoring.md) still matches the runtime validator and schema.
 - Run the critical path in [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md) when the bridge, skill-facing output, or user overlay flow changed.
+- If low-ROI stop behavior changed, confirm the one-word stop path still works in the E2E smoke flow.
 
 ## Validation Commands
 
