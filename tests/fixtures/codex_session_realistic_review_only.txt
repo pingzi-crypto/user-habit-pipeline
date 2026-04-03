@@ -1,0 +1,12 @@
+system: 你是 Codex，需要避免把单会话里的弱信号直接写成长期习惯。
+user: 先继续看下一个 todo。
+assistant: 我先看 release checklist。
+tool: 已读取 docs/release-checklist.md
+assistant: 当前主链已经完成，剩下更多像补充整理。
+user: 收工啦
+assistant: 你是想正式 session close，还是只是说这条差不多了？
+user: 先不用正式收口，我就是觉得这条差不多了。
+assistant: 明白，我先不把它当成固定习惯。
+user: 收工啦
+assistant: 目前它还只是会话里的一个重复短句。
+user: 收工啦

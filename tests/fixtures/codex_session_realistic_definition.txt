@@ -1,0 +1,12 @@
+system: 你是 Codex，需要优先保持解释层边界，不要直接执行工作流动作。
+user: 先看当前项目方向指导文件和 todo。
+assistant: 我先查看 README 和 project principles。
+tool: 已读取 README.md, docs/project-principles.md
+assistant: 当前主链已经打通，后面更像是收口和验收。
+user: 先别直接结束，我后面可能会说“收尾一下”。
+assistant: 明白，我先继续推进当前项。
+user: 以后我说“收尾一下”就是 close_session 场景=session_close
+assistant: 收到，后面看到这个短句我会按 close_session 来理解。
+user: 继续把刚才那项做完。
+assistant: 这一项已经完成。
+user: 收尾一下

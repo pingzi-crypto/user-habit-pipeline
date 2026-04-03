@@ -18,6 +18,10 @@ function createTempRegistryPath() {
   return path.join(fs.mkdtempSync(path.join(os.tmpdir(), "uhp-session-suggest-")), "user_habits.json");
 }
 
+function loadFixtureText(name) {
+  return fs.readFileSync(path.join(__dirname, "fixtures", name), "utf8");
+}
+
 test("parseSessionTranscript groups role-prefixed multiline messages", () => {
   const messages = parseSessionTranscript([
     "user: 新增习惯短句 phrase=收尾一下",
@@ -47,6 +51,27 @@ test("parseSessionTranscript normalizes Chinese role labels and preserves unpref
   assert.equal(messages[1].role, "user");
   assert.equal(messages[2].role, "assistant");
   assert.equal(messages[3].role, "tool");
+});
+
+test("suggestSessionHabitCandidates handles a realistic Codex transcript with an explicit scenario-specific definition", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = loadFixtureText("codex_session_realistic_definition.txt");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.transcript_stats.message_count, 12);
+  assert.equal(result.transcript_stats.user_message_count, 5);
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "收尾一下");
+  assert.equal(result.candidates[0].source_type, "explicit_definition");
+  assert.equal(result.candidates[0].action, "suggest_add");
+  assert.equal(result.candidates[0].confidence, 0.88);
+  assert.deepEqual(result.candidates[0].risk_flags, []);
+  assert.equal(result.candidates[0].evidence.occurrence_count, 3);
+  assert.match(result.candidates[0].confidence_details.summary, /明确场景/u);
 });
 
 test("suggestSessionHabitCandidates extracts explicit add and definition candidates", () => {
@@ -175,6 +200,27 @@ test("repeated phrase confidence grows with repetition and then caps", () => {
   assert.equal(result.candidates[0].evidence.occurrence_count, 5);
   assert.equal(result.candidates[0].confidence_details.final_score, 0.7);
   assert.equal(result.candidates[0].confidence_details.adjustments[0].delta, 0.15);
+});
+
+test("suggestSessionHabitCandidates keeps noisy realistic repeated phrases as review-only candidates", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = loadFixtureText("codex_session_realistic_review_only.txt");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.transcript_stats.message_count, 12);
+  assert.equal(result.transcript_stats.user_message_count, 5);
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "收工啦");
+  assert.equal(result.candidates[0].source_type, "repeated_phrase");
+  assert.equal(result.candidates[0].action, "review_only");
+  assert.equal(result.candidates[0].confidence, 0.6);
+  assert.deepEqual(result.candidates[0].risk_flags, ["single_thread_only", "missing_intent"]);
+  assert.equal(result.candidates[0].evidence.occurrence_count, 3);
+  assert.match(result.candidates[0].confidence_details.summary, /值得复核/u);
 });
 
 test("suggestSessionHabitCandidates skips phrases that the user suppressed from suggestions", () => {

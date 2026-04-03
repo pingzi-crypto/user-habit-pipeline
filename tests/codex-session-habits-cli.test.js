@@ -11,6 +11,10 @@ function createTempRegistryPath() {
   return path.join(fs.mkdtempSync(path.join(os.tmpdir(), "uhp-codex-session-cli-")), "user_habits.json");
 }
 
+function getFixturePath(name) {
+  return path.join(__dirname, "fixtures", name);
+}
+
 test("codex-session-habits cli can scan the current session from stdin", () => {
   const userRegistryPath = createTempRegistryPath();
 
@@ -40,6 +44,39 @@ test("codex-session-habits cli can scan the current session from stdin", () => {
   assert.match(parsed.assistant_reply_markdown, /发现 1 条习惯候选/u);
   assert.match(parsed.assistant_reply_markdown, /添加第1条/u);
   assert.doesNotMatch(parsed.assistant_reply_markdown, /Explicit|Repeated|Structured/u);
+  assert.equal(parsed.next_step_assessment.level, "actionable");
+  assert.deepEqual(parsed.suggested_follow_ups, [
+    "添加第1条",
+    "忽略第1条",
+    "把第1条加到 session_close 场景"
+  ]);
+});
+
+test("codex-session-habits cli can scan a realistic current-session transcript from a thread file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcriptPath = getFixturePath("codex_session_realistic_definition.txt");
+
+  const result = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--thread",
+    transcriptPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "suggest");
+  assert.equal(parsed.transcript_stats.message_count, 12);
+  assert.equal(parsed.candidate_count, 1);
+  assert.equal(parsed.candidates[0].phrase, "收尾一下");
+  assert.equal(parsed.candidates[0].confidence, 0.88);
+  assert.match(parsed.assistant_reply_markdown, /收尾一下/u);
+  assert.match(parsed.assistant_reply_markdown, /session_close/u);
   assert.equal(parsed.next_step_assessment.level, "actionable");
   assert.deepEqual(parsed.suggested_follow_ups, [
     "添加第1条",
