@@ -298,6 +298,10 @@ The Codex-oriented bridge CLI entrypoint is:
 
 - [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
 
+The current host/skill contract for this bridge is documented in:
+
+- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
+
 Command:
 
 ```powershell
@@ -323,6 +327,7 @@ Behavior:
 - enriches successful results with `assistant_reply_markdown` and `suggested_follow_ups` for chat-oriented presentation
 - enriches successful results with `next_step_assessment` so low-ROI follow-up situations can be surfaced explicitly
 - accepts one-word local stop requests such as `停` or `跳过` without forwarding them into the habit-management parser
+- requires exactly one thread source for current-session scans and treats missing or conflicting thread input as a contract error
 
 ---
 

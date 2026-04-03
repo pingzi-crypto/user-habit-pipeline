@@ -251,3 +251,24 @@ test("codex-session-habits cli requires a thread source for current-session scan
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Current-session suggestion scans require --thread <path> or --thread-stdin\./);
 });
+
+test("codex-session-habits cli rejects conflicting thread sources", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const result = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--thread",
+    ".\\data\\thread.txt",
+    "--thread-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: "user: 收尾一下",
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Use only one thread source: --thread <path> or --thread-stdin\./);
+});

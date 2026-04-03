@@ -301,6 +301,7 @@ The registry format is also described by a JSON Schema artifact:
 - [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md)
 - [release-notes-v0.3.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.3.0.md)
 - [session-habit-suggestions.md](/E:/user-habit-pipeline/docs/session-habit-suggestions.md)
+- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
 - [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
 - [freeze-assessment-0.1.0.md](/E:/user-habit-pipeline/docs/freeze-assessment-0.1.0.md)
 - [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
@@ -425,6 +426,10 @@ assistant: 收到。
 user: 收尾一下
 '@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
+
+The current host/skill integration boundary is documented separately in:
+
+- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
 
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.

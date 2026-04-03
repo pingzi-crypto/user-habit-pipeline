@@ -33,6 +33,22 @@ test("parseSessionTranscript groups role-prefixed multiline messages", () => {
   assert.equal(messages[2].content, "收尾一下");
 });
 
+test("parseSessionTranscript normalizes Chinese role labels and preserves unprefixed leading text", () => {
+  const messages = parseSessionTranscript([
+    "会话摘录",
+    "用户: 以后我说“收尾一下”就是 close_session",
+    "助手: 收到。",
+    "工具: 已缓存候选。"
+  ].join("\n"));
+
+  assert.equal(messages.length, 4);
+  assert.equal(messages[0].role, "unknown");
+  assert.equal(messages[0].content, "会话摘录");
+  assert.equal(messages[1].role, "user");
+  assert.equal(messages[2].role, "assistant");
+  assert.equal(messages[3].role, "tool");
+});
+
 test("suggestSessionHabitCandidates extracts explicit add and definition candidates", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcript = [

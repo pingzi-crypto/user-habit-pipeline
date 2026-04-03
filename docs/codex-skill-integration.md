@@ -12,6 +12,10 @@ The repository now provides a Codex-facing bridge CLI:
 
 - [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
 
+The formal host/skill contract for that bridge is documented in:
+
+- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
+
 It accepts the same lightweight request phrases that the management parser already understands, but exposes a session-oriented transcript flag:
 
 - `--thread <path>`
@@ -88,6 +92,8 @@ For large threads, prefer a focused excerpt that includes:
 - nearby assistant clarifications
 
 This keeps the flow lightweight and avoids coupling the project to any private host-side storage scheme.
+
+If you change transcript gathering, request routing, or chat-facing bridge fields, update the contract document above in the same change set.
 
 ---
 
