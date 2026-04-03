@@ -10,6 +10,7 @@ const {
 } = require("./session_suggestions/extract_candidates");
 
 const MANAGE_HABITS_CLI_PATH = path.join(__dirname, "manage-habits-cli.js");
+const LOCAL_STOP_PATTERN = /^\s*(停|跳过)\s*$/u;
 
 function parseArgs(argv) {
   const parsed = {
@@ -98,6 +99,10 @@ function validateArgs(args) {
 
   if (args.threadFromStdin && args.threadPath) {
     throw new Error("Use only one thread source: --thread <path> or --thread-stdin.");
+  }
+
+  if (LOCAL_STOP_PATTERN.test(args.request)) {
+    return;
   }
 
   const parsedRequest = parseHabitManagementRequest(args.request);
@@ -235,19 +240,116 @@ function buildListFollowUps(additions, removals, ignored) {
   return prompts;
 }
 
+function buildNextStepAssessment(output) {
+  if (!output || typeof output !== "object") {
+    return {
+      level: "unknown",
+      reason: "",
+      stop_word: null
+    };
+  }
+
+  if (output.action === "suggest" && Number(output.candidate_count) === 0) {
+    return {
+      level: "low_roi",
+      reason: "这次扫描没有发现候选，继续停留在习惯短句管理方向的收益通常较低。",
+      stop_word: "停"
+    };
+  }
+
+  if (
+    output.action === "apply-candidate" ||
+    output.action === "add" ||
+    output.action === "remove" ||
+    output.action === "ignore-candidate" ||
+    output.action === "ignore-phrase"
+  ) {
+    return {
+      level: "low_roi",
+      reason: "当前管理动作已经完成，继续沿这个方向多半只是在做补充性整理。",
+      stop_word: "停"
+    };
+  }
+
+  if (output.action === "list") {
+    const additions = Array.isArray(output.additions) ? output.additions : [];
+    const removals = Array.isArray(output.removals) ? output.removals : [];
+    const ignored = Array.isArray(output.ignored_suggestions) ? output.ignored_suggestions : [];
+
+    if (additions.length > 0 || removals.length > 0 || ignored.length > 0) {
+      return {
+        level: "low_roi",
+        reason: "当前列表已经展示了主要状态，继续沿这个方向追问通常比切回主任务更不划算。",
+        stop_word: "停"
+      };
+    }
+  }
+
+  return {
+    level: "actionable",
+    reason: "",
+    stop_word: null
+  };
+}
+
+function appendLowRoiStopHint(markdown, assessment) {
+  if (!markdown || assessment.level !== "low_roi" || !assessment.stop_word) {
+    return markdown;
+  }
+
+  return [
+    markdown,
+    "",
+    "这一步继续做的收益不高，可能不太划算。",
+    `如果你想停掉这个方向，直接回 \`${assessment.stop_word}\`。`,
+    "我就改看更高价值的 TODO。"
+  ].join("\n");
+}
+
+function mergeFollowUps(baseFollowUps, assessment) {
+  const prompts = Array.isArray(baseFollowUps) ? [...baseFollowUps] : [];
+
+  if (assessment.level === "low_roi" && assessment.stop_word && !prompts.includes(assessment.stop_word)) {
+    prompts.unshift(assessment.stop_word);
+  }
+
+  return prompts;
+}
+
+function buildLocalStopResponse(request) {
+  return {
+    action: "stop",
+    stop_request: String(request || "").trim(),
+    assistant_reply_markdown: "当前这个方向先停。你可以直接切回更高价值的主任务，或之后再回来继续处理习惯短句。",
+    suggested_follow_ups: [],
+    next_step_assessment: {
+      level: "stopped",
+      reason: "用户显式要求停止当前方向。",
+      stop_word: String(request || "").trim()
+    }
+  };
+}
+
 function renderAssistantReply(output) {
+  const assessment = buildNextStepAssessment(output);
+
   if (!output || typeof output !== "object") {
     return {
       assistant_reply_markdown: "",
-      suggested_follow_ups: []
+      suggested_follow_ups: [],
+      next_step_assessment: assessment
     };
   }
 
   if (output.action === "suggest") {
     if (!Array.isArray(output.candidates) || output.candidates.length === 0) {
       return {
-        assistant_reply_markdown: "这次会话里没有发现值得加入的用户习惯短句候选。",
-        suggested_follow_ups: []
+        assistant_reply_markdown: appendLowRoiStopHint(
+          "这次会话里没有发现值得加入的用户习惯短句候选。",
+          assessment
+        ),
+        suggested_follow_ups: mergeFollowUps([], assessment),
+        next_step_assessment: assessment
       };
     }
 
@@ -255,14 +357,15 @@ function renderAssistantReply(output) {
     const followUps = buildSuggestFollowUps(output.candidates);
 
     return {
-      assistant_reply_markdown: [
+      assistant_reply_markdown: appendLowRoiStopHint([
         `这次会话共发现 ${output.candidate_count} 条习惯候选：`,
         ...candidateLines,
         "",
         "你接下来可以直接说：",
         ...followUps.map((item) => `- \`${item}\``)
-      ].join("\n"),
-      suggested_follow_ups: followUps
+      ].join("\n"), assessment),
+      suggested_follow_ups: mergeFollowUps(followUps, assessment),
+      next_step_assessment: assessment
     };
   }
 
@@ -275,21 +378,29 @@ function renderAssistantReply(output) {
       : String(output.applied_rule?.confidence || "");
 
     return {
-      assistant_reply_markdown: `已添加用户习惯短句「${output.applied_rule?.phrase}」，意图 \`${output.applied_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
-      suggested_follow_ups: [
+      assistant_reply_markdown: appendLowRoiStopHint(
+        `已添加用户习惯短句「${output.applied_rule?.phrase}」，意图 \`${output.applied_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
+        assessment
+      ),
+      suggested_follow_ups: mergeFollowUps([
         "列出用户习惯短句",
         `删除用户习惯短句: ${output.applied_rule?.phrase}`
-      ]
+      ], assessment),
+      next_step_assessment: assessment
     };
   }
 
   if (output.action === "ignore-candidate" || output.action === "ignore-phrase") {
     const phrase = output.ignored_phrase || "";
     return {
-      assistant_reply_markdown: `已忽略短句「${phrase}」，后续扫描将不再重复建议它。`,
-      suggested_follow_ups: [
+      assistant_reply_markdown: appendLowRoiStopHint(
+        `已忽略短句「${phrase}」，后续扫描将不再重复建议它。`,
+        assessment
+      ),
+      suggested_follow_ups: mergeFollowUps([
         "列出用户习惯短句"
-      ]
+      ], assessment),
+      next_step_assessment: assessment
     };
   }
 
@@ -331,15 +442,20 @@ function renderAssistantReply(output) {
     }
 
     return {
-      assistant_reply_markdown: lines.join("\n"),
-      suggested_follow_ups: buildListFollowUps(additions, removals, ignored)
+      assistant_reply_markdown: appendLowRoiStopHint(lines.join("\n"), assessment),
+      suggested_follow_ups: mergeFollowUps(buildListFollowUps(additions, removals, ignored), assessment),
+      next_step_assessment: assessment
     };
   }
 
   if (output.action === "remove") {
     return {
-      assistant_reply_markdown: `已删除用户习惯短句「${output.removed_phrase}」。`,
-      suggested_follow_ups: ["列出用户习惯短句"]
+      assistant_reply_markdown: appendLowRoiStopHint(
+        `已删除用户习惯短句「${output.removed_phrase}」。`,
+        assessment
+      ),
+      suggested_follow_ups: mergeFollowUps(["列出用户习惯短句"], assessment),
+      next_step_assessment: assessment
     };
   }
 
@@ -352,18 +468,28 @@ function renderAssistantReply(output) {
       : String(output.added_rule?.confidence || "");
 
     return {
-      assistant_reply_markdown: `已添加用户习惯短句「${output.added_rule?.phrase}」，意图 \`${output.added_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
-      suggested_follow_ups: ["列出用户习惯短句"]
+      assistant_reply_markdown: appendLowRoiStopHint(
+        `已添加用户习惯短句「${output.added_rule?.phrase}」，意图 \`${output.added_rule?.normalized_intent}\`，场景 \`${scenario}\`，置信度 ${confidence}。`,
+        assessment
+      ),
+      suggested_follow_ups: mergeFollowUps(["列出用户习惯短句"], assessment),
+      next_step_assessment: assessment
     };
   }
 
   return {
     assistant_reply_markdown: "",
-    suggested_follow_ups: []
+    suggested_follow_ups: [],
+    next_step_assessment: assessment
   };
 }
 
 function forwardToManageHabits(args) {
+  if (LOCAL_STOP_PATTERN.test(args.request)) {
+    process.stdout.write(`${JSON.stringify(buildLocalStopResponse(args.request), null, 2)}\n`);
+    process.exit(0);
+  }
+
   const commandArgs = [
     MANAGE_HABITS_CLI_PATH,
     "--request",
@@ -434,6 +560,8 @@ if (require.main === module) {
 }
 
 module.exports = {
+  buildLocalStopResponse,
+  buildNextStepAssessment,
   forwardToManageHabits,
   getUsageText,
   main,

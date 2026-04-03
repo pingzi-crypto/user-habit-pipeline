@@ -45,8 +45,10 @@ On successful responses it now also returns:
 
 - `assistant_reply_markdown`
 - `suggested_follow_ups`
+- `next_step_assessment`
 
 These fields are intended for Codex skill / chat-UI rendering so the skill can show a natural Chinese summary instead of re-deriving one from raw candidate JSON.
+When `next_step_assessment.level = low_roi`, the bridge may also surface a one-word stop path such as `停`.
 
 ### 2. Confirm a candidate with a short follow-up prompt
 
@@ -100,5 +102,6 @@ That skill can use the bridge CLI above so the user can trigger:
 - `扫描这次会话里的习惯候选`
 - `添加第1条`
 - `把第1条加到 session_close 场景`
+- `停`
 
 from a normal Codex app conversation.

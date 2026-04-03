@@ -321,6 +321,8 @@ Behavior:
 - keeps the follow-up confirm flow short by relying on the latest local suggestion cache
 - is intended for skills or host integrations that can access the current conversation context directly
 - enriches successful results with `assistant_reply_markdown` and `suggested_follow_ups` for chat-oriented presentation
+- enriches successful results with `next_step_assessment` so low-ROI follow-up situations can be surfaced explicitly
+- accepts one-word local stop requests such as `停` or `跳过` without forwarding them into the habit-management parser
 
 ---
 
