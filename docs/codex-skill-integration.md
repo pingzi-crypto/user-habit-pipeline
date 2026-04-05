@@ -101,7 +101,8 @@ If you change transcript gathering, request routing, or chat-facing bridge field
 
 The intended auto-discovered skill location is:
 
-- `C:\Users\pz\.codex\skills\manage-current-session-habits`
+- `%CODEX_HOME%\skills\manage-current-session-habits`
+- or `<home>/.codex/skills/manage-current-session-habits` when `CODEX_HOME` is unset
 
 That skill can use the bridge CLI above so the user can trigger:
 

@@ -270,13 +270,13 @@ Inspect:
 
 - [project-principles.md](/E:/user-habit-pipeline/docs/project-principles.md)
 - [SKILL.md](/E:/manage-current-session-habits/SKILL.md)
-- [interaction-patterns.md](/E:/manage-current-session-habits/references/interaction-patterns.md)
+- [README.md](/E:/manage-current-session-habits/README.md)
 
 Expected:
 
 - the project guidance says low-ROI next steps should be challenged early
 - the skill guidance includes a one-word stop path such as `停` or `跳过`
-- the interaction patterns include a short wording template for that situation
+- the public skill docs keep the stop behavior consistent with the backend-facing guidance
 
 ---
 
@@ -285,7 +285,7 @@ Expected:
 If the local skill repo is installed and configured, you can also run:
 
 ```powershell
-& E:\manage-current-session-habits\scripts\check-install.ps1 -SmokeTest
+& <path-to-manage-current-session-habits>\scripts\check-install.ps1 -SmokeTest
 ```
 
 Expected:

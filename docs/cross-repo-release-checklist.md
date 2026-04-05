@@ -71,7 +71,7 @@ Check that these documents still agree:
 - [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
 - [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
 - [SKILL.md](/E:/manage-current-session-habits/SKILL.md)
-- [backend-contract.md](/E:/manage-current-session-habits/references/backend-contract.md)
+- [README.md](/E:/manage-current-session-habits/README.md)
 
 Pay special attention to:
 
@@ -88,6 +88,6 @@ Pay special attention to:
 Before treating the pair as shareable or marketplace-ready:
 
 - run the backend checklist in [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
-- run the skill checklist in [release-checklist.md](/E:/manage-current-session-habits/references/release-checklist.md)
+- run the skill install preview and smoke commands from this checklist
 - confirm both repositories are on the intended commits
-- confirm the skill docs still point to the same backend contract version the backend actually ships
+- confirm the skill README and `SKILL.md` still point to the same backend contract behavior the backend actually ships
