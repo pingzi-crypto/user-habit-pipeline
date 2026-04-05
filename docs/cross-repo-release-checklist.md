@@ -5,6 +5,8 @@ Use this checklist when `user-habit-pipeline` and `manage-current-session-habits
 This is not a replacement for each repository's own release checklist.
 It is the coordination layer that makes sure the backend package and the Codex skill still agree on the same bridge contract.
 
+If you want a concrete publish order for the current release set, also use [cross-repo-release-runbook.md](/E:/user-habit-pipeline/docs/cross-repo-release-runbook.md).
+
 ---
 
 ## 1. Backend First

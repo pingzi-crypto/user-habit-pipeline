@@ -45,6 +45,7 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("docs/versioning.md"));
   assert.ok(pkg.files.includes("docs/release-checklist.md"));
   assert.ok(pkg.files.includes("docs/cross-repo-release-checklist.md"));
+  assert.ok(pkg.files.includes("docs/cross-repo-release-runbook.md"));
   assert.ok(pkg.files.includes("docs/release-notes-v0.4.0.md"));
   assert.ok(pkg.files.includes("docs/session-habit-suggestions.md"));
   assert.ok(pkg.files.includes("docs/codex-current-session-contract.md"));
