@@ -544,7 +544,7 @@ test("manage-habits cli can apply a candidate from a noisy npm-style snapshot fi
   const userRegistryPath = createTempRegistryPath();
   const suggestionsPath = path.join(path.dirname(userRegistryPath), "noisy_suggestions.json");
   fs.writeFileSync(suggestionsPath, [
-    "> user-habit-pipeline@0.3.0 manage-habits",
+    "> user-habit-pipeline@0.4.0 manage-habits",
     "> node ./src/manage-habits-cli.js --suggest --transcript .\\data\\thread.txt",
     "",
     JSON.stringify({

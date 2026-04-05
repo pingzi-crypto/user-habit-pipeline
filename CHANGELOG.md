@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- No unreleased changes yet.
+
+## 0.4.0 - 2026-04-05
+
 - Added a formal Codex current-session contract document covering transcript input, bridge response fields, host responsibilities, and bridge error boundaries.
 - Added realistic Codex session transcript fixtures and regression coverage for noisy current-thread scans through both the suggestion backend and the Codex bridge CLI.
 - Added a formal confidence-scoring document that separates interpreter confidence from session-suggestion confidence and records the current runtime thresholds and bonuses.
