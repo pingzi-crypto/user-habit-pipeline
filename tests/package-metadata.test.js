@@ -12,6 +12,7 @@ function loadPackageJson() {
 test("package metadata exposes the expected entrypoints and scripts", () => {
   const pkg = loadPackageJson();
 
+  assert.equal(pkg.private, false);
   assert.equal(pkg.main, "src/index.js");
   assert.deepEqual(pkg.exports, {
     ".": "./src/index.js"
@@ -22,18 +23,24 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   assert.equal(pkg.scripts.check, "npm run check-examples-doc && npm test");
   assert.equal(
     pkg.scripts["release-check"],
-    "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"
+    "npm run check && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"
   );
   assert.equal(pkg.scripts.demo, "node ./src/demo.js");
   assert.equal(pkg.scripts["manual-e2e-smoke"], "pwsh -File ./scripts/manual-e2e-smoke.ps1");
   assert.equal(pkg.scripts["manage-habits"], "node ./src/manage-habits-cli.js");
+  assert.equal(pkg.scripts.prepublishOnly, "npm run release-check");
   assert.equal(pkg.scripts["package-smoke"], "npm pack --dry-run");
+  assert.equal(pkg.scripts["package-install-smoke"], "node ./scripts/package-install-smoke.js");
 });
 
 test("package metadata documents the expected engine and packaged files", () => {
   const pkg = loadPackageJson();
 
   assert.equal(pkg.license, "UNLICENSED");
+  assert.equal(pkg.homepage, "https://github.com/pingzi-crypto/user-habit-pipeline#readme");
+  assert.equal(pkg.repository.type, "git");
+  assert.equal(pkg.repository.url, "https://github.com/pingzi-crypto/user-habit-pipeline.git");
+  assert.equal(pkg.bugs.url, "https://github.com/pingzi-crypto/user-habit-pipeline/issues");
   assert.equal(pkg.engines.node, ">=18.8.0");
   assert.ok(Array.isArray(pkg.files));
   assert.ok(pkg.files.includes("src"));

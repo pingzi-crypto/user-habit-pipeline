@@ -30,7 +30,9 @@ npm run generate-examples-doc
 ## Packaging Checks
 
 - Confirm [package.json](/E:/user-habit-pipeline/package.json) version and metadata are correct for the release.
+- Confirm `npm whoami` succeeds on the publishing machine before starting the final publish step.
 - Confirm exported files are intentional and no unnecessary test fixtures are included in the package.
+- Confirm `npm run package-install-smoke` passes so a real tarball install, installed bin shims, and runtime user-data path behavior have all been exercised before publish.
 - Confirm CLI entrypoints still work:
   - `npm run interpret -- --message "验收" --scenario reviewer`
   - `npm run validate-registry -- .\src\habit_registry\default_habits.json`

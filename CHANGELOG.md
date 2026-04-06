@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Prepared the package for installable distribution by moving default user state to a user data directory with a compatibility fallback for older repo-local overlays.
+- Added runtime path helpers and exported the user-home override constant so installed consumers can resolve or override package-managed state without hardcoded paths.
+- Added a real package-install smoke test that packs, installs into a temporary consumer, validates installed bin shims, and verifies installed library imports before publish.
+- Added a `prepublishOnly` gate so `npm publish` runs the full release check first.
 
 ## 0.4.0 - 2026-04-05
 

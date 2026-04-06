@@ -218,6 +218,27 @@ Each match item should contain:
 
 ## 7. Usage
 
+### Install As A Package
+
+If you want to consume this project from another local environment without treating the repository itself as the runtime home, use the packed tarball:
+
+```powershell
+npm pack
+npm install .\user-habit-pipeline-<version>.tgz
+```
+
+After installation, prefer the installed bin commands instead of `npm run` wrappers:
+
+```powershell
+user-habit-pipeline --message "继续" --scenario general
+manage-user-habits --list
+codex-session-habits --request "列出用户习惯短句"
+```
+
+Runtime user state is stored in a user data directory by default, not in the installed package directory.
+On existing repository-based setups, the runtime keeps using the legacy repo-local overlay file if that file already exists.
+Repository releases also validate a real tarball install path through `npm run package-install-smoke`, so packaged bin commands and runtime-path behavior are checked before publish.
+
 ### Library
 
 ```js

@@ -70,6 +70,27 @@ Returns an object with:
 - `removals`
 - `ignored_suggestions`
 
+Default behavior:
+
+- prefers a user data directory such as `%APPDATA%\user-habit-pipeline\user_habits.json` on Windows
+- prefers `~/.config/user-habit-pipeline/user_habits.json` on non-Windows systems
+- can be overridden by setting `USER_HABIT_PIPELINE_HOME` to a custom runtime directory
+- falls back to the legacy repo-local `data/user_habits.json` only when that file already exists and the new user-data path does not yet exist
+
+### `resolveUserDataRoot(options?)`
+
+Resolve the runtime user-data root directory for the current machine or override environment.
+
+### `resolveDefaultUserRegistryPath(options?)`
+
+Resolve the default `user_habits.json` path using the current runtime directory policy and legacy fallback behavior.
+
+### `USER_HOME_OVERRIDE_ENV`
+
+The environment variable name used to override the runtime user-data root:
+
+- `USER_HABIT_PIPELINE_HOME`
+
 ### `addUserHabitRule(rule, registryPath?)`
 
 Persist a user-defined habit phrase.

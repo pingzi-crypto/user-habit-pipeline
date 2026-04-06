@@ -253,9 +253,15 @@ npm run interpret -- --message "收尾一下" --scenario session_close --user-re
 
 ## Where Your Data Lives
 
-By default, the user overlay is stored at:
+By default, the user overlay is stored in a user data directory:
 
-- `data/user_habits.json`
+- Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
+- non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
+- set `USER_HABIT_PIPELINE_HOME` if you want the runtime to use a different root directory without changing every CLI call
+
+Compatibility note:
+
+- if an older repo-local `data/user_habits.json` already exists and the new user-data path does not exist yet, the runtime keeps using that legacy file so existing local setups do not silently lose their current habits
 
 This file is intentionally ignored by git.
 It is treated as local user state, not as repository source.

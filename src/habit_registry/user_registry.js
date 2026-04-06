@@ -1,8 +1,14 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { validateHabitRules } = require("./validate_registry");
+const {
+  LEGACY_USER_REGISTRY_PATH,
+  resolveDefaultUserRegistryPath,
+  resolveUserDataRoot
+} = require("../runtime_paths");
 
-const USER_REGISTRY_PATH = path.join(__dirname, "..", "..", "data", "user_habits.json");
+const USER_DATA_ROOT = resolveUserDataRoot();
+const USER_REGISTRY_PATH = resolveDefaultUserRegistryPath();
 
 function normalizePhrase(phrase) {
   return String(phrase || "").trim().toLowerCase();
@@ -209,7 +215,9 @@ function importUserRegistryState(importPath, registryPath = USER_REGISTRY_PATH, 
 }
 
 module.exports = {
+  LEGACY_USER_REGISTRY_PATH,
   USER_REGISTRY_PATH,
+  USER_DATA_ROOT,
   addUserHabitRule,
   createEmptyUserRegistry,
   ensureUserRegistryFile,
@@ -220,6 +228,8 @@ module.exports = {
   mergeUserRegistryStates,
   mergeHabitRegistries,
   removeUserHabitPhrase,
+  resolveDefaultUserRegistryPath,
+  resolveUserDataRoot,
   suppressSuggestionPhrase,
   saveUserRegistryState,
   validateUserRegistryState

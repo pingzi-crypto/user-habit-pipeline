@@ -1,10 +1,18 @@
 {
   "name": "user-habit-pipeline",
   "version": "0.4.0",
-  "private": true,
+  "private": false,
   "license": "UNLICENSED",
   "description": "Minimal user-habit interpretation layer for repeated shorthand expressions.",
+  "homepage": "https://github.com/pingzi-crypto/user-habit-pipeline#readme",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pingzi-crypto/user-habit-pipeline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pingzi-crypto/user-habit-pipeline/issues"
+  },
   "exports": {
     ".": "./src/index.js"
   },
@@ -43,7 +51,9 @@
     "intent",
     "workflow",
     "shorthand",
-    "interpretation"
+    "interpretation",
+    "cli",
+    "codex"
   ],
   "bin": {
     "user-habit-pipeline": "./src/cli.js",
@@ -54,15 +64,17 @@
   "scripts": {
     "check": "npm run check-examples-doc && npm test",
     "codex-session-habits": "node ./src/codex-session-habits-cli.js",
-    "release-check": "npm run check && npm run package-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
+    "release-check": "npm run check && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
     "test": "node --test",
     "demo": "node ./src/demo.js",
     "manual-e2e-smoke": "pwsh -File ./scripts/manual-e2e-smoke.ps1",
     "interpret": "node ./src/cli.js",
     "manage-habits": "node ./src/manage-habits-cli.js",
+    "prepublishOnly": "npm run release-check",
     "validate-registry": "node ./src/validate-registry-cli.js",
     "generate-examples-doc": "node ./src/generate-examples-doc.js",
     "check-examples-doc": "node ./src/generate-examples-doc.js --check",
-    "package-smoke": "npm pack --dry-run"
+    "package-smoke": "npm pack --dry-run",
+    "package-install-smoke": "node ./scripts/package-install-smoke.js"
   }
 }
