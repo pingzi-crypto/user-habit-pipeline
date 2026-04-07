@@ -1,6 +1,8 @@
 # User Habit Pipeline
 
-A reusable user-habit interpretation layer that turns repeated shorthand expressions into structured, reviewable intent hints for downstream workflows.
+`user-habit-pipeline` turns repeated user shorthand into structured, reviewable intent hints.
+
+It is for products, scripts, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and want a stable way to interpret them without turning that interpretation layer into a hidden workflow engine.
 
 ## Quick Start
 
@@ -16,534 +18,114 @@ Interpret one shorthand message:
 npx user-habit-pipeline --message "继续" --scenario general
 ```
 
-Add one user habit phrase:
+Add one user-defined phrase:
 
 ```powershell
-npx manage-user-habits --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
+npx manage-user-habits --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
 ```
 
-Interpret the same phrase again:
+Interpret that phrase again:
 
 ```powershell
 npx user-habit-pipeline --message "收尾一下" --scenario session_close
 ```
+
+## What You Get
+
+- a CLI and library for shorthand interpretation
+- a separate user overlay for add/remove habit phrases without editing shipped defaults
+- current-session habit suggestion scanning for Codex-style chat flows
+- stable structured output for downstream systems
+
+Example output:
+
+```json
+{
+  "normalized_intent": "close_session",
+  "habit_matches": [
+    {
+      "phrase": "收尾一下",
+      "meaning": "close_session",
+      "confidence": 0.86
+    }
+  ],
+  "disambiguation_hints": [],
+  "confidence": 0.86,
+  "should_ask_clarifying_question": false
+}
+```
+
+## Main Commands
+
+Interpret a message:
+
+```powershell
+npx user-habit-pipeline --message "更新入板" --scenario status_board
+```
+
+Manage saved user phrases:
+
+```powershell
+npx manage-user-habits --list
+npx manage-user-habits --request "删除用户习惯短句: 收尾一下"
+```
+
+Scan a transcript for candidate phrases without auto-saving anything:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
+```
+
+## Library Use
+
+```js
+const { interpretHabit } = require("user-habit-pipeline");
+
+const result = interpretHabit({
+  message: "继续",
+  scenario: "general",
+  recent_context: ["继续当前评审"]
+});
+```
+
+## Runtime State
 
 Runtime user state is stored outside the package directory by default:
 
 - Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
 - non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
 
----
+This keeps installed package files read-only and makes npm installs safer to reuse.
 
-## 1. Purpose
+## Product Boundary
 
-This project exists to reduce repeated interpretation cost for stable, high-frequency user expressions.
+This package:
 
-It is designed for cases where a user repeatedly uses short prompts such as:
+- interprets shorthand
+- returns inspectable structured hints
+- helps the host decide whether clarification is needed
 
-- `继续`
-- `下一条`
-- `入板`
-- `更新入板`
-- `验收`
-- `session-close`
-- `收口`
+This package does not:
 
-Without a habit layer, downstream systems repeatedly spend effort re-inferring the same meaning.
-This project aims to make that interpretation cheaper, more stable, and easier to review.
-When a proposed next step becomes obviously low-return relative to the user's effort, the preferred behavior is to say so early and offer an easy stop/skip path rather than dragging the user through low-value follow-up work.
+- execute workflow actions
+- auto-learn into active habits during scan-only flows
+- silently write durable user rules without explicit confirmation
 
----
+## Docs
 
-## 2. Product Position
+Start here if you need more than the quick start:
 
-This project is an **interpretation layer**.
-
-It does:
-
-- interpret repeated shorthand expressions
-- normalize likely user intent
-- return structured hints
-- help downstream workflows reduce ambiguity
-
-It does **not**:
-
-- decide workflow actions
-- write files
-- update boards
-- approve tasks
-- switch roles
-- replace explicit workflow rules
-
-Core rule:
-
-- this project explains
-- downstream workflows decide
-
----
-
-## 3. MVP Goal
-
-The MVP should prove one thing:
-
-> A small, explicit, inspectable habit layer can reduce misunderstanding of repeated user shorthand without taking over workflow decisions.
-
-The MVP does **not** need to support broad coverage.
-The MVP does **not** need to learn automatically.
-The MVP does **not** need to be smart in a general sense.
-
-It only needs to be useful, stable, and easy to inspect.
-
----
-
-## 4. Hard Scope Boundary
-
-The MVP must remain inside this boundary:
-
-### In scope
-
-- interpret current user message
-- use limited recent context when needed
-- map repeated phrases to normalized intent hints
-- return explicit, inspectable structured output
-- recommend clarification when confidence is low
-
-### Out of scope
-
-Anything that directly changes workflow state, files, approvals, or role behavior is out of scope for MVP.
-
-Specifically, MVP must not:
-
-- write status boards
-- update files
-- trigger execution
-- choose reviewer vs executor behavior
-- replace handoff or other explicit source-of-truth documents
-- infer personality, emotion, hidden motives, or psychological traits
-- require full-thread replay to work
-- become a hidden rule engine
-
----
-
-## 5. Input Contract
-
-### Required input
-
-- `message: string`
-
-### Optional input
-
-- `recent_context: string[]`
-- `scenario: string | null`
-
-### Input guidance
-
-- `message` is the main interpretation target
-- `recent_context` should stay short
-- `scenario` is only a bias hint, not a hard rule
-
-Suggested `scenario` examples:
-
-- `reviewer`
-- `executor`
-- `status_board`
-- `session_close`
-- `general`
-
----
-
-## 6. Output Contract
-
-The MVP must return a structured object with stable fields.
-
-### Required fields
-
-- `normalized_intent`
-- `habit_matches`
-- `disambiguation_hints`
-- `confidence`
-- `should_ask_clarifying_question`
-
-### Optional fields
-
-- `preferred_terms`
-- `notes`
-
-### Field contract
-
-#### `normalized_intent`
-- type: `string`
-- required
-- may be `unknown`
-- should stay generic enough to reuse across projects
-
-Examples:
-- `continue_current_track`
-- `move_to_next_item`
-- `add_or_update_board_item`
-- `review_acceptance`
-- `refresh_latest_board_state`
-- `close_session`
-- `draft_text_artifact`
-- `unknown`
-
-#### `habit_matches`
-- type: `array`
-- required
-- each item should describe one matched phrase or rule
-
-Each match item should contain:
-- `phrase: string`
-- `meaning: string`
-- `confidence: number`
-
-#### `disambiguation_hints`
-- type: `array[string]`
-- required
-- empty array allowed
-
-#### `confidence`
-- type: `number`
-- required
-- range: `0.0` to `1.0`
-
-#### `should_ask_clarifying_question`
-- type: `boolean`
-- required
-
-#### `preferred_terms`
-- type: `array[string]`
-- optional
-
-#### `notes`
-- type: `array[string]`
-- optional
-
-### Output example
-
-```json
-{
-  "normalized_intent": "add_or_update_board_item",
-  "habit_matches": [
-    {
-      "phrase": "帮我入板",
-      "meaning": "add_or_update_board_item",
-      "confidence": 0.94
-    }
-  ],
-  "disambiguation_hints": [
-    "Prefer board action over general planning."
-  ],
-  "confidence": 0.94,
-  "should_ask_clarifying_question": false,
-  "preferred_terms": [
-    "status_board"
-  ],
-  "notes": [
-    "High-confidence shorthand mapping."
-  ]
-}
-```
-
----
-
-## 7. Usage
-
-### Install As A Package
-
-Install from the public npm registry:
-
-```powershell
-npm install user-habit-pipeline
-```
-
-Use the installed commands with `npx` or your local `node_modules/.bin`:
-
-```powershell
-npx user-habit-pipeline --message "继续" --scenario general
-npx manage-user-habits --list
-npx codex-session-habits --request "列出用户习惯短句"
-```
-
-If you need a repo-local packaging rehearsal instead of the published package, you can also install from a packed tarball:
-
-```powershell
-npm pack
-npm install .\user-habit-pipeline-<version>.tgz
-```
-
-After installation, prefer the installed bin commands instead of `npm run` wrappers:
-
-```powershell
-npx user-habit-pipeline --message "继续" --scenario general
-npx manage-user-habits --list
-npx codex-session-habits --request "列出用户习惯短句"
-```
-
-Runtime user state is stored in a user data directory by default, not in the installed package directory.
-On existing repository-based setups, the runtime keeps using the legacy repo-local overlay file if that file already exists.
-Repository releases also validate a real tarball install path through `npm run package-install-smoke`, so packaged bin commands and runtime-path behavior are checked before publish.
-
-### Library
-
-```js
-const { interpretHabit, toGrowthHubHint } = require("user-habit-pipeline");
-
-const interpreted = interpretHabit({
-  message: "继续",
-  scenario: "general",
-  recent_context: ["继续当前评审", "review the next issue after this"]
-});
-
-const growthHubHint = toGrowthHubHint(interpreted);
-```
-
-Use a different registry without changing the interpreter:
-
-```js
-const { interpretHabit, loadHabitsFromFile } = require("user-habit-pipeline");
-
-const altRules = loadHabitsFromFile("./tests/fixtures/alt_habits.json");
-
-const interpreted = interpretHabit(
-  { message: "归档一下", scenario: "session_close" },
-  { rules: altRules }
-);
-```
-
-### CLI
-
-Run the interpreter directly:
-
-```powershell
-npm run interpret -- --message "更新入板" --scenario status_board
-```
-
-Show CLI help:
-
-```powershell
-npm run interpret -- --help
-```
-
-Provide recent context by repeating `--context`:
-
-```powershell
-npm run interpret -- --message "继续" --scenario general --context "继续当前评审" --context "review the next issue after this"
-```
-
-Use a custom registry file:
-
-```powershell
-npm run interpret -- --message "归档一下" --scenario session_close --registry .\tests\fixtures\alt_habits.json
-```
-
-Use a custom user-habits overlay file:
-
-```powershell
-npm run interpret -- --message "收尾一下" --scenario session_close --user-registry .\data\user_habits.json
-```
-
-Validate a registry file before using it:
-
-```powershell
-npm run validate-registry -- .\tests\fixtures\alt_habits.json
-```
-
-Show validator help:
-
-```powershell
-npm run validate-registry -- --help
-```
-
-The registry format is also described by a JSON Schema artifact:
-
-- [registry.schema.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry.schema.json)
-- [editor-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/editor-integration.md)
-- [api-reference.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
-- [confidence-scoring.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/confidence-scoring.md)
-- [project-principles.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/project-principles.md)
-- [versioning.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/versioning.md)
-- [release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-checklist.md)
-- [cross-repo-release-runbook.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-repo-release-runbook.md)
-- [manual-e2e-acceptance.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-e2e-acceptance.md)
-- [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md)
-- [session-habit-suggestions.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)
-- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
-- [codex-skill-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-skill-integration.md)
-- [freeze-assessment-0.1.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/freeze-assessment-0.1.0.md)
-- [user-habit-management.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
-
-Regenerate the examples document after changing the example fixtures:
-
-```powershell
-npm run generate-examples-doc
-```
-
-Run the bundled end-to-end smoke script:
-
-```powershell
-npm run manual-e2e-smoke
-```
-
-Run a quick end-to-end demo of the current package scope:
-
-```powershell
-npm run demo
-```
-
-Project the output through the `growth-hub` adapter:
-
-```powershell
-npm run interpret -- --message "验收" --scenario reviewer --adapter growth-hub
-```
-
-### User-Managed Habit Phrases
-
-Add a user habit with structured flags:
-
-```powershell
-npm run manage-habits -- --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
-```
-
-Remove a phrase from the effective registry:
-
-```powershell
-npm run manage-habits -- --remove --phrase "验收"
-```
-
-Suppress a noisy suggestion phrase without making it an active habit:
-
-```powershell
-npm run manage-habits -- --ignore-phrase "收工啦"
-```
-
-List the current user-defined additions and removals:
-
-```powershell
-npm run manage-habits -- --list
-```
-
-Export your current user overlay:
-
-```powershell
-npm run manage-habits -- --export .\backup\user_habits.json
-```
-
-Import a saved overlay:
-
-```powershell
-npm run manage-habits -- --import .\backup\user_habits.json
-npm run manage-habits -- --import .\backup\user_habits.json --mode merge
-```
-
-Use a lightweight prompt-like request instead of flags:
-
-```powershell
-npm run manage-habits -- --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
-npm run manage-habits -- --request "删除用户习惯短句: 收尾一下"
-npm run manage-habits -- --request "以后别再建议这个短句: 收工啦"
-npm run manage-habits -- --request "列出用户习惯短句"
-npm run manage-habits -- --request "导出用户习惯短句: path=.\backup\user_habits.json"
-npm run manage-habits -- --request "导入习惯短句 路径=.\backup\user_habits.json; 模式=merge"
-```
-
-For multiline prompt requests in PowerShell, prefer piping a here-string into `--request-stdin`:
-
-```powershell
-@'
-新增习惯短句 phrase=收尾一下
-intent=close_session
-场景=session_close
-置信度=0.86
-'@ | npm run manage-habits -- --request-stdin
-```
-
-This writes user-managed phrases into a separate overlay file and leaves the default registry untouched.
-
-### Session Habit Suggestions
-
-Scan a current-thread transcript for habit candidates without writing anything to the overlay:
-
-```powershell
-npm run manage-habits -- --suggest --transcript .\data\thread.txt
-```
-
-You can also trigger the same scan through a natural-language request:
-
-```powershell
-npm run manage-habits -- --request "扫描这次会话里的习惯候选" --transcript .\data\thread.txt
-```
-
-For PowerShell here-string input:
-
-```powershell
-@'
-user: 以后我说“收尾一下”就是 close_session
-assistant: 收到。
-user: 收尾一下
-'@ | npm run manage-habits -- --suggest --transcript-stdin
-```
-
-For Codex-side in-app triggering, use the session bridge CLI so the current conversation can be piped in directly:
-
-```powershell
-@'
-user: 以后我说“收尾一下”就是 close_session
-assistant: 收到。
-user: 收尾一下
-'@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin
-```
-
-The current host/skill integration boundary is documented separately in:
-
-- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
-
-This suggestion flow is intentionally read-only.
-It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.
-It also saves the latest suggestion snapshot into a local hidden cache so the next apply step does not need a manual file path.
-Each returned candidate now also includes `confidence_details`, so a Codex skill or other host can explain why that score was assigned instead of only showing a bare number.
-
-After reviewing the candidates, you can explicitly add one:
-
-```powershell
-npm run manage-habits -- --apply-candidate c1
-```
-
-Prompt-style confirmation is also supported:
-
-```powershell
-npm run manage-habits -- --request "添加第1条"
-npm run manage-habits -- --request "把第1条加到 session_close 场景"
-npm run manage-habits -- --request "忽略第1条"
-npm run codex-session-habits -- --request "添加第1条"
-npm run codex-session-habits -- --request "把第1条加到 session_close 场景"
-```
-
-If a candidate is review-only, you can still apply it by supplying an explicit intent:
-
-```powershell
-npm run manage-habits -- --apply-candidate c1 --intent close_session --scenario session_close
-```
-
-If a candidate is noisy and should not be suggested again, suppress it instead of adding it:
-
-```powershell
-npm run manage-habits -- --ignore-candidate c1
-npm run manage-habits -- --request "忽略第1条"
-```
-
-### CLI contract
-
-- `--message` is required
-- `--scenario` is optional
-- repeat `--context` to supply short recent-context items
-- `--adapter growth-hub` projects the interpretation into downstream hint fields
-- `--registry <path>` loads a different habit registry file for this invocation
-- `--user-registry <path>` loads a user-habits overlay file for this invocation
-
-The CLI prints JSON only.
+- [API Reference](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
+- [User Habit Management](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
+- [Session Habit Suggestions](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)
+- [Codex Current-Session Contract](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
+- [Confidence Scoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/confidence-scoring.md)
+- [Registry Authoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md)
 
 ## License
 
-This project is licensed under the Apache License 2.0.
-See [LICENSE](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/LICENSE).
+Apache License 2.0. See [LICENSE](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/LICENSE).
