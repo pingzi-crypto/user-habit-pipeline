@@ -2,6 +2,37 @@
 
 A reusable user-habit interpretation layer that turns repeated shorthand expressions into structured, reviewable intent hints for downstream workflows.
 
+## Quick Start
+
+Install from npm:
+
+```powershell
+npm install user-habit-pipeline
+```
+
+Interpret one shorthand message:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general
+```
+
+Add one user habit phrase:
+
+```powershell
+npx manage-user-habits --add --phrase "收尾一下" --intent close_session --scenario session_close --confidence 0.86
+```
+
+Interpret the same phrase again:
+
+```powershell
+npx user-habit-pipeline --message "收尾一下" --scenario session_close
+```
+
+Runtime user state is stored outside the package directory by default:
+
+- Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
+- non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
+
 ---
 
 ## 1. Purpose
@@ -220,7 +251,21 @@ Each match item should contain:
 
 ### Install As A Package
 
-If you want to consume this project from another local environment without treating the repository itself as the runtime home, use the packed tarball:
+Install from the public npm registry:
+
+```powershell
+npm install user-habit-pipeline
+```
+
+Use the installed commands with `npx` or your local `node_modules/.bin`:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general
+npx manage-user-habits --list
+npx codex-session-habits --request "列出用户习惯短句"
+```
+
+If you need a repo-local packaging rehearsal instead of the published package, you can also install from a packed tarball:
 
 ```powershell
 npm pack
@@ -230,9 +275,9 @@ npm install .\user-habit-pipeline-<version>.tgz
 After installation, prefer the installed bin commands instead of `npm run` wrappers:
 
 ```powershell
-user-habit-pipeline --message "继续" --scenario general
-manage-user-habits --list
-codex-session-habits --request "列出用户习惯短句"
+npx user-habit-pipeline --message "继续" --scenario general
+npx manage-user-habits --list
+npx codex-session-habits --request "列出用户习惯短句"
 ```
 
 Runtime user state is stored in a user data directory by default, not in the installed package directory.
@@ -242,7 +287,7 @@ Repository releases also validate a real tarball install path through `npm run p
 ### Library
 
 ```js
-const { interpretHabit, toGrowthHubHint } = require("./src");
+const { interpretHabit, toGrowthHubHint } = require("user-habit-pipeline");
 
 const interpreted = interpretHabit({
   message: "继续",
@@ -256,7 +301,7 @@ const growthHubHint = toGrowthHubHint(interpreted);
 Use a different registry without changing the interpreter:
 
 ```js
-const { interpretHabit, loadHabitsFromFile } = require("./src");
+const { interpretHabit, loadHabitsFromFile } = require("user-habit-pipeline");
 
 const altRules = loadHabitsFromFile("./tests/fixtures/alt_habits.json");
 
