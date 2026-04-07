@@ -85,6 +85,35 @@ test("codex-session-habits cli can scan a realistic current-session transcript f
   ]);
 });
 
+test("codex-session-habits cli surfaces correction-style definition evidence in chat output", () => {
+  const userRegistryPath = createTempRegistryPath();
+
+  const result = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--thread-stdin",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    input: [
+      "user: 我这里的“收工啦”不是结束线程，是 close_session",
+      "assistant: 收到，我按 close_session 理解。",
+      "user: 收工啦"
+    ].join("\n"),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "suggest");
+  assert.equal(parsed.candidates[0].phrase, "收工啦");
+  assert.equal(parsed.candidates[0].confidence, 0.87);
+  assert.match(parsed.assistant_reply_markdown, /显式纠正式定义/u);
+  assert.match(parsed.assistant_reply_markdown, /close_session/u);
+  assert.equal(parsed.next_step_assessment.level, "actionable");
+});
+
 test("codex-session-habits cli can apply the latest cached suggestion with a short follow-up request", () => {
   const userRegistryPath = createTempRegistryPath();
 

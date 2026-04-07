@@ -131,6 +131,12 @@ function formatAdjustmentZh(adjustment) {
     return `包含结构化新增请求，加 ${delta}`;
   }
 
+  if (adjustment.type === "explicit_correction_bonus") {
+    return adjustment.applied
+      ? `包含显式纠正式定义，加 ${delta}`
+      : "没有显式纠正式定义加分";
+  }
+
   if (adjustment.type === "suggestion_cap" && adjustment.applied) {
     return "命中建议分数上限 0.98";
   }

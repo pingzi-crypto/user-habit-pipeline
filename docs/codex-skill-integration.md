@@ -53,6 +53,7 @@ On successful responses it now also returns:
 
 These fields are intended for Codex skill / chat-UI rendering so the skill can show a natural Chinese summary instead of re-deriving one from raw candidate JSON.
 When `next_step_assessment.level = low_roi`, the bridge may also surface a one-word stop path such as `停`.
+When a candidate comes from an explicit correction-style definition, the chat-ready summary should also surface that evidence directly instead of only showing a higher score.
 
 ### 2. Confirm a candidate with a short follow-up prompt
 
