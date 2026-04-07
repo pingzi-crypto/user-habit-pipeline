@@ -9,6 +9,17 @@ const { spawnSync } = require("node:child_process");
 const ROOT_DIR = path.resolve(__dirname, "..");
 const TMP_PREFIX = "user-habit-pipeline-package-install-";
 
+function createNpmExecEnv(baseEnv = process.env) {
+  const env = { ...baseEnv };
+
+  // `npm publish --dry-run` forwards npm_config_dry_run into lifecycle scripts.
+  // This smoke test needs a real tarball and real local install inside its temp dir.
+  delete env.npm_config_dry_run;
+  delete env.NPM_CONFIG_DRY_RUN;
+
+  return env;
+}
+
 function run(command, args, options = {}) {
   const executable = process.platform === "win32" && !path.extname(command)
     ? `${command}.cmd`
@@ -59,13 +70,14 @@ function main() {
   const packDir = path.join(tempRoot, "pack");
   const consumerDir = path.join(tempRoot, "consumer");
   const runtimeHome = path.join(tempRoot, "runtime-home");
+  const npmEnv = createNpmExecEnv();
 
   fs.mkdirSync(packDir, { recursive: true });
   fs.mkdirSync(consumerDir, { recursive: true });
   fs.mkdirSync(runtimeHome, { recursive: true });
 
   try {
-    const tarballName = run("npm", ["pack", "--pack-destination", packDir], { cwd: ROOT_DIR })
+    const tarballName = run("npm", ["pack", "--pack-destination", packDir], { cwd: ROOT_DIR, env: npmEnv })
       .split(/\r?\n/u)
       .filter(Boolean)
       .at(-1);
@@ -73,8 +85,8 @@ function main() {
     assert.ok(tarballName, "npm pack did not return a tarball name.");
 
     const tarballPath = path.join(packDir, tarballName);
-    run("npm", ["init", "-y"], { cwd: consumerDir });
-    run("npm", ["install", tarballPath], { cwd: consumerDir });
+    run("npm", ["init", "-y"], { cwd: consumerDir, env: npmEnv });
+    run("npm", ["install", tarballPath], { cwd: consumerDir, env: npmEnv });
 
     const env = {
       ...process.env,
