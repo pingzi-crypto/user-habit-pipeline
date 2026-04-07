@@ -181,10 +181,46 @@ test("suggestSessionHabitCandidates detects correction-style explicit definition
   assert.match(result.candidates[0].confidence_details.summary, /纠正式/u);
 });
 
+test("suggestSessionHabitCandidates detects correction-style definitions with 按 intent 理解 phrasing", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 别把“收工啦”理解成结束线程，按 close_session 理解",
+    "assistant: 收到，我按 close_session 理解。",
+    "user: 收工啦"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "收工啦");
+  assert.equal(result.candidates[0].source_type, "explicit_definition");
+  assert.equal(result.candidates[0].confidence, 0.87);
+  assert.equal(result.candidates[0].evidence.correction_count, 1);
+  assert.equal(result.candidates[0].suggested_rule.normalized_intent, "close_session");
+});
+
 test("correction-style definitions still require an explicit normalized intent token", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcript = [
     "user: 我这里的“收工啦”不是结束线程，是帮我做个收尾",
+    "assistant: 收到。"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 0);
+});
+
+test("按 intent 理解 phrasing still requires an explicit normalized intent token", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 别把“收工啦”理解成结束线程，按帮我做个收尾理解",
     "assistant: 收到。"
   ].join("\n");
 

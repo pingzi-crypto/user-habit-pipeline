@@ -270,6 +270,16 @@ function extractExplicitDefinitionRule(message) {
       pattern:
         /["“]?(.+?)["”]?\s*不是\s*[^,\n，。！？!?]+(?:，|,)?\s*(?:意思是|表示|指的是|应当是|应该是)\s*([a-z][a-z0-9_]*)\b/iu,
       correctionCount: 1
+    },
+    {
+      pattern:
+        /(?:别|不要)(?:把)?\s*["“]?(.+?)["”]?\s*(?:理解成|当成|按)\s*[^,\n，。！？!?]+(?:，|,)?\s*(?:按|要按|请按)\s*([a-z][a-z0-9_]*)\s*理解/iu,
+      correctionCount: 1
+    },
+    {
+      pattern:
+        /["“]?(.+?)["”]?\s*别按\s*[^,\n，。！？!?]+\s*理解(?:，|,)?\s*(?:按|要按|请按)\s*([a-z][a-z0-9_]*)\s*理解/iu,
+      correctionCount: 1
     }
   ];
 
