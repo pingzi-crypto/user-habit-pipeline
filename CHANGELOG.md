@@ -2,10 +2,16 @@
 
 ## Unreleased
 
+- No unreleased changes yet.
+
+## 0.4.1 - 2026-04-07
+
 - Prepared the package for installable distribution by moving default user state to a user data directory with a compatibility fallback for older repo-local overlays.
 - Added runtime path helpers and exported the user-home override constant so installed consumers can resolve or override package-managed state without hardcoded paths.
 - Added a real package-install smoke test that packs, installs into a temporary consumer, validates installed bin shims, and verifies installed library imports before publish.
 - Added a `prepublishOnly` gate so `npm publish` runs the full release check first.
+- Switched the public package license to Apache-2.0 and added a repository license file.
+- Reworked the public README and docs to remove author-machine paths and present npm-first install and usage guidance.
 
 ## 0.4.0 - 2026-04-05
 
