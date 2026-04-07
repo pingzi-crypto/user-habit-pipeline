@@ -17,9 +17,10 @@ Use this checklist before cutting a package or internal milestone from this repo
 Run these commands from the repository root:
 
 ```powershell
-npm run manual-e2e-smoke
 npm run release-check
 ```
+
+`npm run release-check` now includes `npm run manual-e2e-smoke`, so a release gate failure in the Codex bridge or user-overlay critical path will block the release instead of relying on a separate reminder.
 
 If you changed example fixtures, also run:
 
