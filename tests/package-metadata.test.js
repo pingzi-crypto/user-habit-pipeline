@@ -36,7 +36,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
 test("package metadata documents the expected engine and packaged files", () => {
   const pkg = loadPackageJson();
 
-  assert.equal(pkg.license, "UNLICENSED");
+  assert.equal(pkg.license, "Apache-2.0");
   assert.equal(pkg.homepage, "https://github.com/pingzi-crypto/user-habit-pipeline#readme");
   assert.equal(pkg.repository.type, "git");
   assert.equal(pkg.repository.url, "https://github.com/pingzi-crypto/user-habit-pipeline.git");

@@ -542,3 +542,8 @@ npm run manage-habits -- --request "忽略第1条"
 - `--user-registry <path>` loads a user-habits overlay file for this invocation
 
 The CLI prints JSON only.
+
+## License
+
+This project is licensed under the Apache License 2.0.
+See [LICENSE](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/LICENSE).

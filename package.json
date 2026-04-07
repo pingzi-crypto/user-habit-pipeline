@@ -2,7 +2,7 @@
   "name": "user-habit-pipeline",
   "version": "0.4.0",
   "private": false,
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "description": "Minimal user-habit interpretation layer for repeated shorthand expressions.",
   "homepage": "https://github.com/pingzi-crypto/user-habit-pipeline#readme",
   "main": "src/index.js",
