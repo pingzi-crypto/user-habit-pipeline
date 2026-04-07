@@ -3,7 +3,7 @@
   "version": "0.4.1",
   "private": false,
   "license": "Apache-2.0",
-  "description": "Minimal user-habit interpretation layer for repeated shorthand expressions.",
+  "description": "CLI and library for turning repeated user shorthand into structured intent hints.",
   "homepage": "https://github.com/pingzi-crypto/user-habit-pipeline#readme",
   "main": "src/index.js",
   "repository": {
