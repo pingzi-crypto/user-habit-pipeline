@@ -4,6 +4,12 @@
 
 - No unreleased changes yet.
 
+## 0.4.2 - 2026-04-07
+
+- Refreshed the public npm and GitHub display copy to better position the package as a product-facing CLI and library.
+- Shortened the npm README so the install path, main commands, runtime state, and product boundary are visible in under two minutes.
+- Updated the npm package description and GitHub release copy to match the simplified public positioning.
+
 ## 0.4.1 - 2026-04-07
 
 - Prepared the package for installable distribution by moving default user state to a user data directory with a compatibility fallback for older repo-local overlays.
