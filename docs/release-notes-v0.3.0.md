@@ -69,6 +69,6 @@ This release was verified with:
 
 ## Related Docs
 
-- [CHANGELOG.md](/E:/user-habit-pipeline/CHANGELOG.md)
-- [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
-- [api-reference.md](/E:/user-habit-pipeline/docs/api-reference.md)
+- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
+- [user-habit-management.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
+- [api-reference.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)

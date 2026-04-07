@@ -10,11 +10,11 @@ The goal is to let the user stay inside the current Codex conversation and trigg
 
 The repository now provides a Codex-facing bridge CLI:
 
-- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+- [codex-session-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/codex-session-habits-cli.js)
 
 The formal host/skill contract for that bridge is documented in:
 
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
 
 It accepts the same lightweight request phrases that the management parser already understands, but exposes a session-oriented transcript flag:
 
@@ -41,7 +41,7 @@ user: 以后我说“收尾一下”就是 close_session
 assistant: 收到。
 user: 收尾一下
 '@
-$transcript | node E:\user-habit-pipeline\src\codex-session-habits-cli.js --request "扫描这次会话里的习惯候选" --thread-stdin
+$transcript | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
 
 The bridge CLI forwards the request into the existing backend and caches the latest suggestion snapshot locally next to the user registry.
@@ -59,8 +59,8 @@ When `next_step_assessment.level = low_roi`, the bridge may also surface a one-w
 Once the scan result has been cached, the follow-up prompt no longer needs transcript input:
 
 ```powershell
-node E:\user-habit-pipeline\src\codex-session-habits-cli.js --request "添加第1条"
-node E:\user-habit-pipeline\src\codex-session-habits-cli.js --request "把第1条加到 session_close 场景"
+npx codex-session-habits --request "添加第1条"
+npx codex-session-habits --request "把第1条加到 session_close 场景"
 ```
 
 ### 3. Apply review-only candidates with explicit meaning
@@ -68,7 +68,7 @@ node E:\user-habit-pipeline\src\codex-session-habits-cli.js --request "把第1�
 If a candidate is review-only, the user can still confirm it by supplying an explicit intent:
 
 ```powershell
-node E:\user-habit-pipeline\src\codex-session-habits-cli.js --request "把第1条加到 session_close 场景; intent=close_session"
+npx codex-session-habits --request "把第1条加到 session_close 场景; intent=close_session"
 ```
 
 ---

@@ -4,7 +4,7 @@ This document describes the public surface currently exposed by the package.
 
 The package entrypoint is:
 
-- [src/index.js](/E:/user-habit-pipeline/src/index.js)
+- [src/index.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/index.js)
 
 ---
 
@@ -48,7 +48,7 @@ Notes:
 
 Load and cache the default registry from:
 
-- [default_habits.json](/E:/user-habit-pipeline/src/habit_registry/default_habits.json)
+- [default_habits.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/habit_registry/default_habits.json)
 
 ### `loadHabitsFromFile(registryPath)`
 
@@ -213,7 +213,7 @@ This adapter does not trigger workflow actions.
 
 The main CLI entrypoint is:
 
-- [cli.js](/E:/user-habit-pipeline/src/cli.js)
+- [cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/cli.js)
 
 Command:
 
@@ -244,7 +244,7 @@ The CLI prints JSON only.
 
 The registry validation CLI entrypoint is:
 
-- [validate-registry-cli.js](/E:/user-habit-pipeline/src/validate-registry-cli.js)
+- [validate-registry-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/validate-registry-cli.js)
 
 Command:
 
@@ -269,7 +269,7 @@ Behavior:
 
 The user-habit management CLI entrypoint is:
 
-- [manage-habits-cli.js](/E:/user-habit-pipeline/src/manage-habits-cli.js)
+- [manage-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/manage-habits-cli.js)
 
 Command:
 
@@ -317,11 +317,11 @@ Behavior:
 
 The Codex-oriented bridge CLI entrypoint is:
 
-- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+- [codex-session-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/codex-session-habits-cli.js)
 
 The current host/skill contract for this bridge is documented in:
 
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
 
 Command:
 
@@ -357,6 +357,6 @@ Behavior:
 The current intent names and output fields are intended to be stable for the MVP.
 The internal scoring details may still change as long as they remain consistent with:
 
-- [confidence-scoring.md](/E:/user-habit-pipeline/docs/confidence-scoring.md)
-- [mvp-spec.md](/E:/user-habit-pipeline/docs/mvp-spec.md)
-- [examples.md](/E:/user-habit-pipeline/docs/examples.md)
+- [confidence-scoring.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/confidence-scoring.md)
+- [mvp-spec.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/mvp-spec.md)
+- [examples.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/examples.md)

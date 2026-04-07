@@ -5,13 +5,13 @@ Use this checklist when `user-habit-pipeline` and `manage-current-session-habits
 This is not a replacement for each repository's own release checklist.
 It is the coordination layer that makes sure the backend package and the Codex skill still agree on the same bridge contract.
 
-If you want a concrete publish order for the current release set, also use [cross-repo-release-runbook.md](/E:/user-habit-pipeline/docs/cross-repo-release-runbook.md).
+If you want a concrete publish order for the current release set, also use [cross-repo-release-runbook.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-repo-release-runbook.md).
 
 ---
 
 ## 1. Backend First
 
-Run from [user-habit-pipeline](/E:/user-habit-pipeline):
+Run from [user-habit-pipeline](https://github.com/pingzi-crypto/user-habit-pipeline):
 
 ```powershell
 npm run release-check
@@ -27,13 +27,13 @@ Confirm:
 
 - the backend package still passes release validation
 - the Codex bridge still returns the expected contract fields
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md) matches the shipped bridge behavior
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md) matches the shipped bridge behavior
 
 ---
 
 ## 2. Skill Install Resolution
 
-Run from [manage-current-session-habits](/E:/manage-current-session-habits):
+Run from [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits):
 
 ```powershell
 & .\scripts\install-skill.ps1 -BackendRepoPath <path-to-user-habit-pipeline> -CheckOnly
@@ -49,7 +49,7 @@ Confirm:
 
 ## 3. Skill Smoke Against The Real Backend
 
-Run from [manage-current-session-habits](/E:/manage-current-session-habits):
+Run from [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits):
 
 ```powershell
 & .\scripts\check-install.ps1 -SmokeTest
@@ -70,10 +70,10 @@ Confirm:
 
 Check that these documents still agree:
 
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
-- [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
-- [SKILL.md](/E:/manage-current-session-habits/SKILL.md)
-- [README.md](/E:/manage-current-session-habits/README.md)
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
+- [codex-skill-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-skill-integration.md)
+- [SKILL.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/SKILL.md)
+- [README.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/README.md)
 
 Pay special attention to:
 
@@ -89,7 +89,7 @@ Pay special attention to:
 
 Before treating the pair as shareable or marketplace-ready:
 
-- run the backend checklist in [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
+- run the backend checklist in [release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-checklist.md)
 - run the skill install preview and smoke commands from this checklist
 - confirm both repositories are on the intended commits
 - confirm the skill README and `SKILL.md` still point to the same backend contract behavior the backend actually ships

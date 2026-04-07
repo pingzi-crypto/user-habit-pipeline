@@ -357,21 +357,21 @@ npm run validate-registry -- --help
 
 The registry format is also described by a JSON Schema artifact:
 
-- [registry.schema.json](/E:/user-habit-pipeline/docs/registry.schema.json)
-- [editor-integration.md](/E:/user-habit-pipeline/docs/editor-integration.md)
-- [api-reference.md](/E:/user-habit-pipeline/docs/api-reference.md)
-- [confidence-scoring.md](/E:/user-habit-pipeline/docs/confidence-scoring.md)
-- [project-principles.md](/E:/user-habit-pipeline/docs/project-principles.md)
-- [versioning.md](/E:/user-habit-pipeline/docs/versioning.md)
-- [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
-- [cross-repo-release-runbook.md](/E:/user-habit-pipeline/docs/cross-repo-release-runbook.md)
-- [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md)
-- [release-notes-v0.4.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.4.0.md)
-- [session-habit-suggestions.md](/E:/user-habit-pipeline/docs/session-habit-suggestions.md)
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
-- [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
-- [freeze-assessment-0.1.0.md](/E:/user-habit-pipeline/docs/freeze-assessment-0.1.0.md)
-- [user-habit-management.md](/E:/user-habit-pipeline/docs/user-habit-management.md)
+- [registry.schema.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry.schema.json)
+- [editor-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/editor-integration.md)
+- [api-reference.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
+- [confidence-scoring.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/confidence-scoring.md)
+- [project-principles.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/project-principles.md)
+- [versioning.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/versioning.md)
+- [release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-checklist.md)
+- [cross-repo-release-runbook.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-repo-release-runbook.md)
+- [manual-e2e-acceptance.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-e2e-acceptance.md)
+- [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md)
+- [session-habit-suggestions.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
+- [codex-skill-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-skill-integration.md)
+- [freeze-assessment-0.1.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/freeze-assessment-0.1.0.md)
+- [user-habit-management.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
 
 Regenerate the examples document after changing the example fixtures:
 
@@ -496,7 +496,7 @@ user: 收尾一下
 
 The current host/skill integration boundary is documented separately in:
 
-- [codex-current-session-contract.md](/E:/user-habit-pipeline/docs/codex-current-session-contract.md)
+- [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
 
 This suggestion flow is intentionally read-only.
 It returns candidate phrases and evidence, but it does not automatically add them to the user overlay.

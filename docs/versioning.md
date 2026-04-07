@@ -42,10 +42,10 @@ Avoid in `0.x` unless clearly justified:
 
 Before treating a change as a new internal release point:
 
-1. update [CHANGELOG.md](/E:/user-habit-pipeline/CHANGELOG.md)
+1. update [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
 2. run `npm run release-check`
-3. confirm [examples.md](/E:/user-habit-pipeline/docs/examples.md) still matches the fixture source
-4. confirm [mvp-spec.md](/E:/user-habit-pipeline/docs/mvp-spec.md) still matches runtime behavior
+3. confirm [examples.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/examples.md) still matches the fixture source
+4. confirm [mvp-spec.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/mvp-spec.md) still matches runtime behavior
 
 ---
 

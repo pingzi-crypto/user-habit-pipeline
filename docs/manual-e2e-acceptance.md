@@ -46,7 +46,7 @@ It does not validate:
 
 Run from:
 
-- repository root `E:\user-habit-pipeline`
+- repository root of this checkout
 
 Required:
 
@@ -268,9 +268,9 @@ This is a documentation acceptance check.
 
 Inspect:
 
-- [project-principles.md](/E:/user-habit-pipeline/docs/project-principles.md)
-- [SKILL.md](/E:/manage-current-session-habits/SKILL.md)
-- [README.md](/E:/manage-current-session-habits/README.md)
+- [project-principles.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/project-principles.md)
+- [SKILL.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/SKILL.md)
+- [README.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/README.md)
 
 Expected:
 

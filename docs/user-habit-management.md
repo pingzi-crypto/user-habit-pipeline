@@ -2,7 +2,7 @@
 
 This guide is for end users who want to manage their own shorthand phrases without editing JSON files manually.
 
-If you want one repeatable end-to-end walkthrough instead of command-by-command reference, see [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md).
+If you want one repeatable end-to-end walkthrough instead of command-by-command reference, see [manual-e2e-acceptance.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-e2e-acceptance.md).
 
 The system supports three basic actions:
 

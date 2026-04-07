@@ -3,7 +3,7 @@
 Use this runbook when you want to cut the current `user-habit-pipeline` and `manage-current-session-habits` release set as one outward-facing Codex flow.
 
 This is the practical execution order.
-For deeper validation rules, keep [cross-repo-release-checklist.md](/E:/user-habit-pipeline/docs/cross-repo-release-checklist.md) as the source checklist.
+For deeper validation rules, keep [cross-repo-release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-repo-release-checklist.md) as the source checklist.
 
 ---
 
@@ -34,16 +34,16 @@ Confirm both repositories:
 
 Current release-facing source files:
 
-- backend notes: [release-notes-v0.4.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.4.0.md)
-- backend changelog: [CHANGELOG.md](/E:/user-habit-pipeline/CHANGELOG.md)
-- skill release draft: [github-release-draft.md](/E:/manage-current-session-habits/references/github-release-draft.md)
-- skill README demo asset: [readme-short-demo.gif](/E:/manage-current-session-habits/assets/readme-short-demo.gif)
+- backend notes: [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md)
+- backend changelog: [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
+- skill release draft: [github-release-draft.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/references/github-release-draft.md)
+- skill README demo asset: [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif)
 
 ---
 
 ## 2. Backend Validation
 
-Run from [user-habit-pipeline](/E:/user-habit-pipeline):
+Run from [user-habit-pipeline](https://github.com/pingzi-crypto/user-habit-pipeline):
 
 ```powershell
 npm test
@@ -55,15 +55,15 @@ Release only if all three pass.
 
 Before moving on, confirm:
 
-- [package.json](/E:/user-habit-pipeline/package.json) says `0.4.0`
-- [CHANGELOG.md](/E:/user-habit-pipeline/CHANGELOG.md) has a `0.4.0 - 2026-04-05` section
-- [release-notes-v0.4.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.4.0.md) matches what you want to publish
+- [package.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/package.json) says `0.4.0`
+- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md) has a `0.4.0 - 2026-04-05` section
+- [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md) matches what you want to publish
 
 ---
 
 ## 3. Skill Validation Against That Backend
 
-Run from [manage-current-session-habits](/E:/manage-current-session-habits):
+Run from [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits):
 
 ```powershell
 & .\scripts\install-skill.ps1 -BackendRepoPath <path-to-user-habit-pipeline> -CheckOnly
@@ -72,8 +72,8 @@ Run from [manage-current-session-habits](/E:/manage-current-session-habits):
 
 Before moving on, confirm:
 
-- [README.md](/E:/manage-current-session-habits/README.md) is the public install surface you want users to see
-- [SKILL.md](/E:/manage-current-session-habits/SKILL.md) still matches the backend bridge behavior
+- [README.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/README.md) is the public install surface you want users to see
+- [SKILL.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/SKILL.md) still matches the backend bridge behavior
 - the README demo GIF is the one you want on the release page
 
 ---
@@ -95,7 +95,7 @@ On GitHub:
 
 1. open the `user-habit-pipeline` releases page
 2. create a new release from tag `v0.4.0`
-3. use [release-notes-v0.4.0.md](/E:/user-habit-pipeline/docs/release-notes-v0.4.0.md) as the release body
+3. use [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md) as the release body
 
 Recommended title:
 
@@ -120,8 +120,8 @@ On GitHub:
 
 1. open the `manage-current-session-habits` releases page
 2. create a new release from tag `v0.1.0`
-3. use [github-release-draft.md](/E:/manage-current-session-habits/references/github-release-draft.md) as the release body
-4. attach or embed [readme-short-demo.gif](/E:/manage-current-session-habits/assets/readme-short-demo.gif) if the release page should mirror the README demo
+3. use [github-release-draft.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/references/github-release-draft.md) as the release body
+4. attach or embed [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif) if the release page should mirror the README demo
 
 Recommended title:
 

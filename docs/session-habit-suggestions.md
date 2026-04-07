@@ -53,7 +53,7 @@ The host integration should provide transcript text through stdin or a temporary
 
 The repository now also includes a Codex-facing bridge CLI:
 
-- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+- [codex-session-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/codex-session-habits-cli.js)
 
 This bridge accepts the same prompt-style requests, but uses `--thread <path>` or `--thread-stdin` so a Codex skill can map directly from the current thread context into the suggestion backend.
 

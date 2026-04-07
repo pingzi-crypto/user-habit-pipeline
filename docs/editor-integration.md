@@ -4,7 +4,7 @@ This repository includes a workspace-level schema association for habit registry
 
 The configuration lives at:
 
-- [.vscode/settings.json](/E:/user-habit-pipeline/.vscode/settings.json)
+- [.vscode/settings.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/.vscode/settings.json)
 
 It maps these file patterns to the registry schema:
 
@@ -13,7 +13,7 @@ It maps these file patterns to the registry schema:
 
 The schema file is:
 
-- [registry.schema.json](/E:/user-habit-pipeline/docs/registry.schema.json)
+- [registry.schema.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry.schema.json)
 
 ---
 
@@ -36,7 +36,7 @@ If you create a new registry file outside the default patterns, either:
 
 1. move it under `src/habit_registry/`
 2. move it under `tests/fixtures/`
-3. extend [.vscode/settings.json](/E:/user-habit-pipeline/.vscode/settings.json) with another `fileMatch` entry
+3. extend [.vscode/settings.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/.vscode/settings.json) with another `fileMatch` entry
 
 Keep the schema association scoped to registry files only.
 

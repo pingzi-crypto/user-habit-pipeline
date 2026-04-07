@@ -30,8 +30,8 @@ Session suggestion confidence answers:
 
 Interpreter scoring is implemented in:
 
-- [scoring.js](/E:/user-habit-pipeline/src/habit_core/scoring.js)
-- [interpreter.js](/E:/user-habit-pipeline/src/habit_core/interpreter.js)
+- [scoring.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/habit_core/scoring.js)
+- [interpreter.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/habit_core/interpreter.js)
 
 ### 2.1 Base score source
 
@@ -98,7 +98,7 @@ Important boundary:
 
 Current context support is implemented in:
 
-- [context_rules.js](/E:/user-habit-pipeline/src/habit_core/context_rules.js)
+- [context_rules.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/habit_core/context_rules.js)
 
 Today it only recognizes keyword support for a small set of intents:
 
@@ -133,7 +133,7 @@ The interpreter can return a non-trivial confidence and still recommend clarific
 
 Clarification logic is implemented in:
 
-- [scoring.js](/E:/user-habit-pipeline/src/habit_core/scoring.js)
+- [scoring.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/habit_core/scoring.js)
 
 ### 3.1 Default clarification threshold
 
@@ -185,7 +185,7 @@ These are interpretation heuristics, not public API thresholds beyond the implem
 
 Session suggestion scoring is implemented in:
 
-- [extract_candidates.js](/E:/user-habit-pipeline/src/session_suggestions/extract_candidates.js)
+- [extract_candidates.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/session_suggestions/extract_candidates.js)
 
 This confidence is not about active interpretation quality.
 It is about review priority for candidate discovery.
@@ -302,7 +302,7 @@ When a suggestion candidate is explicitly applied into the user overlay, the res
 
 This is implemented in:
 
-- [manage-habits-cli.js](/E:/user-habit-pipeline/src/manage-habits-cli.js)
+- [manage-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/manage-habits-cli.js)
 
 This matters because:
 
@@ -325,8 +325,8 @@ Good practice:
 
 See also:
 
-- [registry-authoring.md](/E:/user-habit-pipeline/docs/registry-authoring.md)
-- [mvp-spec.md](/E:/user-habit-pipeline/docs/mvp-spec.md)
+- [registry-authoring.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md)
+- [mvp-spec.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/mvp-spec.md)
 
 ---
 

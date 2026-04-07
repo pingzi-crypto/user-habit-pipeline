@@ -32,7 +32,7 @@ This contract is meant to reduce user friction without introducing hidden automa
 
 The current bridge entrypoint is:
 
-- [codex-session-habits-cli.js](/E:/user-habit-pipeline/src/codex-session-habits-cli.js)
+- [codex-session-habits-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/codex-session-habits-cli.js)
 
 Recommended invocation shape:
 
@@ -322,7 +322,7 @@ Allowed refinement:
 
 If the bridge contract changes materially, update all of these together:
 
-- [api-reference.md](/E:/user-habit-pipeline/docs/api-reference.md)
-- [codex-skill-integration.md](/E:/user-habit-pipeline/docs/codex-skill-integration.md)
-- [manual-e2e-acceptance.md](/E:/user-habit-pipeline/docs/manual-e2e-acceptance.md)
-- [release-checklist.md](/E:/user-habit-pipeline/docs/release-checklist.md)
+- [api-reference.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
+- [codex-skill-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-skill-integration.md)
+- [manual-e2e-acceptance.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-e2e-acceptance.md)
+- [release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-checklist.md)

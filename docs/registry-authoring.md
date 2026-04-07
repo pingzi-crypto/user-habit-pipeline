@@ -39,7 +39,7 @@ Example:
 
 This repository includes a formal JSON Schema at:
 
-- [registry.schema.json](/E:/user-habit-pipeline/docs/registry.schema.json)
+- [registry.schema.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry.schema.json)
 
 Use it when wiring editor assistance or external validation tooling around registry files.
 The runtime still uses the built-in validator, but the schema provides a stable format contract for tooling.
@@ -184,14 +184,14 @@ The recommended reuse model is:
 
 This repository already includes an alternate fixture registry at:
 
-- [alt_habits.json](/E:/user-habit-pipeline/tests/fixtures/alt_habits.json)
+- [alt_habits.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/tests/fixtures/alt_habits.json)
 
 You can load another registry through:
 
 - library injection via `interpretHabit(input, { rules })`
 - file-based injection via `interpretHabit(input, { registryPath })`
 - CLI usage via `--registry <path>`
-- external tooling via [registry.schema.json](/E:/user-habit-pipeline/docs/registry.schema.json)
+- external tooling via [registry.schema.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry.schema.json)
 
 ---
 
