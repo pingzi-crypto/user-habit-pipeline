@@ -248,13 +248,33 @@ function addOrReplaceCandidate(candidates, phrase, candidate) {
 
 function extractExplicitDefinitionRule(message) {
   const patterns = [
-    /(?:以后|下次|之后)?(?:如果|当)?我说\s*["“]?(.+?)["”]?\s*(?:的时候)?(?:，|,|\s)*(?:就是|指的是|表示|默认表示|意思是)\s*([a-z][a-z0-9_]*)\b/iu,
-    /(?:这里的|把)\s*["“]?(.+?)["”]?\s*(?:定义为|记成|当作|表示|指的是)\s*([a-z][a-z0-9_]*)\b/iu,
-    /^["“]?(.+?)["”]?\s*(?:默认)?(?:表示|指的是|意思是)\s*([a-z][a-z0-9_]*)\b/iu
+    {
+      pattern:
+        /(?:以后|下次|之后)?(?:如果|当)?我说\s*["“]?(.+?)["”]?\s*(?:的时候)?(?:，|,|\s)*(?:就是|指的是|表示|默认表示|意思是)\s*([a-z][a-z0-9_]*)\b/iu,
+      correctionCount: 0
+    },
+    {
+      pattern: /(?:这里的|把)\s*["“]?(.+?)["”]?\s*(?:定义为|记成|当作|表示|指的是)\s*([a-z][a-z0-9_]*)\b/iu,
+      correctionCount: 0
+    },
+    {
+      pattern: /^["“]?(.+?)["”]?\s*(?:默认)?(?:表示|指的是|意思是)\s*([a-z][a-z0-9_]*)\b/iu,
+      correctionCount: 0
+    },
+    {
+      pattern:
+        /(?:我这里的|这里的)?\s*["“]?(.+?)["”]?\s*不是\s*[^,\n，。！？!?]+(?:，|,)?\s*(?:是|而是|意思是|表示|指的是)\s*([a-z][a-z0-9_]*)\b/iu,
+      correctionCount: 1
+    },
+    {
+      pattern:
+        /["“]?(.+?)["”]?\s*不是\s*[^,\n，。！？!?]+(?:，|,)?\s*(?:意思是|表示|指的是|应当是|应该是)\s*([a-z][a-z0-9_]*)\b/iu,
+      correctionCount: 1
+    }
   ];
 
-  for (const pattern of patterns) {
-    const match = String(message || "").match(pattern);
+  for (const entry of patterns) {
+    const match = String(message || "").match(entry.pattern);
     if (!match) {
       continue;
     }
@@ -266,15 +286,22 @@ function extractExplicitDefinitionRule(message) {
     }
 
     const scenarioBias = parseInlineScenarioBias(message);
+    const confidence =
+      0.84 +
+      (scenarioBias.length > 0 ? 0.04 : 0) +
+      (entry.correctionCount > 0 ? 0.03 : 0);
     const rule = {
       phrase,
       normalized_intent: normalizedIntent,
       scenario_bias: scenarioBias.length > 0 ? scenarioBias : ["general"],
-      confidence: scenarioBias.length > 0 ? 0.88 : 0.84
+      confidence
     };
 
     validateHabitRules([rule]);
-    return rule;
+    return {
+      rule,
+      correction_count: entry.correctionCount
+    };
   }
 
   return null;
@@ -335,10 +362,12 @@ function extractExplicitCandidates(messages, knownPhrases) {
       continue;
     }
 
-    const explicitRule = extractExplicitDefinitionRule(message.content);
-    if (!explicitRule) {
+    const explicitDefinition = extractExplicitDefinitionRule(message.content);
+    if (!explicitDefinition) {
       continue;
     }
+
+    const explicitRule = explicitDefinition.rule;
 
     if (knownPhrases.has(normalizePhrase(explicitRule.phrase))) {
       continue;
@@ -353,6 +382,12 @@ function extractExplicitCandidates(messages, knownPhrases) {
         baseScore: 0.84,
         adjustments: [
           {
+            type: "explicit_correction_bonus",
+            delta: 0.03,
+            applied: explicitDefinition.correction_count > 0,
+            note: "用户不仅定义了短句，还显式纠正了之前可能的误读。"
+          },
+          {
             type: "scenario_specificity_bonus",
             delta: explicitRule.scenario_bias.includes("general") ? 0 : 0.04,
             applied: !explicitRule.scenario_bias.includes("general"),
@@ -360,14 +395,19 @@ function extractExplicitCandidates(messages, knownPhrases) {
           }
         ],
         finalScore: explicitRule.confidence,
-        summary: explicitRule.scenario_bias.includes("general")
-          ? "会话里出现了明确的短句定义，但场景仍然偏通用。"
-          : "会话里出现了带明确场景的短句定义，证据较强。"
+        summary:
+          explicitDefinition.correction_count > 0
+            ? explicitRule.scenario_bias.includes("general")
+              ? "会话里出现了带纠正式澄清的短句定义，但场景仍然偏通用。"
+              : "会话里出现了带纠正式澄清和明确场景的短句定义，证据很强。"
+            : explicitRule.scenario_bias.includes("general")
+              ? "会话里出现了明确的短句定义，但场景仍然偏通用。"
+              : "会话里出现了带明确场景的短句定义，证据较强。"
       }),
       suggested_rule: explicitRule,
       evidence: {
         occurrence_count: countPhraseOccurrences(messages, explicitRule.phrase),
-        correction_count: /不是/u.test(message.content) ? 1 : 0,
+        correction_count: explicitDefinition.correction_count,
         examples: collectExamples(messages, explicitRule.phrase)
       },
       risk_flags: explicitRule.scenario_bias.includes("general")

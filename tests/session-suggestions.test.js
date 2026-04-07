@@ -148,11 +148,52 @@ test("explicit definitions score differently depending on scenario specificity",
   assert.ok(scenarioCandidate);
   assert.equal(generalCandidate.confidence, 0.84);
   assert.deepEqual(generalCandidate.risk_flags, ["scenario_unspecified"]);
+  assert.equal(generalCandidate.confidence_details.adjustments[0].type, "explicit_correction_bonus");
   assert.equal(generalCandidate.confidence_details.adjustments[0].applied, false);
   assert.equal(scenarioCandidate.confidence, 0.88);
   assert.deepEqual(scenarioCandidate.risk_flags, []);
-  assert.equal(scenarioCandidate.confidence_details.adjustments[0].type, "scenario_specificity_bonus");
-  assert.equal(scenarioCandidate.confidence_details.adjustments[0].delta, 0.04);
+  assert.equal(scenarioCandidate.confidence_details.adjustments[1].type, "scenario_specificity_bonus");
+  assert.equal(scenarioCandidate.confidence_details.adjustments[1].delta, 0.04);
+  assert.equal(scenarioCandidate.confidence_details.adjustments[1].applied, true);
+});
+
+test("suggestSessionHabitCandidates detects correction-style explicit definitions", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 我这里的“收工啦”不是结束线程，是 close_session",
+    "assistant: 收到，我按 close_session 理解。",
+    "user: 收工啦"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "收工啦");
+  assert.equal(result.candidates[0].source_type, "explicit_definition");
+  assert.equal(result.candidates[0].confidence, 0.87);
+  assert.equal(result.candidates[0].evidence.correction_count, 1);
+  assert.equal(result.candidates[0].suggested_rule.normalized_intent, "close_session");
+  assert.equal(result.candidates[0].confidence_details.adjustments[0].type, "explicit_correction_bonus");
+  assert.equal(result.candidates[0].confidence_details.adjustments[0].applied, true);
+  assert.match(result.candidates[0].confidence_details.summary, /纠正式/u);
+});
+
+test("correction-style definitions still require an explicit normalized intent token", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 我这里的“收工啦”不是结束线程，是帮我做个收尾",
+    "assistant: 收到。"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 0);
 });
 
 test("suggestSessionHabitCandidates surfaces repeated unknown short phrases as review-only candidates", () => {

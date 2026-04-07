@@ -147,6 +147,7 @@ These candidates usually contain a fully formed `suggested_rule`.
 Detected when the transcript contains a phrase-to-intent definition such as:
 
 - `以后我说“收尾一下”就是 close_session`
+- `我这里的“收工啦”不是结束线程，是 close_session`
 
 These candidates also usually contain a usable `suggested_rule`.
 

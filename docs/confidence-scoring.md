@@ -210,12 +210,14 @@ Reasoning:
 
 If the transcript contains an explicit phrase-to-intent definition, the candidate confidence is:
 
-- `0.88` when a scenario is explicitly present
-- `0.84` otherwise
+- base `0.84`
+- plus `0.03` when the definition is expressed as an explicit correction
+- plus `0.04` when a scenario is explicitly present
 
 Reasoning:
 
 - explicit definitions are strong evidence
+- explicit corrections are even stronger because they disambiguate a nearby misunderstanding
 - missing scenario is still acceptable, but slightly weaker
 
 ### 5.3 `repeated_phrase`
