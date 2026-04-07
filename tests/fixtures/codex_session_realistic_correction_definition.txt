@@ -1,0 +1,12 @@
+system: 你是 Codex，需要保持解释层边界，不要把口语纠正直接当成自动写入。
+user: 先扫描一下这次会话里的习惯候选，但先别急着加。
+assistant: 我先看有没有明确短句定义或高置信重复。
+tool: 已加载当前线程摘录。
+user: 我这里的“收工啦”不是结束线程，是 close_session 场景=session_close
+assistant: 收到，如果后面再次出现这个短句，我会按 close_session 理解。
+user: 继续把刚才那项做完。
+assistant: 这一项已经完成，只剩最后收口。
+user: 收工啦
+assistant: 如果你要的话，我可以先整理一下当前状态。
+user: 先不用额外展开。
+assistant: 好，我先停在这里等你确认。

@@ -74,6 +74,28 @@ test("suggestSessionHabitCandidates handles a realistic Codex transcript with an
   assert.match(result.candidates[0].confidence_details.summary, /明确场景/u);
 });
 
+test("suggestSessionHabitCandidates handles a realistic Codex transcript with a correction-style definition", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = loadFixtureText("codex_session_realistic_correction_definition.txt");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.transcript_stats.message_count, 12);
+  assert.equal(result.transcript_stats.user_message_count, 5);
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "收工啦");
+  assert.equal(result.candidates[0].source_type, "explicit_definition");
+  assert.equal(result.candidates[0].action, "suggest_add");
+  assert.equal(result.candidates[0].confidence, 0.91);
+  assert.deepEqual(result.candidates[0].risk_flags, []);
+  assert.equal(result.candidates[0].evidence.occurrence_count, 2);
+  assert.equal(result.candidates[0].evidence.correction_count, 1);
+  assert.match(result.candidates[0].confidence_details.summary, /纠正式/u);
+});
+
 test("suggestSessionHabitCandidates extracts explicit add and definition candidates", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcript = [

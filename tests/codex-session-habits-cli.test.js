@@ -85,6 +85,34 @@ test("codex-session-habits cli can scan a realistic current-session transcript f
   ]);
 });
 
+test("codex-session-habits cli can scan a realistic correction-style transcript from a thread file", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcriptPath = getFixturePath("codex_session_realistic_correction_definition.txt");
+
+  const result = spawnSync(process.execPath, [
+    CODEX_SESSION_HABITS_CLI_PATH,
+    "--request",
+    "扫描这次会话里的习惯候选",
+    "--thread",
+    transcriptPath,
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.action, "suggest");
+  assert.equal(parsed.transcript_stats.message_count, 12);
+  assert.equal(parsed.candidate_count, 1);
+  assert.equal(parsed.candidates[0].phrase, "收工啦");
+  assert.equal(parsed.candidates[0].confidence, 0.91);
+  assert.match(parsed.assistant_reply_markdown, /显式纠正式定义/u);
+  assert.match(parsed.assistant_reply_markdown, /session_close/u);
+  assert.equal(parsed.next_step_assessment.level, "actionable");
+});
+
 test("codex-session-habits cli surfaces correction-style definition evidence in chat output", () => {
   const userRegistryPath = createTempRegistryPath();
 

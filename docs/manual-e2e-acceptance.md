@@ -123,6 +123,29 @@ Expected:
 
 ---
 
+## 2A. Scan A Correction-Style Explicit Definition
+
+Run:
+
+```powershell
+@'
+user: 我这里的“收工啦”不是结束线程，是 close_session 场景=session_close
+assistant: 收到，我后面按 close_session 理解。
+user: 收工啦
+'@ | npm run codex-session-habits -- --request "扫描这次会话里的习惯候选" --thread-stdin --user-registry $userRegistry
+```
+
+Expected:
+
+- command exits successfully
+- JSON includes `action = "suggest"`
+- first candidate `phrase = "收工啦"`
+- first candidate `suggested_rule.normalized_intent = "close_session"`
+- first candidate `evidence.correction_count = 1`
+- `assistant_reply_markdown` explicitly mentions correction-style evidence, not only the score
+
+---
+
 ## 3. Apply The Cached Candidate
 
 Run:
