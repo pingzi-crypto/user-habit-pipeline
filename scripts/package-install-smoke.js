@@ -65,6 +65,35 @@ function runNodeEval(script, options = {}) {
   return run(process.execPath, ["-e", script], options);
 }
 
+function runWithInput(command, args, inputText, options = {}) {
+  const executable = process.platform === "win32" && !path.extname(command)
+    ? `${command}.cmd`
+    : command;
+
+  const result = spawnSync(executable, args, {
+    cwd: options.cwd || ROOT_DIR,
+    env: options.env || process.env,
+    encoding: "utf8",
+    input: inputText,
+    stdio: ["pipe", "pipe", "pipe"]
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    const detail = [
+      `Command failed: ${executable} ${args.join(" ")}`,
+      result.stdout ? `stdout:\n${result.stdout}` : null,
+      result.stderr ? `stderr:\n${result.stderr}` : null
+    ].filter(Boolean).join("\n\n");
+    throw new Error(detail);
+  }
+
+  return String(result.stdout || "").trim();
+}
+
 function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), TMP_PREFIX));
   const packDir = path.join(tempRoot, "pack");
@@ -137,6 +166,49 @@ function main() {
       "codex-session-habits"
     );
     assert.equal(stopOutput.action, "stop");
+
+    const correctionScanOutput = readJson(
+      runWithInput(
+        codexBin,
+        ["--request", "扫描这次会话里的习惯候选", "--thread-stdin"],
+        [
+          "user: 我这里的“收工啦”不是结束线程，是 close_session 场景=session_close",
+          "assistant: 收到，我后面按 close_session 理解。",
+          "user: 收工啦"
+        ].join("\n"),
+        { cwd: consumerDir, env }
+      ),
+      "codex-session-habits correction scan"
+    );
+    assert.equal(correctionScanOutput.action, "suggest");
+    assert.equal(correctionScanOutput.candidate_count, 1);
+    assert.equal(correctionScanOutput.candidates[0].phrase, "收工啦");
+    assert.equal(correctionScanOutput.candidates[0].suggested_rule.normalized_intent, "close_session");
+    assert.equal(correctionScanOutput.candidates[0].evidence.correction_count, 1);
+    assert.match(correctionScanOutput.assistant_reply_markdown, /显式纠正式定义/u);
+    assert.ok(
+      path.normalize(correctionScanOutput.suggestions_cache_path).startsWith(path.normalize(runtimeHome)),
+      "Suggestion cache path should resolve inside the configured runtime home."
+    );
+
+    const correctionApplyOutput = readJson(
+      run(codexBin, ["--request", "添加第1条"], { cwd: consumerDir, env }),
+      "codex-session-habits apply cached candidate"
+    );
+    assert.equal(correctionApplyOutput.action, "apply-candidate");
+    assert.equal(correctionApplyOutput.applied_rule.phrase, "收工啦");
+    assert.equal(correctionApplyOutput.applied_rule.normalized_intent, "close_session");
+
+    const listAfterApplyOutput = readJson(
+      run(manageBin, ["--list"], { cwd: consumerDir, env }),
+      "manage-user-habits --list after cached apply"
+    );
+    assert.equal(listAfterApplyOutput.action, "list");
+    assert.equal(listAfterApplyOutput.additions.length, 2);
+    assert.ok(
+      listAfterApplyOutput.additions.some((item) => item.phrase === "收工啦" && item.normalized_intent === "close_session"),
+      "Expected cached candidate apply to persist 收工啦."
+    );
 
     const libraryOutput = readJson(
       runNodeEval(
