@@ -10,7 +10,7 @@ For deeper validation rules, keep [cross-repo-release-checklist.md](https://gith
 ## Target Release Set
 
 - backend repo: `user-habit-pipeline v0.4.1`
-- skill repo: `manage-current-session-habits v0.2.0`
+- skill repo: `manage-current-session-habits v0.3.0`
 
 Recommended release order:
 
@@ -36,12 +36,13 @@ Current release-facing source files:
 
 - backend notes: [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md)
 - backend changelog: [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
+- skill notes: [RELEASE-NOTES-v0.3.0.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/RELEASE-NOTES-v0.3.0.md)
 - skill README demo asset: [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif)
 
 For the skill release body:
 
-- prefer your local unpublished draft if you keep one
-- otherwise reuse the public README positioning plus the new install notes and demo asset
+- use [RELEASE-NOTES-v0.3.0.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/RELEASE-NOTES-v0.3.0.md) as the primary release body
+- keep the README demo asset attached if the release page should mirror the README
 
 ---
 
@@ -117,25 +118,25 @@ Recommended title:
 
 Recommended tag:
 
-- `v0.2.0`
+- `v0.3.0`
 
 Suggested commands:
 
 ```powershell
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
 On GitHub:
 
 1. open the `manage-current-session-habits` releases page
-2. create a new release from tag `v0.2.0`
-3. use your local skill release draft if you keep one; otherwise summarize the package-first install flow, optional `-BackendRepoPath` compatibility path, explicit confirmation boundary, and README demo asset
+2. create a new release from tag `v0.3.0`
+3. use [RELEASE-NOTES-v0.3.0.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/RELEASE-NOTES-v0.3.0.md) as the release body
 4. attach or embed [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif) if the release page should mirror the README demo
 
 Recommended title:
 
-- `manage-current-session-habits v0.2.0`
+- `manage-current-session-habits v0.3.0`
 
 ---
 
@@ -144,7 +145,7 @@ Recommended title:
 After both releases are live, confirm:
 
 - the backend release page points at the right `v0.4.1` notes
-- the skill release page points at the right `v0.2.0` body and demo asset
+- the skill release page points at the right `v0.3.0` body and demo asset
 - the skill README install commands still work against the released backend checkout
 - the contract wording between backend docs and skill docs still matches
 
@@ -160,4 +161,4 @@ If you want the smallest outward-facing move today, publish the skill release fi
 Default recommendation:
 
 - do not split the pair unless time is tight
-- release backend `v0.4.1` and skill `v0.2.0` in the same session
+- release backend `v0.4.1` and skill `v0.3.0` in the same session
