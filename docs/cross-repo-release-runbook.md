@@ -9,8 +9,8 @@ For deeper validation rules, keep [cross-repo-release-checklist.md](https://gith
 
 ## Target Release Set
 
-- backend repo: `user-habit-pipeline v0.4.0`
-- skill repo: `manage-current-session-habits v0.1.0`
+- backend repo: `user-habit-pipeline v0.4.1`
+- skill repo: `manage-current-session-habits v0.2.0`
 
 Recommended release order:
 
@@ -34,10 +34,14 @@ Confirm both repositories:
 
 Current release-facing source files:
 
-- backend notes: [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md)
+- backend notes: [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md)
 - backend changelog: [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
-- skill release draft: [github-release-draft.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/references/github-release-draft.md)
 - skill README demo asset: [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif)
+
+For the skill release body:
+
+- prefer your local unpublished draft if you keep one
+- otherwise reuse the public README positioning plus the new install notes and demo asset
 
 ---
 
@@ -55,9 +59,9 @@ Release only if all three pass.
 
 Before moving on, confirm:
 
-- [package.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/package.json) says `0.4.0`
-- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md) has a `0.4.0 - 2026-04-05` section
-- [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md) matches what you want to publish
+- [package.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/package.json) says `0.4.1`
+- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md) has a `0.4.1 - 2026-04-06` section
+- [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md) matches what you want to publish
 
 ---
 
@@ -66,8 +70,14 @@ Before moving on, confirm:
 Run from [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits):
 
 ```powershell
-& .\scripts\install-skill.ps1 -BackendRepoPath <path-to-user-habit-pipeline> -CheckOnly
+& .\scripts\install-skill.ps1 -CheckOnly
 & .\scripts\check-install.ps1 -SmokeTest
+```
+
+If local-checkout compatibility is part of the release promise, also run:
+
+```powershell
+& .\scripts\install-skill.ps1 -BackendRepoPath <path-to-user-habit-pipeline> -CheckOnly
 ```
 
 Before moving on, confirm:
@@ -82,24 +92,24 @@ Before moving on, confirm:
 
 Recommended tag:
 
-- `v0.4.0`
+- `v0.4.1`
 
 Suggested commands:
 
 ```powershell
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.4.1
+git push origin v0.4.1
 ```
 
 On GitHub:
 
 1. open the `user-habit-pipeline` releases page
-2. create a new release from tag `v0.4.0`
-3. use [release-notes-v0.4.0.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.0.md) as the release body
+2. create a new release from tag `v0.4.1`
+3. use [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md) as the release body
 
 Recommended title:
 
-- `user-habit-pipeline v0.4.0`
+- `user-habit-pipeline v0.4.1`
 
 ---
 
@@ -107,25 +117,25 @@ Recommended title:
 
 Recommended tag:
 
-- `v0.1.0`
+- `v0.2.0`
 
 Suggested commands:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 On GitHub:
 
 1. open the `manage-current-session-habits` releases page
-2. create a new release from tag `v0.1.0`
-3. use [github-release-draft.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/references/github-release-draft.md) as the release body
+2. create a new release from tag `v0.2.0`
+3. use your local skill release draft if you keep one; otherwise summarize the package-first install flow, optional `-BackendRepoPath` compatibility path, explicit confirmation boundary, and README demo asset
 4. attach or embed [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif) if the release page should mirror the README demo
 
 Recommended title:
 
-- `manage-current-session-habits v0.1.0`
+- `manage-current-session-habits v0.2.0`
 
 ---
 
@@ -133,8 +143,8 @@ Recommended title:
 
 After both releases are live, confirm:
 
-- the backend release page points at the right `v0.4.0` notes
-- the skill release page points at the right `v0.1.0` body and demo asset
+- the backend release page points at the right `v0.4.1` notes
+- the skill release page points at the right `v0.2.0` body and demo asset
 - the skill README install commands still work against the released backend checkout
 - the contract wording between backend docs and skill docs still matches
 
@@ -145,9 +155,9 @@ After both releases are live, confirm:
 If you want the smallest outward-facing move today, publish the skill release first only if:
 
 - the backend repository state is already pushed and validated
-- you are comfortable treating backend `v0.4.0` as the contract baseline even if its GitHub release page is created slightly later
+- you are comfortable treating backend `v0.4.1` as the contract baseline even if its GitHub release page is created slightly later
 
 Default recommendation:
 
 - do not split the pair unless time is tight
-- release backend `v0.4.0` and skill `v0.1.0` in the same session
+- release backend `v0.4.1` and skill `v0.2.0` in the same session

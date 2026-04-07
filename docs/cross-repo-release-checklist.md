@@ -36,14 +36,24 @@ Confirm:
 Run from [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits):
 
 ```powershell
+& .\scripts\install-skill.ps1 -CheckOnly
+```
+
+Confirm:
+
+- the default published backend package resolves and installs correctly
+- the installed skill link target is correct
+- no machine-specific path is being treated as a public contract requirement
+
+If you still intend to support direct local-checkout integration, also run:
+
+```powershell
 & .\scripts\install-skill.ps1 -BackendRepoPath <path-to-user-habit-pipeline> -CheckOnly
 ```
 
 Confirm:
 
-- the backend repo resolves to the intended checkout
-- the installed skill link target is correct
-- no machine-specific path is being treated as a public contract requirement
+- the backend repo override still resolves to the intended checkout
 
 ---
 
