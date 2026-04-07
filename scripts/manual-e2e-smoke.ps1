@@ -154,6 +154,22 @@ user: 收尾一下
     "interpret flow verified"
   }
 
+  Test-Step -Results $results -Name "scan_correction_style_definition" -Action {
+    $transcript = @"
+user: 我这里的“收工啦”不是结束线程，是 close_session 场景=session_close
+assistant: 收到，我后面按 close_session 理解。
+user: 收工啦
+"@
+    $parsed = Invoke-JsonCommand -Executable $nodeCommand -Arguments ($sharedArgs + @("--request", "扫描这次会话里的习惯候选", "--thread-stdin")) -InputText $transcript
+    Assert-True ($parsed.action -eq "suggest") "Expected suggest action."
+    Assert-True ($parsed.candidate_count -eq 1) "Expected exactly one candidate."
+    Assert-True ($parsed.candidates[0].phrase -eq "收工啦") "Expected candidate phrase 收工啦."
+    Assert-True ($parsed.candidates[0].suggested_rule.normalized_intent -eq "close_session") "Expected close_session intent."
+    Assert-True ($parsed.candidates[0].evidence.correction_count -eq 1) "Expected correction evidence count 1."
+    Assert-True ($parsed.assistant_reply_markdown -match "显式纠正式定义") "Expected correction-style evidence in markdown."
+    "correction-style definition scan verified"
+  }
+
   Test-Step -Results $results -Name "scan_review_only_phrase" -Action {
     $transcript = @"
 user: 收工啦
