@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Added support for correction-style explicit session habit definitions such as `不是 X，是 close_session` and `别按 X 理解，按 close_session 理解`.
+- Surfaced correction evidence directly in Codex chat-ready bridge replies instead of only reflecting it through higher scores.
+- Added realistic correction-style session fixtures plus regression coverage across the suggestion backend and the Codex bridge.
+- Expanded manual E2E smoke coverage to include correction-style definition scans.
+- Gated backend `release-check` on `manual-e2e-smoke` so bridge-critical flows block releases on failure.
+- Expanded package install smoke to verify the installed Codex bridge scan/apply path and cached follow-up candidate apply.
+- Refreshed cross-repo release docs to the current `v0.4.2` backend baseline.
 
 ## 0.4.2 - 2026-04-07
 
