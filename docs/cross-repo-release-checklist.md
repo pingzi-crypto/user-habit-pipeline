@@ -17,15 +17,10 @@ Run from [user-habit-pipeline](https://github.com/pingzi-crypto/user-habit-pipel
 npm run release-check
 ```
 
-If the bridge, skill-facing output, or low-ROI stop behavior changed, also run:
-
-```powershell
-npm run manual-e2e-smoke
-```
-
 Confirm:
 
 - the backend package still passes release validation
+- `release-check` already exercised manual E2E smoke, package install smoke, and registry validation for the backend
 - the Codex bridge still returns the expected contract fields
 - [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md) matches the shipped bridge behavior
 

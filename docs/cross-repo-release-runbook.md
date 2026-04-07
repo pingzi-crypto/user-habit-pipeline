@@ -9,7 +9,7 @@ For deeper validation rules, keep [cross-repo-release-checklist.md](https://gith
 
 ## Target Release Set
 
-- backend repo: `user-habit-pipeline v0.4.1`
+- backend repo: `user-habit-pipeline v0.4.2`
 - skill repo: `manage-current-session-habits v0.3.0`
 
 Recommended release order:
@@ -34,7 +34,7 @@ Confirm both repositories:
 
 Current release-facing source files:
 
-- backend notes: [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md)
+- backend notes: [release-notes-v0.4.2.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.2.md)
 - backend changelog: [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md)
 - skill notes: [RELEASE-NOTES-v0.3.0.md](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/RELEASE-NOTES-v0.3.0.md)
 - skill README demo asset: [readme-short-demo.gif](https://github.com/pingzi-crypto/manage-current-session-habits/blob/main/assets/readme-short-demo.gif)
@@ -51,18 +51,23 @@ For the skill release body:
 Run from [user-habit-pipeline](https://github.com/pingzi-crypto/user-habit-pipeline):
 
 ```powershell
-npm test
 npm run release-check
-npm run manual-e2e-smoke
 ```
 
-Release only if all three pass.
+Release only if `npm run release-check` passes.
+It already includes:
+
+- test suite
+- manual E2E smoke
+- package smoke
+- package install smoke
+- registry validation
 
 Before moving on, confirm:
 
-- [package.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/package.json) says `0.4.1`
-- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md) has a `0.4.1 - 2026-04-06` section
-- [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md) matches what you want to publish
+- [package.json](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/package.json) says `0.4.2`
+- [CHANGELOG.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/CHANGELOG.md) has a `0.4.2 - 2026-04-07` section
+- [release-notes-v0.4.2.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.2.md) matches what you want to publish
 
 ---
 
@@ -93,24 +98,24 @@ Before moving on, confirm:
 
 Recommended tag:
 
-- `v0.4.1`
+- `v0.4.2`
 
 Suggested commands:
 
 ```powershell
-git tag v0.4.1
-git push origin v0.4.1
+git tag v0.4.2
+git push origin v0.4.2
 ```
 
 On GitHub:
 
 1. open the `user-habit-pipeline` releases page
-2. create a new release from tag `v0.4.1`
-3. use [release-notes-v0.4.1.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.1.md) as the release body
+2. create a new release from tag `v0.4.2`
+3. use [release-notes-v0.4.2.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-notes-v0.4.2.md) as the release body
 
 Recommended title:
 
-- `user-habit-pipeline v0.4.1`
+- `user-habit-pipeline v0.4.2`
 
 ---
 
@@ -144,7 +149,7 @@ Recommended title:
 
 After both releases are live, confirm:
 
-- the backend release page points at the right `v0.4.1` notes
+- the backend release page points at the right `v0.4.2` notes
 - the skill release page points at the right `v0.3.0` body and demo asset
 - the skill README install commands still work against the released backend checkout
 - the contract wording between backend docs and skill docs still matches
@@ -156,9 +161,9 @@ After both releases are live, confirm:
 If you want the smallest outward-facing move today, publish the skill release first only if:
 
 - the backend repository state is already pushed and validated
-- you are comfortable treating backend `v0.4.1` as the contract baseline even if its GitHub release page is created slightly later
+- you are comfortable treating backend `v0.4.2` as the contract baseline even if its GitHub release page is created slightly later
 
 Default recommendation:
 
 - do not split the pair unless time is tight
-- release backend `v0.4.1` and skill `v0.3.0` in the same session
+- release backend `v0.4.2` and skill `v0.3.0` in the same session
