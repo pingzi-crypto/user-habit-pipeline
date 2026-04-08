@@ -1,0 +1,22 @@
+[
+  {
+    "phrase": "收口一下",
+    "normalized_intent": "close_session",
+    "scenario_bias": ["session_close", "general"],
+    "confidence": 0.9,
+    "match_type": "exact",
+    "preferred_terms": ["session_close"],
+    "disambiguation_hints": [],
+    "notes": ["Example project-level phrase for wrapping up the current thread."]
+  },
+  {
+    "phrase": "下一张卡",
+    "normalized_intent": "move_to_next_learning_card",
+    "scenario_bias": ["learning", "general"],
+    "confidence": 0.87,
+    "match_type": "exact",
+    "preferred_terms": ["learning"],
+    "disambiguation_hints": [],
+    "notes": ["Example project-level phrase for moving to the next learning card."]
+  }
+]
