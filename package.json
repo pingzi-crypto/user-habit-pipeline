@@ -1,6 +1,6 @@
 {
   "name": "user-habit-pipeline",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": false,
   "license": "Apache-2.0",
   "description": "CLI and library for turning repeated user shorthand into structured intent hints.",

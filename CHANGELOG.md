@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- No unreleased changes yet.
+
+## 0.4.3 - 2026-04-08
+
 - Added support for correction-style explicit session habit definitions such as `不是 X，是 close_session` and `别按 X 理解，按 close_session 理解`.
 - Surfaced correction evidence directly in Codex chat-ready bridge replies instead of only reflecting it through higher scores.
 - Added realistic correction-style session fixtures plus regression coverage across the suggestion backend and the Codex bridge.
