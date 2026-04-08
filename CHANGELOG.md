@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Added official Python and PowerShell localhost client examples for the new `user-habit-pipeline-http` entrypoint.
+- Corrected integration docs so the shipped local HTTP entrypoint is described as a supported built-in package surface rather than an external wrapper only.
 
 ## 0.5.0 - 2026-04-08
 

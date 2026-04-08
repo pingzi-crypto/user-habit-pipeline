@@ -214,6 +214,8 @@ If another local project really wants an API-shaped boundary, the package now sh
 - `user-habit-pipeline-http`
 - implementation: [http-server-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/http-server-cli.js)
 - compatibility example wrapper: [local-http-wrapper.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/local-http-wrapper.js)
+- Python client example: [http-client-python.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/http-client-python.py)
+- PowerShell client example: [http-client-powershell.ps1](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/http-client-powershell.ps1)
 
 Run it:
 
@@ -249,6 +251,25 @@ Invoke-RestMethod `
   -Body '{"message":"继续","scenario":"general"}'
 ```
 
+Python example:
+
+```python
+import json
+import urllib.request
+
+request = urllib.request.Request(
+    url="http://127.0.0.1:4848/interpret",
+    data=json.dumps({"message": "继续", "scenario": "general"}).encode("utf-8"),
+    headers={"Content-Type": "application/json"},
+    method="POST",
+)
+
+with urllib.request.urlopen(request) as response:
+    result = json.loads(response.read().decode("utf-8"))
+
+print(result["result"]["normalized_intent"])
+```
+
 Use this when another local tool strongly prefers HTTP, but do not mistake it for a built-in product server contract.
 
 ---
@@ -257,8 +278,7 @@ Use this when another local tool strongly prefers HTTP, but do not mistake it fo
 
 The package does not currently ship:
 
-- a built-in HTTP server
 - a remote SaaS API
 - automatic workflow execution after interpretation
 
-If another project needs HTTP, use the local wrapper example above or build another thin wrapper around the library or CLI rather than pushing workflow logic into this package.
+If another project needs HTTP, start with the official local entrypoint above instead of building a custom transport first.

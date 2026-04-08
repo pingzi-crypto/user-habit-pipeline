@@ -19,6 +19,8 @@
   "files": [
     "src",
     "examples/local-http-wrapper.js",
+    "examples/http-client-python.py",
+    "examples/http-client-powershell.ps1",
     "scripts/manual-e2e-smoke.ps1",
     "data/.gitkeep",
     "docs/registry.schema.json",
