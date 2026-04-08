@@ -272,6 +272,7 @@ async function main() {
 
     const manageBin = resolveInstalledBin(consumerDir, "manage-user-habits");
     const interpretBin = resolveInstalledBin(consumerDir, "user-habit-pipeline");
+    const initRegistryBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-init-registry");
     const codexBin = resolveInstalledBin(consumerDir, "codex-session-habits");
     const httpBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-http");
     const httpCliPath = resolveInstalledPackagePath(consumerDir, "src", "http-server-cli.js");
@@ -439,6 +440,17 @@ async function main() {
     assert.equal(httpSuggestOutput.candidates[0].phrase, "收工啦");
     assert.equal(path.normalize(httpSuggestOutput.registry_path), path.normalize(httpRegistryPath));
 
+    const generatedRegistryDir = path.join(tempRoot, "generated-project-registry");
+    const initRegistryOutput = readJson(
+      run(initRegistryBin, ["--out", generatedRegistryDir], { cwd: consumerDir, env }),
+      "user-habit-pipeline-init-registry"
+    );
+    assert.equal(initRegistryOutput.ok, true);
+    assert.equal(path.normalize(initRegistryOutput.out_dir), path.normalize(generatedRegistryDir));
+    assert.ok(fs.existsSync(path.join(generatedRegistryDir, "custom-habits.json")));
+    assert.ok(fs.existsSync(path.join(generatedRegistryDir, "README.md")));
+    assert.ok(fs.existsSync(path.join(generatedRegistryDir, "smoke-test.js")));
+
     const installedProjectRegistryPath = resolveInstalledPackagePath(
       consumerDir,
       "examples",
@@ -466,6 +478,20 @@ async function main() {
     );
     assert.equal(installedProjectRegistryInterpretation.normalized_intent, "close_session");
     assert.equal(installedProjectRegistryInterpretation.should_ask_clarifying_question, false);
+
+    const generatedProjectRegistryInterpretation = readJson(
+      run(interpretBin, [
+        "--message",
+        "收口一下",
+        "--scenario",
+        "session_close",
+        "--registry",
+        path.join(generatedRegistryDir, "custom-habits.json")
+      ], { cwd: consumerDir, env }),
+      "user-habit-pipeline generated project registry example"
+    );
+    assert.equal(generatedProjectRegistryInterpretation.normalized_intent, "close_session");
+    assert.equal(generatedProjectRegistryInterpretation.should_ask_clarifying_question, false);
 
     process.stdout.write(
       `${JSON.stringify({

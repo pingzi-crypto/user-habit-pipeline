@@ -128,6 +128,12 @@ Official local HTTP entrypoint for localhost integration:
 npx user-habit-pipeline-http --port 4848
 ```
 
+Generate a custom project-registry starter:
+
+```powershell
+npx user-habit-pipeline-init-registry --out .\my-project-registry
+```
+
 ## Runtime State
 
 Runtime user state is stored outside the package directory by default:

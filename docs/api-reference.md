@@ -265,6 +265,39 @@ Behavior:
 
 ---
 
+## Init-Registry CLI
+
+The registry starter CLI entrypoint is:
+
+- [init-registry-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/init-registry-cli.js)
+
+Command:
+
+```powershell
+npx user-habit-pipeline-init-registry --out .\my-project-registry
+```
+
+Help:
+
+```powershell
+npx user-habit-pipeline-init-registry --help
+```
+
+Supported flags:
+
+- `--out <directory>` required
+- `--force` optional
+
+Behavior:
+
+- generates a minimal project-registry starter directory
+- writes `custom-habits.json`, `README.md`, and `smoke-test.js`
+- refuses to overwrite generated files unless `--force` is provided
+
+Use this when another project wants an explicit registry starting point without manually copying the example directory.
+
+---
+
 ## Manage-Habits CLI
 
 The user-habit management CLI entrypoint is:

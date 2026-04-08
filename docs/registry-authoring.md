@@ -192,6 +192,12 @@ For a reusable project-level starting point, it now also includes:
 - [examples/project-registry/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/project-registry/README.md)
 - [examples/project-registry/smoke-test.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/project-registry/smoke-test.js)
 
+If you want to generate the same starter into another directory, use:
+
+```powershell
+npx user-habit-pipeline-init-registry --out .\my-project-registry
+```
+
 You can load another registry through:
 
 - library injection via `interpretHabit(input, { rules })`
