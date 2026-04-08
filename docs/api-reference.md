@@ -352,6 +352,181 @@ Behavior:
 
 ---
 
+## Local HTTP Server CLI
+
+The local HTTP server entrypoint is:
+
+- [http-server-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/http-server-cli.js)
+
+Command:
+
+```powershell
+npx user-habit-pipeline-http --port 4848
+```
+
+Help:
+
+```powershell
+npx user-habit-pipeline-http --help
+```
+
+Supported flags:
+
+- `--host <hostname>` optional
+- `--port <number>` optional
+- `--user-registry <path>` optional
+- `--max-body-bytes <n>` optional
+
+Environment fallbacks:
+
+- `UHP_HTTP_HOST`
+- `UHP_HTTP_PORT`
+- `UHP_HTTP_MAX_BODY_BYTES`
+
+Default address:
+
+- `http://127.0.0.1:4848`
+
+This server is intended for localhost integration from other local tools.
+It is not a remote SaaS API and it does not change the project into a workflow engine.
+
+### `GET /health`
+
+Returns a small JSON status payload for health checks and runtime discovery.
+
+Example:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri http://127.0.0.1:4848/health
+```
+
+Typical fields:
+
+- `ok`
+- `service`
+- `host`
+- `port`
+- `user_registry_path`
+- `default_user_registry_path`
+- `endpoints`
+
+### `POST /interpret`
+
+Interpret one shorthand message through the same core engine used by the CLI and library.
+
+Request body:
+
+- `message: string` required
+- `scenario?: string | null`
+- `recent_context?: string[] | string`
+- `include_user_registry?: boolean`
+- `user_registry_path?: string`
+
+PowerShell example:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:4848/interpret `
+  -ContentType "application/json" `
+  -Body '{"message":"继续","scenario":"general"}'
+```
+
+Response shape:
+
+- `ok`
+- `result.normalized_intent`
+- `result.habit_matches`
+- `result.disambiguation_hints`
+- `result.confidence`
+- `result.should_ask_clarifying_question`
+
+### `POST /suggest`
+
+Scan a transcript for candidate habit phrases without directly changing active habit state.
+
+Request body:
+
+- `transcript: string` required
+- `max_candidates?: number`
+- `user_registry_path?: string`
+
+Example:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:4848/suggest `
+  -ContentType "application/json" `
+  -Body (@{
+    transcript = "user: 以后我说“收尾一下”就是 close_session`nassistant: 收到。`nuser: 收尾一下"
+    max_candidates = 3
+  } | ConvertTo-Json -Compress)
+```
+
+Response shape:
+
+- `ok`
+- `action`
+- `registry_path`
+- `suggestions_cache_path`
+- `candidate_count`
+- `transcript_stats`
+- `candidates`
+
+### `POST /manage`
+
+Forward one prompt-style habit-management request through the same management backend used by `manage-user-habits`.
+
+Request body:
+
+- `request: string` required
+- `transcript?: string`
+- `suggestions?: object | array`
+- `scenario?: string[] | string`
+- `intent?: string`
+- `confidence?: number`
+- `mode?: string`
+- `file_path?: string`
+- `max_candidates?: number`
+- `user_registry_path?: string`
+
+Example:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:4848/manage `
+  -ContentType "application/json" `
+  -Body '{"request":"添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"}'
+```
+
+Typical response:
+
+- `ok`
+- `result.action`
+- `result.registry_path`
+- action-specific payload such as:
+  - `result.added_rule`
+  - `result.additions`
+  - `result.removals`
+  - `result.ignored_suggestions`
+  - `result.candidates`
+
+### Error Boundary
+
+The HTTP server returns JSON errors instead of HTML.
+
+Typical `400` cases:
+
+- invalid JSON request body
+- missing `message` on `/interpret`
+- missing `transcript` on `/suggest`
+- missing `request` on `/manage`
+- invalid startup flags such as an out-of-range `--port`
+
+---
+
 ## Stability Notes
 
 The current intent names and output fields are intended to be stable for the MVP.

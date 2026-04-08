@@ -9,7 +9,7 @@ If you only need one recommendation, use this:
 - chat host / assistant UI: call `codex-session-habits`
 
 The package is an interpretation layer, not a workflow server.
-It does not expose an HTTP API by default.
+It now also ships an optional localhost HTTP entrypoint for local integration.
 
 ---
 
@@ -270,7 +270,7 @@ with urllib.request.urlopen(request) as response:
 print(result["result"]["normalized_intent"])
 ```
 
-Use this when another local tool strongly prefers HTTP, but do not mistake it for a built-in product server contract.
+Use this when another local tool strongly prefers HTTP, but do not mistake it for a remote product server contract.
 
 ---
 
