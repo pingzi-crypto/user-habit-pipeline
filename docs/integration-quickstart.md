@@ -1,0 +1,218 @@
+# Integration Quickstart
+
+This document shows the lowest-friction ways to integrate `user-habit-pipeline` into another local project.
+
+If you only need one recommendation, use this:
+
+- Node project: call the library directly
+- non-Node project: call the CLI and read JSON
+- chat host / assistant UI: call `codex-session-habits`
+
+The package is an interpretation layer, not a workflow server.
+It does not expose an HTTP API by default.
+
+---
+
+## Install
+
+Add it to the target project:
+
+```powershell
+npm install user-habit-pipeline
+```
+
+You do not need to clone the repository just to use it.
+
+---
+
+## Path 1: Node Project
+
+Use this when the target project already runs on Node.js.
+
+```js
+const { interpretHabit } = require("user-habit-pipeline");
+
+const result = interpretHabit({
+  message: "继续",
+  scenario: "general",
+  recent_context: ["继续处理刚才的发布检查"]
+});
+
+console.log(result);
+```
+
+Best fit:
+
+- backend services already using Node.js
+- Electron apps
+- local tooling scripts in JavaScript
+
+Useful exports:
+
+- `interpretHabit`
+- `suggestSessionHabitCandidates`
+- `addUserHabitRule`
+- `removeUserHabitPhrase`
+- `loadUserRegistryState`
+- `parseHabitManagementRequest`
+
+This is the cleanest integration path when you want function calls instead of subprocesses.
+
+---
+
+## Path 2: Any Language Via CLI
+
+Use this when the target project is not written in Node.js, or when you want the most stable integration boundary.
+
+Interpret one message:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general
+```
+
+Manage user-defined phrases:
+
+```powershell
+npx manage-user-habits --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
+```
+
+Why this path is often best:
+
+- the CLI prints JSON
+- any host language can call it
+- runtime user state is handled by the package
+- you avoid reimplementing parser and storage rules in another stack
+
+Recommended host pattern:
+
+1. install the package as a dependency in the target project
+2. invoke `npx user-habit-pipeline` or `npx manage-user-habits`
+3. parse stdout as JSON
+4. let your host decide whether to execute any downstream action
+
+This is usually the simplest production boundary for Python, Go, Rust, or desktop automation tools.
+
+Python example:
+
+```python
+import json
+import subprocess
+
+completed = subprocess.run(
+    [
+        "npx",
+        "user-habit-pipeline",
+        "--message",
+        "继续",
+        "--scenario",
+        "general",
+    ],
+    check=True,
+    capture_output=True,
+    text=True,
+)
+
+result = json.loads(completed.stdout)
+print(result["normalized_intent"])
+```
+
+Python example for phrase management:
+
+```python
+import json
+import subprocess
+
+completed = subprocess.run(
+    [
+        "npx",
+        "manage-user-habits",
+        "--request",
+        "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86",
+    ],
+    check=True,
+    capture_output=True,
+    text=True,
+)
+
+result = json.loads(completed.stdout)
+print(result["status"])
+```
+
+---
+
+## Path 3: Chat Host Or Assistant UI
+
+Use this when the host already has access to visible conversation text and wants an in-thread flow such as:
+
+- `扫描这次会话里的习惯候选`
+- `添加第1条`
+- `忽略第1条`
+
+Bridge command:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
+```
+
+Host responsibilities:
+
+- gather visible conversation text
+- pass it through `--thread <path>` or `--thread-stdin`
+- render returned JSON or chat-ready fields in the UI
+- require explicit user confirmation before durable writes
+
+Do not make the user manually locate transcript files.
+Do not scrape unknown private thread stores.
+
+This path is the intended contract for Codex-style current-session integrations.
+
+---
+
+## Runtime Data
+
+By default, user state is stored outside the installed package:
+
+- Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
+- non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
+
+You can override the runtime data root with:
+
+- `USER_HABIT_PIPELINE_HOME`
+
+That is useful when another application wants a project-local or sandbox-local state directory.
+
+---
+
+## Which Path Should You Choose
+
+Choose library calls if:
+
+- your host is already Node.js
+- you want direct function integration
+
+Choose CLI calls if:
+
+- your host is not Node.js
+- you want the lowest integration complexity
+- you want a stable subprocess boundary
+
+Choose `codex-session-habits` if:
+
+- the host is a conversation UI
+- the user should trigger scans from natural prompts inside the current thread
+
+---
+
+## What Does Not Exist Yet
+
+The package does not currently ship:
+
+- a built-in HTTP server
+- a remote SaaS API
+- automatic workflow execution after interpretation
+
+If another project needs HTTP, build a thin wrapper around the library or CLI rather than pushing workflow logic into this package.
