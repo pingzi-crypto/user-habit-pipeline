@@ -1,8 +1,50 @@
 # User Habit Pipeline
 
-`user-habit-pipeline` turns repeated user shorthand into structured, reviewable intent hints.
+`user-habit-pipeline` is a Node.js CLI and library for turning repeated user shorthand into structured, reviewable intent hints.
 
-It is for products, scripts, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and want a stable way to interpret them without turning that interpretation layer into a hidden workflow engine.
+It is for products, scripts, local tools, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and need a stable shorthand interpretation layer without turning that layer into a hidden workflow engine.
+
+It works well for:
+
+- user shorthand interpretation
+- intent parsing in local automation tools
+- Codex or chat-style current-session habit scanning
+- prompt and workflow hinting without hidden execution
+
+If you are searching for a local-first intent parser, shorthand CLI, Codex habit scanner, or a lightweight way to interpret chat workflow phrases, this is the project.
+
+## Who It Is For
+
+Use this package if you are building:
+
+- a Node.js product that needs stable shorthand interpretation
+- a local tool that wants JSON output instead of brittle regex glue
+- a chat or assistant host that wants current-session habit suggestions
+- a workflow layer that needs hints, not auto-executed actions
+
+## Common Use Cases
+
+Interpret one ambiguous shorthand message into structured intent data:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general
+```
+
+Add one user-defined phrase without editing shipped defaults:
+
+```powershell
+npx manage-user-habits --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
+```
+
+Scan a current conversation for candidate habit phrases:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
+```
 
 ## Quick Start
 
@@ -12,19 +54,7 @@ Install from npm:
 npm install user-habit-pipeline
 ```
 
-Interpret one shorthand message:
-
-```powershell
-npx user-habit-pipeline --message "继续" --scenario general
-```
-
-Add one user-defined phrase:
-
-```powershell
-npx manage-user-habits --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
-```
-
-Interpret that phrase again:
+Interpret a shorthand phrase:
 
 ```powershell
 npx user-habit-pipeline --message "收尾一下" --scenario session_close
@@ -55,32 +85,9 @@ Example output:
 }
 ```
 
-## Main Commands
+## Integration Paths
 
-Interpret a message:
-
-```powershell
-npx user-habit-pipeline --message "更新入板" --scenario status_board
-```
-
-Manage saved user phrases:
-
-```powershell
-npx manage-user-habits --list
-npx manage-user-habits --request "删除用户习惯短句: 收尾一下"
-```
-
-Scan a transcript for candidate phrases without auto-saving anything:
-
-```powershell
-@'
-user: 以后我说“收尾一下”就是 close_session
-assistant: 收到。
-user: 收尾一下
-'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
-```
-
-## Library Use
+Node.js library use:
 
 ```js
 const { interpretHabit } = require("user-habit-pipeline");
@@ -92,6 +99,29 @@ const result = interpretHabit({
 });
 ```
 
+CLI use:
+
+```powershell
+npx user-habit-pipeline --message "更新入板" --scenario status_board
+```
+
+User phrase management:
+
+```powershell
+npx manage-user-habits --list
+npx manage-user-habits --request "删除用户习惯短句: 收尾一下"
+```
+
+Current-session scan for chat or assistant hosts:
+
+```powershell
+@'
+user: 以后我说“收尾一下”就是 close_session
+assistant: 收到。
+user: 收尾一下
+'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
+```
+
 ## Runtime State
 
 Runtime user state is stored outside the package directory by default:
@@ -99,7 +129,7 @@ Runtime user state is stored outside the package directory by default:
 - Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
 - non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
 
-This keeps installed package files read-only and makes npm installs safer to reuse.
+This keeps installed package files read-only and makes local npm installs safer to reuse across projects.
 
 ## Product Boundary
 

@@ -3,7 +3,7 @@
   "version": "0.4.3",
   "private": false,
   "license": "Apache-2.0",
-  "description": "CLI and library for turning repeated user shorthand into structured intent hints.",
+  "description": "Local-first Node.js CLI and library for interpreting user shorthand into structured intent hints.",
   "homepage": "https://github.com/pingzi-crypto/user-habit-pipeline#readme",
   "main": "src/index.js",
   "repository": {
@@ -52,13 +52,20 @@
     "node": ">=18.8.0"
   },
   "keywords": [
-    "habit",
-    "intent",
-    "workflow",
-    "shorthand",
-    "interpretation",
+    "assistant-tools",
+    "chat-workflow",
     "cli",
-    "codex"
+    "codex",
+    "intent",
+    "intent-parsing",
+    "local-first",
+    "nodejs",
+    "prompt",
+    "session-analysis",
+    "shorthand",
+    "workflow-hints",
+    "workflow",
+    "interpretation"
   ],
   "bin": {
     "user-habit-pipeline": "./src/cli.js",
