@@ -4,7 +4,7 @@ This repository currently follows a simple MVP-first versioning policy.
 
 ## Current Status
 
-- current package version: `0.4.3`
+- current package version: `0.5.0`
 - current stage: pre-stable MVP expansion
 - compatibility goal: keep the main output contract stable while the implementation is refined
 
@@ -53,7 +53,7 @@ Before treating a change as a new internal release point:
 
 Possible future milestones:
 
-- `0.5.x` for broader adapter examples, packaging refinement, or stronger host integration validation
+- `0.5.x` for consolidating the new local HTTP transport, validating real consumer integration paths, and refining package-level install ergonomics
 - `0.6.x` for richer registry authoring and project-specific distribution workflows
 - `1.0.0` only after the output contract and intended extension model are considered stable
 

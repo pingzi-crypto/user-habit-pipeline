@@ -4,6 +4,16 @@
 
 - No unreleased changes yet.
 
+## 0.5.0 - 2026-04-08
+
+- Added an official local HTTP entrypoint through `user-habit-pipeline-http` for localhost-style integration from other local projects.
+- Promoted the earlier local HTTP wrapper example into a formal CLI under `src/http-server-cli.js`, while keeping the example path as a thin compatibility wrapper.
+- Added configurable HTTP server flags for `--host`, `--port`, `--user-registry`, and `--max-body-bytes`.
+- Expanded package-install smoke coverage to validate the installed HTTP entrypoint, including `/health`, `/manage`, `/interpret`, and `/suggest`.
+- Added direct tests for the HTTP CLI argument contract and health / interpret route behavior.
+- Updated integration docs and the public README to surface the official HTTP entrypoint as a supported local integration path.
+- Refreshed package metadata and repository presentation so the local integration surface is easier to discover.
+
 ## 0.4.3 - 2026-04-08
 
 - Added support for correction-style explicit session habit definitions such as `不是 X，是 close_session` and `别按 X 理解，按 close_session 理解`.
