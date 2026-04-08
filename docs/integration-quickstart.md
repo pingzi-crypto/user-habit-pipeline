@@ -207,6 +207,43 @@ Choose `codex-session-habits` if:
 
 ---
 
+## Local HTTP Wrapper Example
+
+If another local project really wants an API-shaped boundary, this repository now includes a minimal wrapper example:
+
+- [examples/local-http-wrapper.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/local-http-wrapper.js)
+
+Run it:
+
+```powershell
+node .\examples\local-http-wrapper.js
+```
+
+Default address:
+
+- `http://127.0.0.1:4848`
+
+Available endpoints:
+
+- `GET /health`
+- `POST /interpret`
+- `POST /suggest`
+- `POST /manage`
+
+PowerShell example:
+
+```powershell
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://127.0.0.1:4848/interpret `
+  -ContentType "application/json" `
+  -Body '{"message":"继续","scenario":"general"}'
+```
+
+Use this when another local tool strongly prefers HTTP, but do not mistake it for a built-in product server contract.
+
+---
+
 ## What Does Not Exist Yet
 
 The package does not currently ship:
@@ -215,4 +252,4 @@ The package does not currently ship:
 - a remote SaaS API
 - automatic workflow execution after interpretation
 
-If another project needs HTTP, build a thin wrapper around the library or CLI rather than pushing workflow logic into this package.
+If another project needs HTTP, use the local wrapper example above or build another thin wrapper around the library or CLI rather than pushing workflow logic into this package.

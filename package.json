@@ -18,6 +18,7 @@
   },
   "files": [
     "src",
+    "examples/local-http-wrapper.js",
     "scripts/manual-e2e-smoke.ps1",
     "data/.gitkeep",
     "docs/registry.schema.json",
