@@ -439,6 +439,34 @@ async function main() {
     assert.equal(httpSuggestOutput.candidates[0].phrase, "收工啦");
     assert.equal(path.normalize(httpSuggestOutput.registry_path), path.normalize(httpRegistryPath));
 
+    const installedProjectRegistryPath = resolveInstalledPackagePath(
+      consumerDir,
+      "examples",
+      "project-registry",
+      "custom-habits.json"
+    );
+
+    const installedProjectRegistryValidation = readJson(
+      run(resolveInstalledBin(consumerDir, "validate-habit-registry"), [installedProjectRegistryPath], { cwd: consumerDir, env }),
+      "validate-registry installed project registry example"
+    );
+    assert.equal(installedProjectRegistryValidation.ok, true);
+    assert.equal(installedProjectRegistryValidation.rules, 2);
+
+    const installedProjectRegistryInterpretation = readJson(
+      run(interpretBin, [
+        "--message",
+        "收口一下",
+        "--scenario",
+        "session_close",
+        "--registry",
+        installedProjectRegistryPath
+      ], { cwd: consumerDir, env }),
+      "user-habit-pipeline installed project registry example"
+    );
+    assert.equal(installedProjectRegistryInterpretation.normalized_intent, "close_session");
+    assert.equal(installedProjectRegistryInterpretation.should_ask_clarifying_question, false);
+
     process.stdout.write(
       `${JSON.stringify({
         ok: true,

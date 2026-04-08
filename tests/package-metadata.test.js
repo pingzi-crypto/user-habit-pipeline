@@ -62,4 +62,7 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("docs/codex-current-session-contract.md"));
   assert.ok(pkg.files.includes("docs/freeze-assessment-0.1.0.md"));
   assert.ok(pkg.files.includes("docs/user-habit-management.md"));
+  assert.ok(pkg.files.includes("examples/project-registry/custom-habits.json"));
+  assert.ok(pkg.files.includes("examples/project-registry/README.md"));
+  assert.ok(pkg.files.includes("examples/project-registry/smoke-test.js"));
 });
