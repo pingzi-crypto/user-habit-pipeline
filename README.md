@@ -122,6 +122,12 @@ user: 收尾一下
 '@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
 
+Official local HTTP entrypoint for localhost integration:
+
+```powershell
+npx user-habit-pipeline-http --port 4848
+```
+
 ## Runtime State
 
 Runtime user state is stored outside the package directory by default:

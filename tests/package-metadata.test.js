@@ -20,7 +20,10 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   assert.equal(pkg.bin["user-habit-pipeline"], "./src/cli.js");
   assert.equal(pkg.bin["validate-habit-registry"], "./src/validate-registry-cli.js");
   assert.equal(pkg.bin["manage-user-habits"], "./src/manage-habits-cli.js");
+  assert.equal(pkg.bin["codex-session-habits"], "./src/codex-session-habits-cli.js");
+  assert.equal(pkg.bin["user-habit-pipeline-http"], "./src/http-server-cli.js");
   assert.equal(pkg.scripts.check, "npm run check-examples-doc && npm test");
+  assert.equal(pkg.scripts["http-server"], "node ./src/http-server-cli.js");
   assert.equal(
     pkg.scripts["release-check"],
     "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"

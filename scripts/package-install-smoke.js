@@ -2,9 +2,11 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const http = require("node:http");
+const net = require("node:net");
 const os = require("node:os");
 const path = require("node:path");
-const { spawnSync } = require("node:child_process");
+const { spawn, spawnSync } = require("node:child_process");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const TMP_PREFIX = "user-habit-pipeline-package-install-";
@@ -12,8 +14,6 @@ const TMP_PREFIX = "user-habit-pipeline-package-install-";
 function createNpmExecEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
 
-  // `npm publish --dry-run` forwards npm_config_dry_run into lifecycle scripts.
-  // This smoke test needs a real tarball and real local install inside its temp dir.
   delete env.npm_config_dry_run;
   delete env.NPM_CONFIG_DRY_RUN;
 
@@ -51,6 +51,10 @@ function run(command, args, options = {}) {
 function resolveInstalledBin(consumerDir, binName) {
   const suffix = process.platform === "win32" ? ".cmd" : "";
   return path.join(consumerDir, "node_modules", ".bin", `${binName}${suffix}`);
+}
+
+function resolveInstalledPackagePath(consumerDir, ...segments) {
+  return path.join(consumerDir, "node_modules", "user-habit-pipeline", ...segments);
 }
 
 function readJson(text, sourceLabel) {
@@ -94,12 +98,156 @@ function runWithInput(command, args, inputText, options = {}) {
   return String(result.stdout || "").trim();
 }
 
-function main() {
+function getAvailablePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      const port = typeof address === "object" && address ? address.port : null;
+      server.close((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(port);
+      });
+    });
+  });
+}
+
+function requestJson(method, url, payload) {
+  return new Promise((resolve, reject) => {
+    const target = new URL(url);
+    const body = payload === undefined ? null : JSON.stringify(payload);
+    const request = http.request({
+      method,
+      hostname: target.hostname,
+      port: target.port,
+      path: `${target.pathname}${target.search}`,
+      headers: body
+        ? {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(body)
+        }
+        : undefined
+    }, (response) => {
+      let responseText = "";
+      response.setEncoding("utf8");
+      response.on("data", (chunk) => {
+        responseText += chunk;
+      });
+      response.on("end", () => {
+        const normalized = responseText.trim();
+        const parsed = normalized ? readJson(normalized, `${method} ${url}`) : {};
+
+        if ((response.statusCode || 500) < 200 || (response.statusCode || 500) >= 300) {
+          reject(new Error(`${method} ${url} failed with ${response.statusCode}.\n\n${normalized}`));
+          return;
+        }
+
+        resolve(parsed);
+      });
+    });
+
+    request.once("error", reject);
+
+    if (body) {
+      request.write(body);
+    }
+
+    request.end();
+  });
+}
+
+async function waitForHealth(url, timeoutMs = 15000) {
+  const deadline = Date.now() + timeoutMs;
+  let lastError = null;
+
+  while (Date.now() < deadline) {
+    try {
+      return await requestJson("GET", url);
+    } catch (error) {
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+  }
+
+  throw lastError || new Error(`Timed out waiting for ${url}`);
+}
+
+function spawnBackground(command, args, options = {}) {
+  const executable = process.platform === "win32" && !path.extname(command)
+    ? `${command}.cmd`
+    : command;
+
+  const child = spawn(executable, args, {
+    cwd: options.cwd || ROOT_DIR,
+    env: options.env || process.env,
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+
+  let stdout = "";
+  let stderr = "";
+  child.stdout.on("data", (chunk) => {
+    stdout += chunk.toString();
+  });
+  child.stderr.on("data", (chunk) => {
+    stderr += chunk.toString();
+  });
+
+  return {
+    child,
+    getStdout: () => stdout,
+    getStderr: () => stderr
+  };
+}
+
+async function stopBackground(processHandle) {
+  if (!processHandle || processHandle.child.exitCode !== null) {
+    return;
+  }
+
+  const child = processHandle.child;
+  child.kill();
+
+  await Promise.race([
+    new Promise((resolve) => child.once("exit", resolve)),
+    new Promise((resolve) => setTimeout(resolve, 5000))
+  ]);
+
+  if (child.exitCode === null) {
+    child.kill("SIGKILL");
+  }
+}
+
+async function removeWithRetry(targetPath, attempts = 20, delayMs = 250) {
+  for (let index = 0; index < attempts; index += 1) {
+    try {
+      fs.rmSync(targetPath, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      if (
+        index === attempts - 1
+        || !error
+        || !["EBUSY", "EPERM", "ENOTEMPTY"].includes(error.code)
+      ) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
+async function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), TMP_PREFIX));
   const packDir = path.join(tempRoot, "pack");
   const consumerDir = path.join(tempRoot, "consumer");
   const runtimeHome = path.join(tempRoot, "runtime-home");
   const npmEnv = createNpmExecEnv();
+  let httpProcessHandle = null;
 
   fs.mkdirSync(packDir, { recursive: true });
   fs.mkdirSync(consumerDir, { recursive: true });
@@ -125,6 +273,8 @@ function main() {
     const manageBin = resolveInstalledBin(consumerDir, "manage-user-habits");
     const interpretBin = resolveInstalledBin(consumerDir, "user-habit-pipeline");
     const codexBin = resolveInstalledBin(consumerDir, "codex-session-habits");
+    const httpBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-http");
+    const httpCliPath = resolveInstalledPackagePath(consumerDir, "src", "http-server-cli.js");
 
     const addOutput = readJson(
       run(manageBin, [
@@ -234,6 +384,61 @@ function main() {
       "Library export should resolve the default user registry path inside the configured runtime home."
     );
 
+    const httpHelpOutput = run(httpBin, ["--help"], { cwd: consumerDir, env });
+    assert.match(httpHelpOutput, /Usage: user-habit-pipeline-http/u);
+
+    const httpRegistryPath = path.join(runtimeHome, "http-user-habits.json");
+    const httpPort = await getAvailablePort();
+    const httpBaseUrl = `http://127.0.0.1:${httpPort}`;
+
+    httpProcessHandle = spawnBackground(process.execPath, [
+      httpCliPath,
+      "--host",
+      "127.0.0.1",
+      "--port",
+      String(httpPort),
+      "--user-registry",
+      httpRegistryPath
+    ], {
+      cwd: consumerDir,
+      env
+    });
+
+    const healthOutput = await waitForHealth(`${httpBaseUrl}/health`);
+    assert.equal(healthOutput.ok, true);
+    assert.equal(healthOutput.service, "user-habit-pipeline-http");
+    assert.equal(healthOutput.port, httpPort);
+    assert.equal(path.normalize(healthOutput.user_registry_path), path.normalize(httpRegistryPath));
+
+    const httpManageOutput = await requestJson("POST", `${httpBaseUrl}/manage`, {
+      request: "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
+    });
+    assert.equal(httpManageOutput.ok, true);
+    assert.equal(httpManageOutput.result.action, "add");
+    assert.equal(httpManageOutput.result.added_rule.phrase, "收尾一下");
+    assert.equal(path.normalize(httpManageOutput.result.registry_path), path.normalize(httpRegistryPath));
+
+    const httpInterpretOutput = await requestJson("POST", `${httpBaseUrl}/interpret`, {
+      message: "收尾一下",
+      scenario: "session_close"
+    });
+    assert.equal(httpInterpretOutput.ok, true);
+    assert.equal(httpInterpretOutput.result.normalized_intent, "close_session");
+
+    const httpSuggestOutput = await requestJson("POST", `${httpBaseUrl}/suggest`, {
+      transcript: [
+        "user: 我这里的“收工啦”不是结束线程，是 close_session 场景=session_close",
+        "assistant: 收到，我后面按 close_session 理解。",
+        "user: 收工啦"
+      ].join("\n"),
+      max_candidates: 3
+    });
+    assert.equal(httpSuggestOutput.ok, true);
+    assert.equal(httpSuggestOutput.action, "suggest");
+    assert.equal(httpSuggestOutput.candidate_count, 1);
+    assert.equal(httpSuggestOutput.candidates[0].phrase, "收工啦");
+    assert.equal(path.normalize(httpSuggestOutput.registry_path), path.normalize(httpRegistryPath));
+
     process.stdout.write(
       `${JSON.stringify({
         ok: true,
@@ -243,12 +448,17 @@ function main() {
       }, null, 2)}\n`
     );
   } finally {
+    await stopBackground(httpProcessHandle);
+
     if (process.env.USER_HABIT_PIPELINE_KEEP_SMOKE_TMP !== "1") {
-      fs.rmSync(tempRoot, { recursive: true, force: true });
+      await removeWithRetry(tempRoot);
     }
   }
 }
 
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    process.stderr.write(`${error.stack || error.message || String(error)}\n`);
+    process.exit(1);
+  });
 }

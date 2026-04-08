@@ -207,16 +207,18 @@ Choose `codex-session-habits` if:
 
 ---
 
-## Local HTTP Wrapper Example
+## Local HTTP Entry Point
 
-If another local project really wants an API-shaped boundary, this repository now includes a minimal wrapper example:
+If another local project really wants an API-shaped boundary, the package now ships an official localhost entrypoint:
 
-- [examples/local-http-wrapper.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/local-http-wrapper.js)
+- `user-habit-pipeline-http`
+- implementation: [http-server-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/http-server-cli.js)
+- compatibility example wrapper: [local-http-wrapper.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/local-http-wrapper.js)
 
 Run it:
 
 ```powershell
-node .\examples\local-http-wrapper.js
+npx user-habit-pipeline-http --port 4848
 ```
 
 Default address:
@@ -229,6 +231,13 @@ Available endpoints:
 - `POST /interpret`
 - `POST /suggest`
 - `POST /manage`
+
+Optional flags:
+
+- `--host <hostname>`
+- `--port <number>`
+- `--user-registry <path>`
+- `--max-body-bytes <n>`
 
 PowerShell example:
 
