@@ -37,8 +37,19 @@ const {
   loadSuggestionSnapshot,
   saveSuggestionSnapshot
 } = require("./session_suggestions/cache");
+const {
+  DEFAULT_HTTP_HOST,
+  DEFAULT_HTTP_MAX_BODY_BYTES,
+  DEFAULT_HTTP_PORT,
+  createHttpServer,
+  routeHttpRequest,
+  startHttpServer
+} = require("./http_server");
 
 module.exports = {
+  DEFAULT_HTTP_HOST,
+  DEFAULT_HTTP_MAX_BODY_BYTES,
+  DEFAULT_HTTP_PORT,
   LEGACY_USER_REGISTRY_PATH,
   PACKAGE_NAME,
   USER_REGISTRY_PATH,
@@ -57,14 +68,17 @@ module.exports = {
   loadMergedHabits,
   loadSuggestionSnapshot,
   loadUserRegistryState,
+  createHttpServer,
   parseHabitManagementRequest,
   parseCandidateReference,
   parseSessionTranscript,
   removeUserHabitPhrase,
   resolveDefaultUserRegistryPath,
   resolveUserDataRoot,
+  routeHttpRequest,
   suppressSuggestionPhrase,
   saveSuggestionSnapshot,
+  startHttpServer,
   suggestSessionHabitCandidates,
   validateHabitRules,
   toGrowthHubHint

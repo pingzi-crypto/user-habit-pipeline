@@ -132,6 +132,58 @@ Supported examples:
 - `列出用户习惯短句`
 - `扫描这次会话里的习惯候选`
 
+### `createHttpServer(options?)`
+
+Create the official localhost HTTP server as a Node.js `http.Server` without going through the CLI.
+
+Supported options:
+
+- `options.host?: string`
+- `options.port?: number`
+- `options.registryPath?: string`
+- `options.maxBodyBytes?: number`
+
+Use this when a local Node.js or Electron host wants to embed the shipped HTTP contract directly.
+
+### `startHttpServer(options?)`
+
+Start the official localhost HTTP server and resolve a small runtime descriptor.
+
+Supported options:
+
+- `options.host?: string`
+- `options.port?: number`
+- `options.registryPath?: string`
+- `options.maxBodyBytes?: number`
+
+Resolved fields:
+
+- `server`
+- `host`
+- `port`
+- `url`
+- `registryPath`
+- `maxBodyBytes`
+
+Example:
+
+```js
+const { startHttpServer } = require("user-habit-pipeline");
+
+const { url, server } = await startHttpServer({
+  host: "127.0.0.1",
+  port: 4848
+});
+
+console.log(url);
+```
+
+### `routeHttpRequest(request, response, options?)`
+
+Route one request through the official localhost HTTP contract.
+
+This is mainly useful for advanced hosts that need the package's request handling logic but want to compose their own surrounding Node.js server behavior.
+
 ### `parseSessionTranscript(transcriptText)`
 
 Parse a role-prefixed session transcript into message objects.
@@ -422,6 +474,8 @@ Default address:
 
 This server is intended for localhost integration from other local tools.
 It is not a remote SaaS API and it does not change the project into a workflow engine.
+
+The same HTTP contract is also available from the library entrypoint through `createHttpServer()` and `startHttpServer()`.
 
 ### `GET /health`
 

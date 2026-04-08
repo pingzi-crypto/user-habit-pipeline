@@ -128,6 +128,20 @@ Official local HTTP entrypoint for localhost integration:
 npx user-habit-pipeline-http --port 4848
 ```
 
+Embedded HTTP server from Node.js:
+
+```js
+const { startHttpServer } = require("user-habit-pipeline");
+
+const { url, server } = await startHttpServer({
+  host: "127.0.0.1",
+  port: 4848
+});
+
+console.log(url);
+// later: server.close()
+```
+
 Generate a custom project-registry starter:
 
 ```powershell

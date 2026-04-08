@@ -58,6 +58,41 @@ Useful exports:
 
 This is the cleanest integration path when you want function calls instead of subprocesses.
 
+If the target project prefers an API-shaped localhost boundary but still runs on Node.js, you can also embed the shipped HTTP server directly instead of spawning the CLI:
+
+```js
+const { startHttpServer } = require("user-habit-pipeline");
+
+async function main() {
+  const { url, server } = await startHttpServer({
+    host: "127.0.0.1",
+    port: 4848
+  });
+
+  console.log(`user-habit-pipeline listening at ${url}`);
+
+  process.on("SIGINT", () => {
+    server.close(() => process.exit(0));
+  });
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
+```
+
+Useful embedded HTTP exports:
+
+- `createHttpServer`
+- `startHttpServer`
+
+Use this when:
+
+- the host is Node.js or Electron
+- you want the official HTTP contract
+- you do not want subprocess management overhead
+
 ---
 
 ## Path 2: Any Language Via CLI
@@ -209,10 +244,12 @@ Choose `codex-session-habits` if:
 
 ## Local HTTP Entry Point
 
-If another local project really wants an API-shaped boundary, the package now ships an official localhost entrypoint:
+If another local project really wants an API-shaped boundary, the package now ships an official localhost entrypoint and matching embeddable server helpers:
 
 - `user-habit-pipeline-http`
+- library helpers: `createHttpServer`, `startHttpServer`
 - implementation: [http-server-cli.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/http-server-cli.js)
+- shared server module: [http_server.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/src/http_server.js)
 - compatibility example wrapper: [local-http-wrapper.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/local-http-wrapper.js)
 - Python client example: [http-client-python.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/http-client-python.py)
 - PowerShell client example: [http-client-powershell.ps1](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/http-client-powershell.ps1)
