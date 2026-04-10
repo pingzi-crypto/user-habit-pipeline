@@ -1,26 +1,41 @@
 # User Habit Pipeline
 
-`user-habit-pipeline` is a Node.js CLI and library for turning repeated user shorthand into structured, reviewable intent hints.
+`user-habit-pipeline` is a local-first AI shorthand interpreter for Codex, local AI tools, and app workflows that need to turn repeated user phrases into structured, reviewable intent hints.
 
-It is for products, scripts, local tools, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and need a stable shorthand interpretation layer without turning that layer into a hidden workflow engine.
+It is for products, scripts, local tools, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and need a stable user-habit interpretation layer without turning that layer into a hidden workflow engine.
 
 It works well for:
 
+- AI assistant user-habit interpretation
 - user shorthand interpretation
+- chat command normalization
 - intent parsing in local automation tools
 - Codex or chat-style current-session habit scanning
 - prompt and workflow hinting without hidden execution
 
-If you are searching for a local-first intent parser, shorthand CLI, Codex habit scanner, or a lightweight way to interpret chat workflow phrases, this is the project.
+If you are searching for an AI shorthand interpreter, user habit pipeline, Codex habit scanner, prompt parser, chat workflow phrase interpreter, or a local-first intent parser, this is the project.
+
+## In One Line
+
+Use `user-habit-pipeline` when an AI assistant or local app keeps seeing repeated user phrases and you want explicit, inspectable interpretation instead of brittle regex glue or hidden memory.
 
 ## Who It Is For
 
 Use this package if you are building:
 
+- an AI assistant that needs explicit user-habit memory with confirmation controls
 - a Node.js product that needs stable shorthand interpretation
 - a local tool that wants JSON output instead of brittle regex glue
 - a chat or assistant host that wants current-session habit suggestions
 - a workflow layer that needs hints, not auto-executed actions
+
+## Search-Friendly Use Cases
+
+- local AI assistant memory for repeated user shorthand
+- Codex skill backend for current-session habit suggestions
+- prompt parser for follow-up commands like `继续`, `停`, `收尾一下`
+- reviewable user preference interpretation without auto-executing workflows
+- localhost intent service for desktop tools, Electron apps, and local automation
 
 ## Common Use Cases
 

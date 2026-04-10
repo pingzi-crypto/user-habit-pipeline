@@ -8,3 +8,4 @@ data/.last_session_habit_suggestions.json
 data/tmp-session-transcript.txt
 data/tmp-*.txt
 .codex/
+docs/public-copy-kit.md
