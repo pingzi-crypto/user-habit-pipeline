@@ -93,6 +93,12 @@ Use this when:
 - you want the official HTTP contract
 - you do not want subprocess management overhead
 
+Copyable external-project demo files:
+
+- [examples/external-consumer-node/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/README.md)
+- [examples/external-consumer-node/direct-library-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/direct-library-demo.js)
+- [examples/external-consumer-node/embedded-http-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/embedded-http-demo.js)
+
 ---
 
 ## Path 2: Any Language Via CLI
