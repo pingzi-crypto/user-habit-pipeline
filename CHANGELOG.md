@@ -2,9 +2,14 @@
 
 ## Unreleased
 
+No unreleased changes.
+
+## 0.7.0 - 2026-04-10
+
 - Added official library exports for the local HTTP server so Node.js and Electron hosts can embed the localhost integration surface without spawning the CLI.
 - Kept `user-habit-pipeline-http` as a thin CLI wrapper over the same shared HTTP server module.
 - Added regression coverage for starting the local HTTP server through the main library entrypoint.
+- Refined the public package positioning across the npm description, keywords, and README so AI-tooling, Codex, and user-habit use cases are easier to discover.
 
 ## 0.6.0 - 2026-04-08
 

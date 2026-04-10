@@ -1,6 +1,6 @@
 {
   "name": "user-habit-pipeline",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": false,
   "license": "Apache-2.0",
   "description": "Local-first AI shorthand interpreter and Codex habit pipeline for turning repeated user phrases into structured, reviewable intent hints.",
@@ -47,6 +47,7 @@
     "docs/release-notes-v0.4.3.md",
     "docs/release-notes-v0.5.0.md",
     "docs/release-notes-v0.6.0.md",
+    "docs/release-notes-v0.7.0.md",
     "docs/session-habit-suggestions.md",
     "docs/codex-current-session-contract.md",
     "docs/codex-skill-integration.md",
