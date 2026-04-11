@@ -6,6 +6,7 @@
   "description": "Local-first AI shorthand interpreter and Codex habit pipeline for turning repeated user phrases into structured, reviewable intent hints.",
   "homepage": "https://github.com/pingzi-crypto/user-habit-pipeline#readme",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/pingzi-crypto/user-habit-pipeline.git"
@@ -97,12 +98,13 @@
     "user-habit-pipeline-http": "./src/http-server-cli.js"
   },
   "scripts": {
+    "build": "tsc -p ./tsconfig.json",
     "check": "npm run check-examples-doc && npm test",
     "codex-session-habits": "node ./src/codex-session-habits-cli.js",
     "http-server": "node ./src/http-server-cli.js",
     "init-registry": "node ./src/init-registry-cli.js",
     "release-check": "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
-    "test": "node --test",
+    "test": "npm run build && node --test",
     "demo": "node ./src/demo.js",
     "manual-e2e-smoke": "pwsh -File ./scripts/manual-e2e-smoke.ps1",
     "interpret": "node ./src/cli.js",
@@ -113,5 +115,9 @@
     "check-examples-doc": "node ./src/generate-examples-doc.js --check",
     "package-smoke": "npm pack --dry-run",
     "package-install-smoke": "node ./scripts/package-install-smoke.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.50",
+    "typescript": "^5.8.3"
   }
 }

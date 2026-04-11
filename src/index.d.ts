@@ -1,0 +1,18 @@
+import { toGrowthHubHint } from "./adapters/growth_hub/adapter";
+import { createUnknownOutput, findCandidateRules, interpretHabit, loadDefaultHabits, loadHabitsFromFile } from "./habit_core/interpreter";
+import type { GrowthHubHint, HabitInput, HabitMatch, HabitOutput, HabitRule, InterpretHabitOptions, MatchType, UserRegistryState } from "./habit_core/types";
+import { USER_DATA_ROOT, USER_REGISTRY_PATH, addUserHabitRule, ensureUserRegistryFile, exportUserRegistryState, importUserRegistryState, loadMergedHabits, loadUserRegistryState, removeUserHabitPhrase, suppressSuggestionPhrase } from "./habit_registry/user_registry";
+import { parseHabitManagementRequest as parseHabitManagementRequestImpl, type HabitManagementRequest as ParsedHabitManagementRequest } from "./habit_registry/management_prompt";
+import { validateHabitRules } from "./habit_registry/validate_registry";
+import { LEGACY_DATA_DIR, LEGACY_USER_REGISTRY_PATH, PACKAGE_NAME, USER_HOME_OVERRIDE_ENV, resolveDefaultUserRegistryPath, resolveUserDataRoot } from "./runtime_paths";
+import { DEFAULT_SUGGESTION_CACHE_FILENAME, deriveSuggestionCachePath as deriveSuggestionCachePathImpl, loadSuggestionSnapshot as loadSuggestionSnapshotImpl, saveSuggestionSnapshot as saveSuggestionSnapshotImpl, type LoadedSuggestionSnapshot as CacheLoadedSuggestionSnapshot, type SuggestionSnapshotRecord as CacheSuggestionSnapshotRecord } from "./session_suggestions/cache";
+export type { GrowthHubHint, HabitInput, ParsedHabitManagementRequest as HabitManagementRequest, HabitMatch, HabitOutput, HabitRule, InterpretHabitOptions, CacheLoadedSuggestionSnapshot as LoadedSuggestionSnapshot, MatchType, CacheSuggestionSnapshotRecord as SuggestionSnapshotRecord, UserRegistryState };
+export { createUnknownOutput, findCandidateRules, interpretHabit, loadDefaultHabits, loadHabitsFromFile, toGrowthHubHint, validateHabitRules, LEGACY_DATA_DIR, LEGACY_USER_REGISTRY_PATH, PACKAGE_NAME, USER_HOME_OVERRIDE_ENV, resolveDefaultUserRegistryPath, resolveUserDataRoot };
+export { USER_DATA_ROOT, USER_REGISTRY_PATH, addUserHabitRule, ensureUserRegistryFile, exportUserRegistryState, importUserRegistryState, loadMergedHabits, loadUserRegistryState, removeUserHabitPhrase, suppressSuggestionPhrase };
+export declare const findSuggestedCandidate: (...args: any[]) => any, parseCandidateReference: (...args: any[]) => any, parseSessionTranscript: (...args: any[]) => any, suggestSessionHabitCandidates: (...args: any[]) => any;
+export declare const parseHabitManagementRequest: typeof parseHabitManagementRequestImpl;
+export declare const deriveSuggestionCachePath: typeof deriveSuggestionCachePathImpl;
+export declare const loadSuggestionSnapshot: typeof loadSuggestionSnapshotImpl;
+export declare const saveSuggestionSnapshot: typeof saveSuggestionSnapshotImpl;
+export { DEFAULT_SUGGESTION_CACHE_FILENAME, };
+export declare const DEFAULT_HTTP_HOST: string, DEFAULT_HTTP_MAX_BODY_BYTES: number, DEFAULT_HTTP_PORT: number, createHttpServer: (...args: any[]) => any, routeHttpRequest: (...args: any[]) => any, startHttpServer: (...args: any[]) => any;

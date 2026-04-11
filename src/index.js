@@ -1,85 +1,42 @@
-const {
-  interpretHabit,
-  loadDefaultHabits,
-  loadHabitsFromFile
-} = require("./habit_core/interpreter");
-const { toGrowthHubHint } = require("./adapters/growth_hub/adapter");
-const { validateHabitRules } = require("./habit_registry/validate_registry");
-const {
-  PACKAGE_NAME,
-  USER_HOME_OVERRIDE_ENV
-} = require("./runtime_paths");
-const {
-  LEGACY_USER_REGISTRY_PATH,
-  USER_REGISTRY_PATH,
-  USER_DATA_ROOT,
-  addUserHabitRule,
-  ensureUserRegistryFile,
-  exportUserRegistryState,
-  importUserRegistryState,
-  loadMergedHabits,
-  loadUserRegistryState,
-  removeUserHabitPhrase,
-  resolveDefaultUserRegistryPath,
-  resolveUserDataRoot,
-  suppressSuggestionPhrase
-} = require("./habit_registry/user_registry");
-const { parseHabitManagementRequest } = require("./habit_registry/management_prompt");
-const {
-  parseSessionTranscript,
-  findSuggestedCandidate,
-  parseCandidateReference,
-  suggestSessionHabitCandidates
-} = require("./session_suggestions/extract_candidates");
-const {
-  DEFAULT_SUGGESTION_CACHE_FILENAME,
-  deriveSuggestionCachePath,
-  loadSuggestionSnapshot,
-  saveSuggestionSnapshot
-} = require("./session_suggestions/cache");
-const {
-  DEFAULT_HTTP_HOST,
-  DEFAULT_HTTP_MAX_BODY_BYTES,
-  DEFAULT_HTTP_PORT,
-  createHttpServer,
-  routeHttpRequest,
-  startHttpServer
-} = require("./http_server");
-
-module.exports = {
-  DEFAULT_HTTP_HOST,
-  DEFAULT_HTTP_MAX_BODY_BYTES,
-  DEFAULT_HTTP_PORT,
-  LEGACY_USER_REGISTRY_PATH,
-  PACKAGE_NAME,
-  USER_REGISTRY_PATH,
-  USER_DATA_ROOT,
-  USER_HOME_OVERRIDE_ENV,
-  addUserHabitRule,
-  ensureUserRegistryFile,
-  exportUserRegistryState,
-  findSuggestedCandidate,
-  importUserRegistryState,
-  interpretHabit,
-  DEFAULT_SUGGESTION_CACHE_FILENAME,
-  deriveSuggestionCachePath,
-  loadDefaultHabits,
-  loadHabitsFromFile,
-  loadMergedHabits,
-  loadSuggestionSnapshot,
-  loadUserRegistryState,
-  createHttpServer,
-  parseHabitManagementRequest,
-  parseCandidateReference,
-  parseSessionTranscript,
-  removeUserHabitPhrase,
-  resolveDefaultUserRegistryPath,
-  resolveUserDataRoot,
-  routeHttpRequest,
-  suppressSuggestionPhrase,
-  saveSuggestionSnapshot,
-  startHttpServer,
-  suggestSessionHabitCandidates,
-  validateHabitRules,
-  toGrowthHubHint
-};
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.startHttpServer = exports.routeHttpRequest = exports.createHttpServer = exports.DEFAULT_HTTP_PORT = exports.DEFAULT_HTTP_MAX_BODY_BYTES = exports.DEFAULT_HTTP_HOST = exports.DEFAULT_SUGGESTION_CACHE_FILENAME = exports.saveSuggestionSnapshot = exports.loadSuggestionSnapshot = exports.deriveSuggestionCachePath = exports.parseHabitManagementRequest = exports.suggestSessionHabitCandidates = exports.parseSessionTranscript = exports.parseCandidateReference = exports.findSuggestedCandidate = exports.suppressSuggestionPhrase = exports.removeUserHabitPhrase = exports.loadUserRegistryState = exports.loadMergedHabits = exports.importUserRegistryState = exports.exportUserRegistryState = exports.ensureUserRegistryFile = exports.addUserHabitRule = exports.USER_REGISTRY_PATH = exports.USER_DATA_ROOT = exports.resolveUserDataRoot = exports.resolveDefaultUserRegistryPath = exports.USER_HOME_OVERRIDE_ENV = exports.PACKAGE_NAME = exports.LEGACY_USER_REGISTRY_PATH = exports.LEGACY_DATA_DIR = exports.validateHabitRules = exports.toGrowthHubHint = exports.loadHabitsFromFile = exports.loadDefaultHabits = exports.interpretHabit = exports.findCandidateRules = exports.createUnknownOutput = void 0;
+const adapter_1 = require("./adapters/growth_hub/adapter");
+Object.defineProperty(exports, "toGrowthHubHint", { enumerable: true, get: function () { return adapter_1.toGrowthHubHint; } });
+const interpreter_1 = require("./habit_core/interpreter");
+Object.defineProperty(exports, "createUnknownOutput", { enumerable: true, get: function () { return interpreter_1.createUnknownOutput; } });
+Object.defineProperty(exports, "findCandidateRules", { enumerable: true, get: function () { return interpreter_1.findCandidateRules; } });
+Object.defineProperty(exports, "interpretHabit", { enumerable: true, get: function () { return interpreter_1.interpretHabit; } });
+Object.defineProperty(exports, "loadDefaultHabits", { enumerable: true, get: function () { return interpreter_1.loadDefaultHabits; } });
+Object.defineProperty(exports, "loadHabitsFromFile", { enumerable: true, get: function () { return interpreter_1.loadHabitsFromFile; } });
+const user_registry_1 = require("./habit_registry/user_registry");
+Object.defineProperty(exports, "USER_DATA_ROOT", { enumerable: true, get: function () { return user_registry_1.USER_DATA_ROOT; } });
+Object.defineProperty(exports, "USER_REGISTRY_PATH", { enumerable: true, get: function () { return user_registry_1.USER_REGISTRY_PATH; } });
+Object.defineProperty(exports, "addUserHabitRule", { enumerable: true, get: function () { return user_registry_1.addUserHabitRule; } });
+Object.defineProperty(exports, "ensureUserRegistryFile", { enumerable: true, get: function () { return user_registry_1.ensureUserRegistryFile; } });
+Object.defineProperty(exports, "exportUserRegistryState", { enumerable: true, get: function () { return user_registry_1.exportUserRegistryState; } });
+Object.defineProperty(exports, "importUserRegistryState", { enumerable: true, get: function () { return user_registry_1.importUserRegistryState; } });
+Object.defineProperty(exports, "loadMergedHabits", { enumerable: true, get: function () { return user_registry_1.loadMergedHabits; } });
+Object.defineProperty(exports, "loadUserRegistryState", { enumerable: true, get: function () { return user_registry_1.loadUserRegistryState; } });
+Object.defineProperty(exports, "removeUserHabitPhrase", { enumerable: true, get: function () { return user_registry_1.removeUserHabitPhrase; } });
+Object.defineProperty(exports, "suppressSuggestionPhrase", { enumerable: true, get: function () { return user_registry_1.suppressSuggestionPhrase; } });
+const management_prompt_1 = require("./habit_registry/management_prompt");
+const validate_registry_1 = require("./habit_registry/validate_registry");
+Object.defineProperty(exports, "validateHabitRules", { enumerable: true, get: function () { return validate_registry_1.validateHabitRules; } });
+const runtime_paths_1 = require("./runtime_paths");
+Object.defineProperty(exports, "LEGACY_DATA_DIR", { enumerable: true, get: function () { return runtime_paths_1.LEGACY_DATA_DIR; } });
+Object.defineProperty(exports, "LEGACY_USER_REGISTRY_PATH", { enumerable: true, get: function () { return runtime_paths_1.LEGACY_USER_REGISTRY_PATH; } });
+Object.defineProperty(exports, "PACKAGE_NAME", { enumerable: true, get: function () { return runtime_paths_1.PACKAGE_NAME; } });
+Object.defineProperty(exports, "USER_HOME_OVERRIDE_ENV", { enumerable: true, get: function () { return runtime_paths_1.USER_HOME_OVERRIDE_ENV; } });
+Object.defineProperty(exports, "resolveDefaultUserRegistryPath", { enumerable: true, get: function () { return runtime_paths_1.resolveDefaultUserRegistryPath; } });
+Object.defineProperty(exports, "resolveUserDataRoot", { enumerable: true, get: function () { return runtime_paths_1.resolveUserDataRoot; } });
+const cache_1 = require("./session_suggestions/cache");
+Object.defineProperty(exports, "DEFAULT_SUGGESTION_CACHE_FILENAME", { enumerable: true, get: function () { return cache_1.DEFAULT_SUGGESTION_CACHE_FILENAME; } });
+const extractCandidates = require("./session_suggestions/extract_candidates");
+const httpServer = require("./http_server");
+exports.findSuggestedCandidate = extractCandidates.findSuggestedCandidate, exports.parseCandidateReference = extractCandidates.parseCandidateReference, exports.parseSessionTranscript = extractCandidates.parseSessionTranscript, exports.suggestSessionHabitCandidates = extractCandidates.suggestSessionHabitCandidates;
+exports.parseHabitManagementRequest = management_prompt_1.parseHabitManagementRequest;
+exports.deriveSuggestionCachePath = cache_1.deriveSuggestionCachePath;
+exports.loadSuggestionSnapshot = cache_1.loadSuggestionSnapshot;
+exports.saveSuggestionSnapshot = cache_1.saveSuggestionSnapshot;
+exports.DEFAULT_HTTP_HOST = httpServer.DEFAULT_HTTP_HOST, exports.DEFAULT_HTTP_MAX_BODY_BYTES = httpServer.DEFAULT_HTTP_MAX_BODY_BYTES, exports.DEFAULT_HTTP_PORT = httpServer.DEFAULT_HTTP_PORT, exports.createHttpServer = httpServer.createHttpServer, exports.routeHttpRequest = httpServer.routeHttpRequest, exports.startHttpServer = httpServer.startHttpServer;

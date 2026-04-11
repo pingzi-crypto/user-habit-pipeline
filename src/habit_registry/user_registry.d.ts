@@ -1,0 +1,18 @@
+import type { HabitRule, UserRegistryState } from "../habit_core/types";
+import { LEGACY_USER_REGISTRY_PATH, resolveDefaultUserRegistryPath, resolveUserDataRoot } from "../runtime_paths";
+export { LEGACY_USER_REGISTRY_PATH, resolveDefaultUserRegistryPath, resolveUserDataRoot };
+export declare const USER_DATA_ROOT: string;
+export declare const USER_REGISTRY_PATH: string;
+export declare function createEmptyUserRegistry(): UserRegistryState;
+export declare function validateUserRegistryState(state: unknown): UserRegistryState;
+export declare function ensureUserRegistryFile(registryPath?: string): string;
+export declare function loadUserRegistryState(registryPath?: string): UserRegistryState;
+export declare function saveUserRegistryState(state: unknown, registryPath?: string): UserRegistryState;
+export declare function mergeHabitRegistries(defaultRules: HabitRule[], userRegistryState: unknown): HabitRule[];
+export declare function loadMergedHabits(defaultRules: HabitRule[], registryPath?: string): HabitRule[];
+export declare function mergeUserRegistryStates(baseState: unknown, incomingState: unknown): UserRegistryState;
+export declare function addUserHabitRule(rule: HabitRule, registryPath?: string): UserRegistryState;
+export declare function removeUserHabitPhrase(phrase: string | null | undefined, registryPath?: string): UserRegistryState;
+export declare function suppressSuggestionPhrase(phrase: string | null | undefined, registryPath?: string): UserRegistryState;
+export declare function exportUserRegistryState(exportPath: string, registryPath?: string): UserRegistryState;
+export declare function importUserRegistryState(importPath: string, registryPath?: string, mode?: "replace" | "merge"): UserRegistryState;
