@@ -59,7 +59,9 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.equal(typeof pkg.devDependencies.typescript, "string");
   assert.equal(typeof pkg.devDependencies["@types/node"], "string");
   assert.ok(Array.isArray(pkg.files));
-  assert.ok(pkg.files.includes("src"));
+  assert.ok(pkg.files.includes("src/**/*.js"));
+  assert.ok(pkg.files.includes("src/**/*.d.ts"));
+  assert.ok(pkg.files.includes("src/habit_registry/default_habits.json"));
   assert.ok(pkg.files.includes("scripts/manual-e2e-smoke.ps1"));
   assert.ok(pkg.files.includes("data/.gitkeep"));
   assert.ok(pkg.files.includes("CHANGELOG.md"));

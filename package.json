@@ -18,7 +18,9 @@
     ".": "./src/index.js"
   },
   "files": [
-    "src",
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "src/habit_registry/default_habits.json",
     "examples/local-http-wrapper.js",
     "examples/http-client-python.py",
     "examples/http-client-powershell.ps1",
