@@ -106,7 +106,7 @@
     "codex-session-habits": "node ./src/codex-session-habits-cli.js",
     "http-server": "node ./src/http-server-cli.js",
     "init-registry": "node ./src/init-registry-cli.js",
-    "release-check": "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json",
+    "release-check": "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- ./src/habit_registry/default_habits.json",
     "test": "npm run build && node --test",
     "demo": "node ./src/demo.js",
     "manual-e2e-smoke": "pwsh -File ./scripts/manual-e2e-smoke.ps1",

@@ -2,7 +2,7 @@ param(
   [string]$UserRegistryPath,
   [string]$TempRoot,
   [switch]$IncludeSkillSmoke,
-  [string]$SkillRepoPath = "E:\manage-current-session-habits"
+  [string]$SkillRepoPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,6 +32,20 @@ function Assert-True {
   if (-not $Condition) {
     throw $Message
   }
+}
+
+function Join-SubPath {
+  param(
+    [string]$BasePath,
+    [string[]]$Parts
+  )
+
+  $resolved = $BasePath
+  foreach ($part in $Parts) {
+    $resolved = Join-Path $resolved $part
+  }
+
+  return $resolved
 }
 
 function Invoke-JsonCommand {
@@ -77,12 +91,17 @@ function Test-Step {
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $nodeCommand = (Get-Command node -ErrorAction Stop).Source
-$codexCliPath = Join-Path $repoRoot "src\codex-session-habits-cli.js"
-$interpretCliPath = Join-Path $repoRoot "src\cli.js"
-$projectPrinciplesPath = Join-Path $repoRoot "docs\project-principles.md"
+$codexCliPath = Join-SubPath -BasePath $repoRoot -Parts @("src", "codex-session-habits-cli.js")
+$interpretCliPath = Join-SubPath -BasePath $repoRoot -Parts @("src", "cli.js")
+$projectPrinciplesPath = Join-SubPath -BasePath $repoRoot -Parts @("docs", "project-principles.md")
+
+if (-not $SkillRepoPath) {
+  $workspaceRoot = Split-Path -Path $repoRoot -Parent
+  $SkillRepoPath = Join-SubPath -BasePath $workspaceRoot -Parts @("manage-current-session-habits")
+}
 
 if (-not $TempRoot) {
-  $TempRoot = Join-Path $env:TEMP "uhp-e2e-smoke"
+  $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) "uhp-e2e-smoke"
 }
 
 New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null
@@ -227,8 +246,8 @@ user: 收工啦
     Assert-True ($projectPrinciples -match "低 ROI|low ROI|不太划算") "Expected low-ROI wording in project principles."
 
     if (Test-Path -LiteralPath $SkillRepoPath) {
-      $skillPath = Join-Path $SkillRepoPath "SKILL.md"
-      $interactionPath = Join-Path $SkillRepoPath "references\interaction-patterns.md"
+      $skillPath = Join-SubPath -BasePath $SkillRepoPath -Parts @("SKILL.md")
+      $interactionPath = Join-SubPath -BasePath $SkillRepoPath -Parts @("references", "interaction-patterns.md")
       $skillText = Get-Content -Raw -LiteralPath $skillPath
       $interactionText = Get-Content -Raw -LiteralPath $interactionPath
       Assert-True ($skillText -match "停|跳过") "Expected stop word guidance in skill instructions."
@@ -240,7 +259,7 @@ user: 收工啦
 
   if ($IncludeSkillSmoke) {
     Test-Step -Results $results -Name "skill_smoke_test" -Action {
-      $checkInstallPath = Join-Path $SkillRepoPath "scripts\check-install.ps1"
+      $checkInstallPath = Join-SubPath -BasePath $SkillRepoPath -Parts @("scripts", "check-install.ps1")
       if (-not (Test-Path -LiteralPath $checkInstallPath)) {
         throw "Skill smoke script was not found at $checkInstallPath"
       }

@@ -36,7 +36,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   assert.equal(pkg.scripts["init-registry"], "node ./src/init-registry-cli.js");
   assert.equal(
     pkg.scripts["release-check"],
-    "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- .\\src\\habit_registry\\default_habits.json"
+    "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- ./src/habit_registry/default_habits.json"
   );
   assert.equal(pkg.scripts.test, "npm run build && node --test");
   assert.equal(pkg.scripts.demo, "node ./src/demo.js");
