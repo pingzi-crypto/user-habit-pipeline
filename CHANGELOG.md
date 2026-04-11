@@ -2,9 +2,14 @@
 
 ## Unreleased
 
+- No changes yet.
+
+## 0.7.1 - 2026-04-11
+
 - Refactored the source tree from JavaScript to TypeScript while preserving the existing CommonJS runtime entrypoints and published CLI names.
 - Added generated declaration files for the public library surface so TypeScript consumers can import the package without hand-written ambient types.
 - Removed `@ts-nocheck` from the TypeScript source files and tightened the core interpreter, user-registry, suggestion, and HTTP entry modules with explicit types.
+- Trimmed the published package contents so install consumers receive the compiled runtime, type declarations, and required docs without the full authoring source tree.
 
 ## 0.7.0 - 2026-04-10
 
