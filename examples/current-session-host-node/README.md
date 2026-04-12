@@ -38,6 +38,18 @@ Use `apply-first-candidate-demo.js` when:
 - a scan already happened in the same runtime home
 - you want the host to reuse cached candidate state instead of replaying transcript input
 
+## Runtime Isolation
+
+The current-session apply step reuses the latest local suggestion cache.
+
+For project-local testing or when multiple host projects share one machine, prefer setting:
+
+```powershell
+$env:USER_HABIT_PIPELINE_HOME = Join-Path $PWD ".runtime-home"
+```
+
+before running the demos. That keeps the cached suggestion snapshot and user registry inside the host project instead of mixing with another existing local setup.
+
 ## Host Responsibilities
 
 - gather visible conversation text

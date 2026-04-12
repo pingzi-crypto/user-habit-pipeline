@@ -255,6 +255,8 @@ Do not scrape unknown private thread stores.
 
 This path is the intended contract for Codex-style current-session integrations.
 
+For project-local testing or multi-project isolation, prefer setting `USER_HABIT_PIPELINE_HOME` to a host-owned runtime directory before running the scan/apply flow. That keeps the cached suggestion snapshot and user registry local to the host project instead of reusing another existing machine-level setup.
+
 Copyable current-session host starter files:
 
 - [examples/current-session-host-node/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/README.md)

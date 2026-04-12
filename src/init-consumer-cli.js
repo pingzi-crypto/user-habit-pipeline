@@ -116,6 +116,7 @@ const HOST_DEFINITIONS = {
             "- Use this starter when your host already has access to visible chat or Codex conversation text.",
             "- Keep transcript gathering on the host side; do not make users locate private thread files on disk.",
             "- Reuse the latest local suggestion cache for short follow-up actions such as `添加第1条`.",
+            "- For project-local testing or multi-project isolation, set `USER_HABIT_PIPELINE_HOME` to a host-owned runtime directory before running the starter scripts.",
             "",
             "## Next Steps",
             "",
