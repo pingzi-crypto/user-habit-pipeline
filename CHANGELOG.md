@@ -4,6 +4,13 @@
 
 - No changes yet.
 
+## 0.7.2 - 2026-04-12
+
+- Hardened release validation to run across Windows, macOS, and Linux through a shared GitHub Actions matrix.
+- Fixed cross-platform validation gaps caused by line-ending-sensitive examples doc checks and a Windows-only dependency on external `rg` during package metadata testing.
+- Hardened the package-install smoke flow on Windows by routing npm invocation and installed `.cmd` shim execution through safer runner-compatible paths.
+- Added public docs that explicitly state the currently verified platform matrix and the cross-platform validation scope for installed consumers.
+
 ## 0.7.1 - 2026-04-11
 
 - Refactored the source tree from JavaScript to TypeScript while preserving the existing CommonJS runtime entrypoints and published CLI names.

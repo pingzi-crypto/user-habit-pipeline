@@ -4,7 +4,7 @@ This repository currently follows a simple MVP-first versioning policy.
 
 ## Current Status
 
-- current package version: `0.7.0`
+- current package version: `0.7.2`
 - current stage: pre-stable MVP expansion
 - compatibility goal: keep the main output contract stable while the implementation is refined
 
