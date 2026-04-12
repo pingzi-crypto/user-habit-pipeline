@@ -10,6 +10,9 @@ const { spawn, spawnSync } = require("node:child_process");
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const TMP_PREFIX = "user-habit-pipeline-package-install-";
+const NPM_EXEC_PATH = process.env.npm_execpath && fs.existsSync(process.env.npm_execpath)
+  ? process.env.npm_execpath
+  : null;
 
 function createNpmExecEnv(baseEnv = process.env) {
   const env = { ...baseEnv };
@@ -46,6 +49,14 @@ function run(command, args, options = {}) {
   }
 
   return String(result.stdout || "").trim();
+}
+
+function runNpm(args, options = {}) {
+  if (NPM_EXEC_PATH) {
+    return run(process.execPath, [NPM_EXEC_PATH, ...args], options);
+  }
+
+  return run("npm", args, options);
 }
 
 function resolveInstalledBin(consumerDir, binName) {
@@ -254,7 +265,7 @@ async function main() {
   fs.mkdirSync(runtimeHome, { recursive: true });
 
   try {
-    const tarballName = run("npm", ["pack", "--pack-destination", packDir], { cwd: ROOT_DIR, env: npmEnv })
+    const tarballName = runNpm(["pack", "--pack-destination", packDir], { cwd: ROOT_DIR, env: npmEnv })
       .split(/\r?\n/u)
       .filter(Boolean)
       .at(-1);
@@ -262,8 +273,8 @@ async function main() {
     assert.ok(tarballName, "npm pack did not return a tarball name.");
 
     const tarballPath = path.join(packDir, tarballName);
-    run("npm", ["init", "-y"], { cwd: consumerDir, env: npmEnv });
-    run("npm", ["install", tarballPath], { cwd: consumerDir, env: npmEnv });
+    runNpm(["init", "-y"], { cwd: consumerDir, env: npmEnv });
+    runNpm(["install", tarballPath], { cwd: consumerDir, env: npmEnv });
 
     const env = {
       ...process.env,
