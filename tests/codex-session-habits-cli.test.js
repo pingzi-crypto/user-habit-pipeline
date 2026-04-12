@@ -43,7 +43,13 @@ test("codex-session-habits cli can scan the current session from stdin", () => {
   assert.equal(parsed.candidates[0].confidence_details.final_score, 0.84);
   assert.match(parsed.assistant_reply_markdown, /发现 1 条习惯候选/u);
   assert.match(parsed.assistant_reply_markdown, /添加第1条/u);
+  assert.match(parsed.assistant_reply_markdown, /证据：/u);
   assert.doesNotMatch(parsed.assistant_reply_markdown, /Explicit|Repeated|Structured/u);
+  assert.equal(parsed.candidate_previews[0].headline, "「收尾一下」 -> close_session");
+  assert.equal(parsed.candidate_previews[0].action_label, "建议添加");
+  assert.equal(parsed.candidate_previews[0].confidence_score, 0.84);
+  assert.ok(Array.isArray(parsed.candidate_previews[0].evidence_summary));
+  assert.ok(parsed.candidate_previews[0].evidence_summary.length > 0);
   assert.equal(parsed.next_step_assessment.level, "actionable");
   assert.deepEqual(parsed.suggested_follow_ups, [
     "添加第1条",
@@ -239,7 +245,12 @@ test("codex-session-habits cli returns chat-ready follow-ups for review-only can
   const parsed = JSON.parse(result.stdout);
   assert.equal(parsed.candidates[0].action, "review_only");
   assert.match(parsed.assistant_reply_markdown, /复核候选/u);
+  assert.match(parsed.assistant_reply_markdown, /风险：/u);
   assert.doesNotMatch(parsed.assistant_reply_markdown, /Explicit|Repeated|Structured/u);
+  assert.equal(parsed.candidate_previews[0].action_label, "复核候选");
+  assert.equal(parsed.candidate_previews[0].normalized_intent, null);
+  assert.ok(parsed.candidate_previews[0].risk_summary.includes("仅单会话证据"));
+  assert.ok(parsed.candidate_previews[0].risk_summary.includes("缺少显式 intent"));
   assert.equal(parsed.next_step_assessment.level, "actionable");
   assert.deepEqual(parsed.suggested_follow_ups, [
     "添加第1条",

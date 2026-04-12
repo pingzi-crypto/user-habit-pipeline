@@ -30,6 +30,7 @@ Use `scan-current-session-demo.js` when:
 
 - the host can gather the visible current conversation directly
 - you want chat-ready suggestion output including `assistant_reply_markdown`
+- you want a structured `candidate_previews` layer for UI cards or richer candidate rows
 - you want the backend to keep the latest local suggestion snapshot for follow-up actions
 
 Use `apply-first-candidate-demo.js` when:

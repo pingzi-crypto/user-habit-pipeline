@@ -49,9 +49,11 @@ On successful responses it now also returns:
 
 - `assistant_reply_markdown`
 - `suggested_follow_ups`
+- `candidate_previews`
 - `next_step_assessment`
 
 These fields are intended for Codex skill / chat-UI rendering so the skill can show a natural Chinese summary instead of re-deriving one from raw candidate JSON.
+`candidate_previews` is the host-friendly structured layer for cards, side panels, or richer list rows when the UI does not want to parse `assistant_reply_markdown`.
 When `next_step_assessment.level = low_roi`, the bridge may also surface a one-word stop path such as `停`.
 When a candidate comes from an explicit correction-style definition, the chat-ready summary should also surface that evidence directly instead of only showing a higher score.
 

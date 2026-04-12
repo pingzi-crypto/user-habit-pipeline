@@ -40,6 +40,13 @@ interface ConfidenceDetails {
   [key: string]: unknown;
 }
 
+interface CandidateEvidence {
+  occurrence_count?: number;
+  correction_count?: number;
+  examples?: string[];
+  [key: string]: unknown;
+}
+
 interface SessionHabitCandidate {
   candidate_id: string;
   phrase: string;
@@ -47,8 +54,24 @@ interface SessionHabitCandidate {
   confidence?: number;
   confidence_details?: ConfidenceDetails;
   suggested_rule?: HabitRule | null;
+  evidence?: CandidateEvidence;
   risk_flags?: string[];
   [key: string]: unknown;
+}
+
+interface CandidatePreview {
+  ordinal: number;
+  candidate_id: string;
+  phrase: string;
+  headline: string;
+  action_label: string;
+  normalized_intent: string | null;
+  scenario_label: string | null;
+  confidence_score: number | null;
+  confidence_summary: string | null;
+  evidence_summary: string[];
+  rationale_summary: string[];
+  risk_summary: string[];
 }
 
 interface NextStepAssessment {
@@ -60,6 +83,7 @@ interface NextStepAssessment {
 interface RenderedAssistantReply {
   assistant_reply_markdown: string;
   suggested_follow_ups: string[];
+  candidate_previews: CandidatePreview[];
   next_step_assessment: NextStepAssessment;
 }
 
@@ -236,29 +260,88 @@ function formatRiskFlagsZh(riskFlags: unknown): string[] {
     .map((item) => labels[String(item)] || String(item));
 }
 
-function formatCandidateLine(candidate: SessionHabitCandidate, index: number): string {
-  const ordinal = index + 1;
-  const intent = candidate.suggested_rule?.normalized_intent
-    ? `，意图 \`${candidate.suggested_rule.normalized_intent}\``
-    : "，尚无显式意图";
-  const action = candidate.action === "review_only" ? "复核候选" : "建议添加";
-  const score = typeof candidate.confidence === "number" ? candidate.confidence.toFixed(2) : String(candidate.confidence);
-  const summary = candidate.confidence_details?.summary
-    ? `；${candidate.confidence_details.summary}`
-    : "";
-  const adjustments = Array.isArray(candidate.confidence_details?.adjustments)
+function summarizeEvidenceZh(candidate: SessionHabitCandidate): string[] {
+  const evidence = candidate.evidence;
+  if (!evidence || typeof evidence !== "object") {
+    return [];
+  }
+
+  const summaries: string[] = [];
+  const occurrenceCount = typeof evidence.occurrence_count === "number" ? evidence.occurrence_count : null;
+  const correctionCount = typeof evidence.correction_count === "number" ? evidence.correction_count : null;
+  const examples = Array.isArray(evidence.examples)
+    ? evidence.examples.map((item) => String(item || "").trim()).filter(Boolean)
+    : [];
+
+  if (occurrenceCount !== null) {
+    summaries.push(`当前会话出现 ${occurrenceCount} 次`);
+  }
+
+  if (correctionCount !== null && correctionCount > 0) {
+    summaries.push(`包含 ${correctionCount} 次显式纠正证据`);
+  }
+
+  if (examples.length > 0) {
+    summaries.push(`示例：${examples[0]}`);
+  }
+
+  return summaries;
+}
+
+function buildCandidatePreview(candidate: SessionHabitCandidate, index: number): CandidatePreview {
+  const actionLabel = candidate.action === "review_only" ? "复核候选" : "建议添加";
+  const normalizedIntent = candidate.suggested_rule?.normalized_intent || null;
+  const scenarioBias = Array.isArray(candidate.suggested_rule?.scenario_bias)
+    ? candidate.suggested_rule?.scenario_bias.filter(Boolean)
+    : [];
+  const scenarioLabel = scenarioBias.length > 0 ? scenarioBias.join(", ") : null;
+  const confidenceScore = typeof candidate.confidence === "number" ? candidate.confidence : null;
+  const confidenceSummary = candidate.confidence_details?.summary || null;
+  const rationaleSummary = Array.isArray(candidate.confidence_details?.adjustments)
     ? candidate.confidence_details.adjustments
         .filter((item) => item.applied || item.type === "single_thread_limit")
         .map(formatAdjustmentZh)
         .filter(Boolean)
     : [];
-  const riskFlags = formatRiskFlagsZh(candidate.risk_flags);
+  const riskSummary = formatRiskFlagsZh(candidate.risk_flags);
+  const headline = normalizedIntent
+    ? `「${candidate.phrase}」 -> ${normalizedIntent}`
+    : `「${candidate.phrase}」待补充 intent`;
+
+  return {
+    ordinal: index + 1,
+    candidate_id: candidate.candidate_id,
+    phrase: candidate.phrase,
+    headline,
+    action_label: actionLabel,
+    normalized_intent: normalizedIntent,
+    scenario_label: scenarioLabel,
+    confidence_score: confidenceScore,
+    confidence_summary: confidenceSummary,
+    evidence_summary: summarizeEvidenceZh(candidate),
+    rationale_summary: rationaleSummary,
+    risk_summary: riskSummary
+  };
+}
+
+function formatCandidateLine(candidate: SessionHabitCandidate, index: number): string {
+  const preview = buildCandidatePreview(candidate, index);
+  const score = typeof preview.confidence_score === "number"
+    ? preview.confidence_score.toFixed(2)
+    : String(preview.confidence_score);
+  const intent = preview.normalized_intent
+    ? `，意图 \`${preview.normalized_intent}\``
+    : "，尚无显式意图";
+  const summary = preview.confidence_summary
+    ? `；${preview.confidence_summary}`
+    : "";
   const tail = [
-    adjustments.length > 0 ? `评分依据：${adjustments.join("，")}` : null,
-    riskFlags.length > 0 ? `风险：${riskFlags.join("、")}` : null
+    preview.evidence_summary.length > 0 ? `证据：${preview.evidence_summary.join("；")}` : null,
+    preview.rationale_summary.length > 0 ? `评分依据：${preview.rationale_summary.join("，")}` : null,
+    preview.risk_summary.length > 0 ? `风险：${preview.risk_summary.join("、")}` : null
   ].filter(Boolean).join("；");
 
-  return `${ordinal}. \`${candidate.candidate_id}\`「${candidate.phrase}」${intent}，${action}，置信度 ${score}${summary}${tail ? `；${tail}` : ""}`;
+  return `${preview.ordinal}. \`${candidate.candidate_id}\`「${candidate.phrase}」${intent}，${preview.action_label}，置信度 ${score}${summary}${tail ? `；${tail}` : ""}`;
 }
 
 function buildSuggestFollowUps(candidates: SessionHabitCandidate[]): string[] {
@@ -395,6 +478,7 @@ export function buildLocalStopResponse(request: string | null): SessionHabitOutp
     stop_request: String(request || "").trim(),
     assistant_reply_markdown: "当前这个方向先停。你可以直接切回更高价值的主任务，或之后再回来继续处理习惯短句。",
     suggested_follow_ups: [],
+    candidate_previews: [],
     next_step_assessment: {
       level: "stopped",
       reason: "用户显式要求停止当前方向。",
@@ -410,6 +494,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
     return {
       assistant_reply_markdown: "",
       suggested_follow_ups: [],
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -422,11 +507,13 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
           assessment
         ),
         suggested_follow_ups: mergeFollowUps([], assessment),
+        candidate_previews: [],
         next_step_assessment: assessment
       };
     }
 
     const candidateLines = output.candidates.map(formatCandidateLine);
+    const candidatePreviews = output.candidates.map(buildCandidatePreview);
     const followUps = buildSuggestFollowUps(output.candidates);
 
     return {
@@ -438,6 +525,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
         ...followUps.map((item) => `- \`${item}\``)
       ].join("\n"), assessment),
       suggested_follow_ups: mergeFollowUps(followUps, assessment),
+      candidate_previews: candidatePreviews,
       next_step_assessment: assessment
     };
   }
@@ -460,6 +548,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
         "列出用户习惯短句",
         `删除用户习惯短句: ${appliedRule?.phrase}`
       ], assessment),
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -474,6 +563,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
       suggested_follow_ups: mergeFollowUps([
         "列出用户习惯短句"
       ], assessment),
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -518,6 +608,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
     return {
       assistant_reply_markdown: appendLowRoiStopHint(lines.join("\n"), assessment),
       suggested_follow_ups: mergeFollowUps(buildListFollowUps(additions, removals, ignored), assessment),
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -529,6 +620,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
         assessment
       ),
       suggested_follow_ups: mergeFollowUps(["列出用户习惯短句"], assessment),
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -548,6 +640,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
         assessment
       ),
       suggested_follow_ups: mergeFollowUps(["列出用户习惯短句"], assessment),
+      candidate_previews: [],
       next_step_assessment: assessment
     };
   }
@@ -555,6 +648,7 @@ export function renderAssistantReply(output: SessionHabitOutput): RenderedAssist
   return {
     assistant_reply_markdown: "",
     suggested_follow_ups: [],
+    candidate_previews: [],
     next_step_assessment: assessment
   };
 }

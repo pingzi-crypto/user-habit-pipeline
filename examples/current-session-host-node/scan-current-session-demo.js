@@ -71,5 +71,6 @@ process.stdout.write(`${JSON.stringify({
   action: payload.action,
   candidate_count: payload.candidate_count,
   top_phrase: payload.candidates?.[0]?.phrase || null,
+  top_candidate_preview: payload.candidate_previews?.[0] || null,
   suggested_follow_ups: payload.suggested_follow_ups
 }, null, 2)}\n`);

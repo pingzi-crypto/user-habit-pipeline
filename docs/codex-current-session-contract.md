@@ -192,6 +192,7 @@ These bridge-specific fields are part of the current integration contract:
 
 - `assistant_reply_markdown`
 - `suggested_follow_ups`
+- `candidate_previews`
 - `next_step_assessment`
 
 ### 5.1 `assistant_reply_markdown`
@@ -248,6 +249,37 @@ Current `level` values used by the bridge:
 Purpose:
 
 - let the host distinguish between normal next steps, low-ROI follow-up situations, and an explicit local stop
+
+### 5.4 `candidate_previews`
+
+Type:
+
+- `array[object]`
+
+Purpose:
+
+- give the host a structured, UI-friendly candidate summary without forcing it to parse `assistant_reply_markdown`
+
+Current fields:
+
+- `ordinal`
+- `candidate_id`
+- `phrase`
+- `headline`
+- `action_label`
+- `normalized_intent`
+- `scenario_label`
+- `confidence_score`
+- `confidence_summary`
+- `evidence_summary`
+- `rationale_summary`
+- `risk_summary`
+
+Current expectations:
+
+- this field is populated for current-session `suggest` results
+- this field is empty for non-scan actions such as `add`, `remove`, `list`, `ignore`, or local `stop`
+- hosts may render these previews directly in cards, lists, or side panels instead of re-deriving display text from raw candidate data
 
 ---
 

@@ -20,6 +20,12 @@ interface ConfidenceDetails {
     adjustments?: ConfidenceAdjustment[];
     [key: string]: unknown;
 }
+interface CandidateEvidence {
+    occurrence_count?: number;
+    correction_count?: number;
+    examples?: string[];
+    [key: string]: unknown;
+}
 interface SessionHabitCandidate {
     candidate_id: string;
     phrase: string;
@@ -27,8 +33,23 @@ interface SessionHabitCandidate {
     confidence?: number;
     confidence_details?: ConfidenceDetails;
     suggested_rule?: HabitRule | null;
+    evidence?: CandidateEvidence;
     risk_flags?: string[];
     [key: string]: unknown;
+}
+interface CandidatePreview {
+    ordinal: number;
+    candidate_id: string;
+    phrase: string;
+    headline: string;
+    action_label: string;
+    normalized_intent: string | null;
+    scenario_label: string | null;
+    confidence_score: number | null;
+    confidence_summary: string | null;
+    evidence_summary: string[];
+    rationale_summary: string[];
+    risk_summary: string[];
 }
 interface NextStepAssessment {
     level: AssessmentLevel;
@@ -38,6 +59,7 @@ interface NextStepAssessment {
 interface RenderedAssistantReply {
     assistant_reply_markdown: string;
     suggested_follow_ups: string[];
+    candidate_previews: CandidatePreview[];
     next_step_assessment: NextStepAssessment;
 }
 interface SessionHabitOutput {
