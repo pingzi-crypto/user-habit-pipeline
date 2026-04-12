@@ -26,6 +26,10 @@ interface ExampleFixture {
   why: string;
 }
 
+function normalizeLineEndings(text: string): string {
+  return text.replace(/\r\n/g, "\n");
+}
+
 function formatInput(input: ExampleInput): string[] {
   const lines: string[] = [];
 
@@ -114,7 +118,7 @@ export function main(argv: string[] = process.argv.slice(2)): void {
 
   if (checkOnly) {
     const current = fs.readFileSync(EXAMPLES_DOC_PATH, "utf8");
-    if (current !== content) {
+    if (normalizeLineEndings(current) !== normalizeLineEndings(content)) {
       process.stderr.write("docs/examples.md is out of date. Run `npm run generate-examples-doc`.\n");
       process.exit(1);
     }

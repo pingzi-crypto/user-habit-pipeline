@@ -8,6 +8,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 exports.EXAMPLES_FIXTURE_PATH = path.join(__dirname, "..", "tests", "fixtures", "examples.json");
 exports.EXAMPLES_DOC_PATH = path.join(__dirname, "..", "docs", "examples.md");
+function normalizeLineEndings(text) {
+    return text.replace(/\r\n/g, "\n");
+}
 function formatInput(input) {
     const lines = [];
     if (typeof input.message === "string") {
@@ -78,7 +81,7 @@ function main(argv = process.argv.slice(2)) {
     const content = renderExamplesDoc(readFixtures());
     if (checkOnly) {
         const current = fs.readFileSync(exports.EXAMPLES_DOC_PATH, "utf8");
-        if (current !== content) {
+        if (normalizeLineEndings(current) !== normalizeLineEndings(content)) {
             process.stderr.write("docs/examples.md is out of date. Run `npm run generate-examples-doc`.\n");
             process.exit(1);
         }

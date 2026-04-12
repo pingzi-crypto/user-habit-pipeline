@@ -2,10 +2,10 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { execFileSync } = require("node:child_process");
 
 const PACKAGE_JSON_PATH = path.join(__dirname, "..", "package.json");
 const PACKAGE_TYPES_PATH = path.join(__dirname, "..", "src", "index.d.ts");
+const SOURCE_DIR = path.join(__dirname, "..", "src");
 
 function loadPackageJson() {
   return JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, "utf8"));
@@ -92,21 +92,31 @@ test("package types expose the public API surface", () => {
 });
 
 test("typescript source files do not rely on ts-nocheck", () => {
-  let output = "";
+  const matches = [];
+  const queue = [SOURCE_DIR];
 
-  try {
-    output = execFileSync(
-      "rg",
-      ["-n", "@ts-nocheck", "src", "-g", "*.ts"],
-      {
-        cwd: path.join(__dirname, ".."),
-        encoding: "utf8"
+  while (queue.length > 0) {
+    const currentDir = queue.pop();
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+
+      if (entry.isDirectory()) {
+        queue.push(fullPath);
+        continue;
       }
-    ).trim();
-  } catch (error) {
-    assert.equal(error.status, 1);
-    output = String(error.stdout || "").trim();
+
+      if (!entry.isFile() || !entry.name.endsWith(".ts")) {
+        continue;
+      }
+
+      const content = fs.readFileSync(fullPath, "utf8");
+      if (content.includes("@ts-nocheck")) {
+        matches.push(path.relative(path.join(__dirname, ".."), fullPath));
+      }
+    }
   }
 
-  assert.equal(output, "");
+  assert.deepEqual(matches, []);
 });
