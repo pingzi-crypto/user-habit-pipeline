@@ -4,6 +4,12 @@
 
 - No changes yet.
 
+## 0.7.6 - 2026-04-13
+
+- Added structured `candidate_previews` to `codex-session-habits` scan results so hosts can render confidence, evidence, and risk summaries without parsing markdown.
+- Updated the current-session host demo to surface the new preview layer directly.
+- Extended the Codex current-session contract and integration docs to document `candidate_previews` as a stable host-facing field.
+
 ## 0.7.5 - 2026-04-13
 
 - Tightened the public README opening so the value proposition, fastest install path, demo repo, and Codex skill entrypoints are visible faster.
