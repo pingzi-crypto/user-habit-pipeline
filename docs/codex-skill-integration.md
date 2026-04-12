@@ -113,3 +113,16 @@ That skill can use the bridge CLI above so the user can trigger:
 - `停`
 
 from a normal Codex app conversation.
+
+If you want a packaged backend-side starter instead of wiring the bridge from scratch, generate one in the target project root:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
+```
+
+That starter currently includes:
+
+- `scan-current-session-demo.js`
+- `apply-first-candidate-demo.js`
+
+Use it as the smallest copyable wrapper around the stable `codex-session-habits` contract.

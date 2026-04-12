@@ -557,6 +557,34 @@ async function main() {
     assert.ok(fs.existsSync(path.join(generatedPythonConsumerDir, "cli-demo.py")));
     assert.ok(fs.existsSync(path.join(generatedPythonConsumerDir, "http-client-demo.py")));
 
+    const generatedCodexConsumerDir = path.join(consumerDir, "habit-pipeline-codex-starter");
+    const initCodexConsumerOutput = readJson(
+      run(initConsumerBin, ["--host", "codex", "--out", generatedCodexConsumerDir], { cwd: consumerDir, env }),
+      "user-habit-pipeline-init-consumer codex"
+    );
+    assert.equal(initCodexConsumerOutput.ok, true);
+    assert.equal(initCodexConsumerOutput.host, "codex");
+    assert.ok(fs.existsSync(path.join(generatedCodexConsumerDir, "README.md")));
+    assert.ok(fs.existsSync(path.join(generatedCodexConsumerDir, "scan-current-session-demo.js")));
+    assert.ok(fs.existsSync(path.join(generatedCodexConsumerDir, "apply-first-candidate-demo.js")));
+
+    const generatedCodexScanOutput = readJson(
+      runNodeScript(path.join(generatedCodexConsumerDir, "scan-current-session-demo.js"), { cwd: consumerDir, env }),
+      "generated codex scan demo"
+    );
+    assert.equal(generatedCodexScanOutput.integration_path, "current-session-scan");
+    assert.equal(generatedCodexScanOutput.action, "suggest");
+    assert.equal(generatedCodexScanOutput.top_phrase, "收个尾");
+
+    const generatedCodexApplyOutput = readJson(
+      runNodeScript(path.join(generatedCodexConsumerDir, "apply-first-candidate-demo.js"), { cwd: consumerDir, env }),
+      "generated codex apply demo"
+    );
+    assert.equal(generatedCodexApplyOutput.integration_path, "current-session-apply");
+    assert.equal(generatedCodexApplyOutput.action, "apply-candidate");
+    assert.equal(generatedCodexApplyOutput.phrase, "收个尾");
+    assert.equal(generatedCodexApplyOutput.normalized_intent, "close_session");
+
     process.stdout.write(
       `${JSON.stringify({
         ok: true,

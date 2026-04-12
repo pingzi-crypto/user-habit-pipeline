@@ -7,7 +7,7 @@ export interface InitConsumerCliArgs {
 }
 interface WriteConsumerTemplateResult {
     ok: true;
-    host: "node" | "python";
+    host: "node" | "python" | "codex";
     out_dir: string;
     files: string[];
 }

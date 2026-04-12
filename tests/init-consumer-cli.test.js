@@ -58,6 +58,29 @@ test("init-consumer cli generates python starter files", () => {
   assert.ok(fs.existsSync(path.join(outDir, "http-client-demo.py")));
 });
 
+test("init-consumer cli generates codex starter files", () => {
+  const tempDir = createTempDir();
+  const outDir = path.join(tempDir, "codex-starter");
+
+  const result = spawnSync(process.execPath, [
+    INIT_CONSUMER_CLI_PATH,
+    "--host",
+    "codex",
+    "--out",
+    outDir
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.host, "codex");
+  assert.equal(path.normalize(parsed.out_dir), path.normalize(outDir));
+  assert.ok(fs.existsSync(path.join(outDir, "README.md")));
+  assert.ok(fs.existsSync(path.join(outDir, "scan-current-session-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "apply-first-candidate-demo.js")));
+});
+
 test("init-consumer cli refuses to overwrite existing files without force", () => {
   const tempDir = createTempDir();
   const outDir = path.join(tempDir, "starter");
@@ -85,6 +108,6 @@ test("init-consumer cli prints help and exits zero", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /user-habit-pipeline-init-consumer/u);
-  assert.match(result.stdout, /--host <node\|python>/u);
+  assert.match(result.stdout, /--host <node\|python\|codex>/u);
   assert.match(result.stdout, /--out <directory>/u);
 });

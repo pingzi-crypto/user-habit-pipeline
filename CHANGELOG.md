@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added a packaged current-session host starter for Codex / chat-style integrations, covering transcript scan and short follow-up apply flows through `codex-session-habits`.
+- Extended `user-habit-pipeline-init-consumer` with `--host codex` so installed consumers can scaffold the current-session host starter directly.
+- Added regression and installed-package smoke coverage for the new current-session host starter path.
 - Hardened installed-package smoke coverage for `user-habit-pipeline-init-consumer` by executing the generated Node starter scripts from a real installed consumer project, not only checking that the files exist.
 
 ## 0.7.3 - 2026-04-12

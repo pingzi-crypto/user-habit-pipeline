@@ -161,12 +161,14 @@ Copyable external-project templates:
 
 - Node: `examples/external-consumer-node/`
 - Python: `examples/external-consumer-python/`
+- Current-session host: `examples/current-session-host-node/`
 
 Starter generator for target projects:
 
 ```powershell
 npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
 npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
+npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
 ```
 
 Official local HTTP entrypoint for localhost integration:

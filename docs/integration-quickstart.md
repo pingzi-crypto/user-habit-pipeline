@@ -26,6 +26,7 @@ Optional starter generator for the target project:
 ```powershell
 npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
 npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
+npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
 ```
 
 You do not need to clone the repository just to use it.
@@ -253,6 +254,18 @@ Do not make the user manually locate transcript files.
 Do not scrape unknown private thread stores.
 
 This path is the intended contract for Codex-style current-session integrations.
+
+Copyable current-session host starter files:
+
+- [examples/current-session-host-node/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/README.md)
+- [examples/current-session-host-node/scan-current-session-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/scan-current-session-demo.js)
+- [examples/current-session-host-node/apply-first-candidate-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/apply-first-candidate-demo.js)
+
+Official starter command:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
+```
 
 ---
 
