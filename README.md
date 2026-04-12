@@ -2,6 +2,8 @@
 
 `user-habit-pipeline` is a local-first AI shorthand interpreter for Codex, local AI tools, and app workflows that need to turn repeated user phrases into structured, reviewable intent hints.
 
+![Current-session demo](assets/readme-short-demo.gif)
+
 The package is now authored in TypeScript and ships declaration files for library consumers, while keeping the existing Node.js CLI and runtime entrypoints stable.
 
 It is for products, scripts, local tools, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and need a stable user-habit interpretation layer without turning that layer into a hidden workflow engine.
