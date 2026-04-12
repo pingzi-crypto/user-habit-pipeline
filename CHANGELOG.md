@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- No changes yet.
+- Hardened installed-package smoke coverage for `user-habit-pipeline-init-consumer` by executing the generated Node starter scripts from a real installed consumer project, not only checking that the files exist.
 
 ## 0.7.3 - 2026-04-12
 

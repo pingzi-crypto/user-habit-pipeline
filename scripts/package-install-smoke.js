@@ -82,6 +82,10 @@ function runNodeEval(script, options = {}) {
   return run(process.execPath, ["-e", script], options);
 }
 
+function runNodeScript(scriptPath, options = {}) {
+  return run(process.execPath, [scriptPath], options);
+}
+
 function runWithInput(command, args, inputText, options = {}) {
   const executable = process.platform === "win32" && !path.extname(command)
     ? `${command}.cmd`
@@ -509,7 +513,7 @@ async function main() {
     assert.equal(generatedProjectRegistryInterpretation.normalized_intent, "close_session");
     assert.equal(generatedProjectRegistryInterpretation.should_ask_clarifying_question, false);
 
-    const generatedNodeConsumerDir = path.join(tempRoot, "generated-node-consumer");
+    const generatedNodeConsumerDir = path.join(consumerDir, "habit-pipeline-starter");
     const initNodeConsumerOutput = readJson(
       run(initConsumerBin, ["--host", "node", "--out", generatedNodeConsumerDir], { cwd: consumerDir, env }),
       "user-habit-pipeline-init-consumer node"
@@ -521,7 +525,28 @@ async function main() {
     assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "cli-subprocess-demo.js")));
     assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "embedded-http-demo.js")));
 
-    const generatedPythonConsumerDir = path.join(tempRoot, "generated-python-consumer");
+    const generatedNodeDirectOutput = readJson(
+      runNodeScript(path.join(generatedNodeConsumerDir, "direct-library-demo.js"), { cwd: consumerDir, env }),
+      "generated node direct-library demo"
+    );
+    assert.equal(generatedNodeDirectOutput.integration_path, "direct-library");
+    assert.equal(generatedNodeDirectOutput.normalized_intent, "continue_current_track");
+
+    const generatedNodeCliOutput = readJson(
+      runNodeScript(path.join(generatedNodeConsumerDir, "cli-subprocess-demo.js"), { cwd: consumerDir, env }),
+      "generated node cli-subprocess demo"
+    );
+    assert.equal(generatedNodeCliOutput.integration_path, "cli-subprocess");
+    assert.equal(generatedNodeCliOutput.normalized_intent, "continue_current_track");
+
+    const generatedNodeHttpOutput = readJson(
+      runNodeScript(path.join(generatedNodeConsumerDir, "embedded-http-demo.js"), { cwd: consumerDir, env }),
+      "generated node embedded-http demo"
+    );
+    assert.equal(generatedNodeHttpOutput.integration_path, "embedded-http");
+    assert.equal(generatedNodeHttpOutput.normalized_intent, "continue_current_track");
+
+    const generatedPythonConsumerDir = path.join(consumerDir, "habit-pipeline-python-starter");
     const initPythonConsumerOutput = readJson(
       run(initConsumerBin, ["--host", "python", "--out", generatedPythonConsumerDir], { cwd: consumerDir, env }),
       "user-habit-pipeline-init-consumer python"
