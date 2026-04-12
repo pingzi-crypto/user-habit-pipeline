@@ -27,12 +27,14 @@ function run(command, args, options = {}) {
   const executable = process.platform === "win32" && !path.extname(command)
     ? `${command}.cmd`
     : command;
+  const useWindowsShell = process.platform === "win32" && /\.(cmd|bat)$/iu.test(executable);
 
   const result = spawnSync(executable, args, {
     cwd: options.cwd || ROOT_DIR,
     env: options.env || process.env,
     encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ["ignore", "pipe", "pipe"],
+    shell: useWindowsShell
   });
 
   if (result.error) {
@@ -84,13 +86,15 @@ function runWithInput(command, args, inputText, options = {}) {
   const executable = process.platform === "win32" && !path.extname(command)
     ? `${command}.cmd`
     : command;
+  const useWindowsShell = process.platform === "win32" && /\.(cmd|bat)$/iu.test(executable);
 
   const result = spawnSync(executable, args, {
     cwd: options.cwd || ROOT_DIR,
     env: options.env || process.env,
     encoding: "utf8",
     input: inputText,
-    stdio: ["pipe", "pipe", "pipe"]
+    stdio: ["pipe", "pipe", "pipe"],
+    shell: useWindowsShell
   });
 
   if (result.error) {
