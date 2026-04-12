@@ -10,6 +10,10 @@ const ALT_HABITS_PATH = path.join(__dirname, "fixtures", "alt_habits.json");
 
 const exampleFixtures = JSON.parse(fs.readFileSync(EXAMPLES_PATH, "utf8"));
 
+function normalizeLineEndings(text) {
+  return text.replace(/\r\n/g, "\n");
+}
+
 for (const fixture of exampleFixtures) {
   test(`fixture: ${fixture.name || fixture.title}`, () => {
     const result = interpretHabit(fixture.input, { includeUserRegistry: false });
@@ -38,7 +42,7 @@ test("examples doc stays in sync with the fixture source", () => {
   const rendered = renderExamplesDoc(exampleFixtures);
   const current = fs.readFileSync(EXAMPLES_DOC_PATH, "utf8");
 
-  assert.equal(current, rendered);
+  assert.equal(normalizeLineEndings(current), normalizeLineEndings(rendered));
 });
 
 test("custom registry path can replace the default habit set", () => {
