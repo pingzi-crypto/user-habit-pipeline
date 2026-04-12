@@ -2,22 +2,17 @@
 
 `user-habit-pipeline` is a local-first AI shorthand interpreter for Codex, local AI tools, and app workflows that need to turn repeated user phrases into structured, reviewable intent hints.
 
+Use it when a host keeps seeing phrases like `继续`, `收尾一下`, or `验收` and you want explicit, inspectable interpretation instead of brittle regex glue or hidden memory.
+
 ![Current-session demo](assets/readme-short-demo.gif)
 
-The package is now authored in TypeScript and ships declaration files for library consumers, while keeping the existing Node.js CLI and runtime entrypoints stable.
+Fastest entrypoints:
 
-It is for products, scripts, local tools, and assistants that keep seeing phrases like `继续`, `收尾一下`, or `验收`, and need a stable user-habit interpretation layer without turning that layer into a hidden workflow engine.
+- npm package: `npm install user-habit-pipeline`
+- outside-project demo: [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
+- Codex skill: [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits)
 
-It works well for:
-
-- AI assistant user-habit interpretation
-- user shorthand interpretation
-- chat command normalization
-- intent parsing in local automation tools
-- Codex or chat-style current-session habit scanning
-- prompt and workflow hinting without hidden execution
-
-If you are searching for an AI shorthand interpreter, user habit pipeline, Codex habit scanner, prompt parser, chat workflow phrase interpreter, or a local-first intent parser, this is the project.
+It works well for AI assistant user-habit interpretation, chat command normalization, current-session habit scanning, and prompt or workflow hinting without hidden execution.
 
 ## In One Line
 
