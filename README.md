@@ -71,6 +71,12 @@ Install from npm:
 npm install user-habit-pipeline
 ```
 
+Generate a copyable starter for another project:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
+```
+
 Interpret a shorthand phrase:
 
 ```powershell
@@ -155,6 +161,13 @@ Copyable external-project templates:
 
 - Node: `examples/external-consumer-node/`
 - Python: `examples/external-consumer-python/`
+
+Starter generator for target projects:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
+npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
+```
 
 Official local HTTP entrypoint for localhost integration:
 

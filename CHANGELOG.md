@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added `user-habit-pipeline-init-consumer` so installed packages can scaffold copyable Node.js or Python host starter files directly into another project directory.
+- Added install-smoke coverage for the new consumer starter generator so shipped npm tarballs prove the scaffold command works after install.
 - Added copyable external-consumer starter templates for Node.js and Python hosts instead of only isolated snippets.
 - Added a Node.js CLI-subprocess demo so host projects can adopt the package through an explicit JSON boundary without linking directly to the library.
 - Added a Python external-consumer template covering both CLI and local HTTP integration paths.

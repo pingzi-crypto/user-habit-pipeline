@@ -99,6 +99,7 @@
   ],
   "bin": {
     "user-habit-pipeline": "./src/cli.js",
+    "user-habit-pipeline-init-consumer": "./src/init-consumer-cli.js",
     "user-habit-pipeline-init-registry": "./src/init-registry-cli.js",
     "validate-habit-registry": "./src/validate-registry-cli.js",
     "manage-user-habits": "./src/manage-habits-cli.js",
@@ -110,6 +111,7 @@
     "check": "npm run check-examples-doc && npm test",
     "codex-session-habits": "node ./src/codex-session-habits-cli.js",
     "http-server": "node ./src/http-server-cli.js",
+    "init-consumer": "node ./src/init-consumer-cli.js",
     "init-registry": "node ./src/init-registry-cli.js",
     "release-check": "npm run check && npm run manual-e2e-smoke && npm run package-smoke && npm run package-install-smoke && npm run validate-registry -- ./src/habit_registry/default_habits.json",
     "test": "npm run build && node --test",

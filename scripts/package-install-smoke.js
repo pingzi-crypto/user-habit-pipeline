@@ -287,6 +287,7 @@ async function main() {
 
     const manageBin = resolveInstalledBin(consumerDir, "manage-user-habits");
     const interpretBin = resolveInstalledBin(consumerDir, "user-habit-pipeline");
+    const initConsumerBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-init-consumer");
     const initRegistryBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-init-registry");
     const codexBin = resolveInstalledBin(consumerDir, "codex-session-habits");
     const httpBin = resolveInstalledBin(consumerDir, "user-habit-pipeline-http");
@@ -507,6 +508,29 @@ async function main() {
     );
     assert.equal(generatedProjectRegistryInterpretation.normalized_intent, "close_session");
     assert.equal(generatedProjectRegistryInterpretation.should_ask_clarifying_question, false);
+
+    const generatedNodeConsumerDir = path.join(tempRoot, "generated-node-consumer");
+    const initNodeConsumerOutput = readJson(
+      run(initConsumerBin, ["--host", "node", "--out", generatedNodeConsumerDir], { cwd: consumerDir, env }),
+      "user-habit-pipeline-init-consumer node"
+    );
+    assert.equal(initNodeConsumerOutput.ok, true);
+    assert.equal(initNodeConsumerOutput.host, "node");
+    assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "README.md")));
+    assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "direct-library-demo.js")));
+    assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "cli-subprocess-demo.js")));
+    assert.ok(fs.existsSync(path.join(generatedNodeConsumerDir, "embedded-http-demo.js")));
+
+    const generatedPythonConsumerDir = path.join(tempRoot, "generated-python-consumer");
+    const initPythonConsumerOutput = readJson(
+      run(initConsumerBin, ["--host", "python", "--out", generatedPythonConsumerDir], { cwd: consumerDir, env }),
+      "user-habit-pipeline-init-consumer python"
+    );
+    assert.equal(initPythonConsumerOutput.ok, true);
+    assert.equal(initPythonConsumerOutput.host, "python");
+    assert.ok(fs.existsSync(path.join(generatedPythonConsumerDir, "README.md")));
+    assert.ok(fs.existsSync(path.join(generatedPythonConsumerDir, "cli-demo.py")));
+    assert.ok(fs.existsSync(path.join(generatedPythonConsumerDir, "http-client-demo.py")));
 
     process.stdout.write(
       `${JSON.stringify({

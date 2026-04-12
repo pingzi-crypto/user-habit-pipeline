@@ -21,6 +21,13 @@ Add it to the target project:
 npm install user-habit-pipeline
 ```
 
+Optional starter generator for the target project:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
+npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
+```
+
 You do not need to clone the repository just to use it.
 
 ## Verified Environments
@@ -117,6 +124,12 @@ Copyable external-project demo files:
 - [examples/external-consumer-node/cli-subprocess-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/cli-subprocess-demo.js)
 - [examples/external-consumer-node/embedded-http-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/embedded-http-demo.js)
 
+Official starter command:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
+```
+
 ---
 
 ## Path 2: Any Language Via CLI
@@ -202,6 +215,12 @@ Copyable Python-project starter files:
 - [examples/external-consumer-python/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/README.md)
 - [examples/external-consumer-python/cli-demo.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/cli-demo.py)
 - [examples/external-consumer-python/http-client-demo.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/http-client-demo.py)
+
+Official starter command:
+
+```powershell
+npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
+```
 
 ---
 

@@ -25,6 +25,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
     ".": "./src/index.js"
   });
   assert.equal(pkg.bin["user-habit-pipeline"], "./src/cli.js");
+  assert.equal(pkg.bin["user-habit-pipeline-init-consumer"], "./src/init-consumer-cli.js");
   assert.equal(pkg.bin["user-habit-pipeline-init-registry"], "./src/init-registry-cli.js");
   assert.equal(pkg.bin["validate-habit-registry"], "./src/validate-registry-cli.js");
   assert.equal(pkg.bin["manage-user-habits"], "./src/manage-habits-cli.js");
@@ -33,6 +34,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   assert.equal(pkg.scripts.build, "tsc -p ./tsconfig.json");
   assert.equal(pkg.scripts.check, "npm run check-examples-doc && npm test");
   assert.equal(pkg.scripts["http-server"], "node ./src/http-server-cli.js");
+  assert.equal(pkg.scripts["init-consumer"], "node ./src/init-consumer-cli.js");
   assert.equal(pkg.scripts["init-registry"], "node ./src/init-registry-cli.js");
   assert.equal(
     pkg.scripts["release-check"],
