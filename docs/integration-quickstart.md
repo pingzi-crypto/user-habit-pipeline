@@ -114,6 +114,7 @@ Copyable external-project demo files:
 
 - [examples/external-consumer-node/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/README.md)
 - [examples/external-consumer-node/direct-library-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/direct-library-demo.js)
+- [examples/external-consumer-node/cli-subprocess-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/cli-subprocess-demo.js)
 - [examples/external-consumer-node/embedded-http-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/embedded-http-demo.js)
 
 ---
@@ -195,6 +196,12 @@ completed = subprocess.run(
 result = json.loads(completed.stdout)
 print(result["status"])
 ```
+
+Copyable Python-project starter files:
+
+- [examples/external-consumer-python/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/README.md)
+- [examples/external-consumer-python/cli-demo.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/cli-demo.py)
+- [examples/external-consumer-python/http-client-demo.py](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-python/http-client-demo.py)
 
 ---
 

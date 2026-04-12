@@ -5,6 +5,7 @@ This folder shows the smallest realistic way another local Node.js project can c
 It demonstrates two paths:
 
 - call the library directly from application code
+- call the shipped CLI as a JSON subprocess boundary
 - start the official localhost HTTP server from application code and call it through HTTP
 
 Use this when you want a copyable external-project example instead of isolated snippets.
@@ -12,6 +13,7 @@ Use this when you want a copyable external-project example instead of isolated s
 ## Files
 
 - `direct-library-demo.js`
+- `cli-subprocess-demo.js`
 - `embedded-http-demo.js`
 
 ## Run From This Repository
@@ -20,6 +22,7 @@ From the repository root:
 
 ```powershell
 node .\examples\external-consumer-node\direct-library-demo.js
+node .\examples\external-consumer-node\cli-subprocess-demo.js
 node .\examples\external-consumer-node\embedded-http-demo.js
 ```
 
@@ -42,6 +45,12 @@ Use `direct-library-demo.js` when:
 
 - your host is already Node.js
 - you want the simplest possible function-call integration
+
+Use `cli-subprocess-demo.js` when:
+
+- your host is Node.js but you still want the most stable JSON subprocess boundary
+- you want to keep the package behind an explicit CLI contract
+- you do not want to link host code directly to library calls yet
 
 Use `embedded-http-demo.js` when:
 

@@ -151,6 +151,11 @@ user: 收尾一下
 '@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
 
+Copyable external-project templates:
+
+- Node: `examples/external-consumer-node/`
+- Python: `examples/external-consumer-python/`
+
 Official local HTTP entrypoint for localhost integration:
 
 ```powershell

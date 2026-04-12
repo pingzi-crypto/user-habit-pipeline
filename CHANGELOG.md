@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- No changes yet.
+- Added copyable external-consumer starter templates for Node.js and Python hosts instead of only isolated snippets.
+- Added a Node.js CLI-subprocess demo so host projects can adopt the package through an explicit JSON boundary without linking directly to the library.
+- Added a Python external-consumer template covering both CLI and local HTTP integration paths.
 
 ## 0.7.2 - 2026-04-12
 

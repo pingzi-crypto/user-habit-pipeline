@@ -5,6 +5,7 @@ const { spawnSync } = require("node:child_process");
 
 const rootDir = path.join(__dirname, "..");
 const directDemoPath = path.join(rootDir, "examples", "external-consumer-node", "direct-library-demo.js");
+const cliDemoPath = path.join(rootDir, "examples", "external-consumer-node", "cli-subprocess-demo.js");
 const httpDemoPath = path.join(rootDir, "examples", "external-consumer-node", "embedded-http-demo.js");
 
 function runNodeScript(scriptPath) {
@@ -32,6 +33,13 @@ function runNodeScript(scriptPath) {
 test("external consumer direct-library demo runs successfully", () => {
   const output = runNodeScript(directDemoPath);
   assert.equal(output.integration_path, "direct-library");
+  assert.equal(output.normalized_intent, "continue_current_track");
+  assert.equal(typeof output.confidence, "number");
+});
+
+test("external consumer cli-subprocess demo runs successfully", () => {
+  const output = runNodeScript(cliDemoPath);
+  assert.equal(output.integration_path, "cli-subprocess");
   assert.equal(output.normalized_intent, "continue_current_track");
   assert.equal(typeof output.confidence, "number");
 });

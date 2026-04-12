@@ -80,6 +80,10 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("examples/project-registry/custom-habits.json"));
   assert.ok(pkg.files.includes("examples/project-registry/README.md"));
   assert.ok(pkg.files.includes("examples/project-registry/smoke-test.js"));
+  assert.ok(pkg.files.includes("examples/external-consumer-node/cli-subprocess-demo.js"));
+  assert.ok(pkg.files.includes("examples/external-consumer-python/README.md"));
+  assert.ok(pkg.files.includes("examples/external-consumer-python/cli-demo.py"));
+  assert.ok(pkg.files.includes("examples/external-consumer-python/http-client-demo.py"));
 });
 
 test("package types expose the public API surface", () => {
