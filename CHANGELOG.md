@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- No changes yet.
+
+## 0.7.3 - 2026-04-12
+
 - Added `user-habit-pipeline-init-consumer` so installed packages can scaffold copyable Node.js or Python host starter files directly into another project directory.
 - Added install-smoke coverage for the new consumer starter generator so shipped npm tarballs prove the scaffold command works after install.
 - Added copyable external-consumer starter templates for Node.js and Python hosts instead of only isolated snippets.
