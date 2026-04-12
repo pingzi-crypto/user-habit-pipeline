@@ -4,6 +4,13 @@
 
 - No changes yet.
 
+## 0.7.5 - 2026-04-13
+
+- Tightened the public README opening so the value proposition, fastest install path, demo repo, and Codex skill entrypoints are visible faster.
+- Added a committed README demo GIF and linked the public external demo repo more prominently from the package README and integration quickstart.
+- Clarified integration guidance around project-local `USER_HABIT_PIPELINE_HOME` isolation for current-session host flows.
+- Refreshed the public release copy and GitHub metadata so the npm package, GitHub repo, demo repo, and skill repo form a clearer outside-adoption path.
+
 ## 0.7.4 - 2026-04-12
 
 - Added a packaged current-session host starter for Codex / chat-style integrations, covering transcript scan and short follow-up apply flows through `codex-session-habits`.
