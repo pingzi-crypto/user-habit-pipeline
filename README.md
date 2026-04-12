@@ -77,6 +77,18 @@ Interpret a shorthand phrase:
 npx user-habit-pipeline --message "收尾一下" --scenario session_close
 ```
 
+## Platform Support
+
+The package is designed for local-first use across major desktop/server environments.
+
+Current verified matrix:
+
+- Windows with Node.js 18+
+- macOS with Node.js 18+
+- Linux with Node.js 18+
+
+The repository CI now runs the same `release-check` flow on `windows-latest`, `macos-latest`, and `ubuntu-latest`, including packaging smoke and installed-package validation.
+
 ## What You Get
 
 - a CLI and library for shorthand interpretation

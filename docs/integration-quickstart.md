@@ -23,6 +23,23 @@ npm install user-habit-pipeline
 
 You do not need to clone the repository just to use it.
 
+## Verified Environments
+
+The published package and release-check flow are currently verified on:
+
+- Windows with Node.js 18+
+- macOS with Node.js 18+
+- Linux with Node.js 18+
+
+That validation includes:
+
+- library import and CLI usage
+- current-session scan flows
+- local HTTP entrypoint checks
+- package tarball install smoke from an installed consumer
+
+If your host environment can run Node.js and `npx`, the package boundary should behave consistently across those three operating-system families.
+
 ---
 
 ## Path 1: Node Project
