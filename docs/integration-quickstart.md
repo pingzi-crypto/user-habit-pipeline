@@ -21,6 +21,11 @@ Add it to the target project:
 npm install user-habit-pipeline
 ```
 
+If you want the fastest outside-project proof before wiring your own host, start with the public demo repo:
+
+- [pingzi-crypto/user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
+- It installs the published package, auto-scaffolds the `--host codex` starter, and runs a local `scan -> apply` flow with project-local runtime isolation.
+
 Optional starter generator for the target project:
 
 ```powershell

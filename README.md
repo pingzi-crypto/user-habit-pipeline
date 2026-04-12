@@ -71,6 +71,10 @@ Install from npm:
 npm install user-habit-pipeline
 ```
 
+Fastest external demo:
+
+- [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo) shows a clean outside project using the published package, auto-scaffolding the Codex host starter, and running a local `scan -> apply` flow with isolated runtime state.
+
 Generate a copyable starter for another project:
 
 ```powershell
@@ -162,6 +166,7 @@ Copyable external-project templates:
 - Node: `examples/external-consumer-node/`
 - Python: `examples/external-consumer-python/`
 - Current-session host: `examples/current-session-host-node/`
+- Public external demo repo: [pingzi-crypto/user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
 
 Starter generator for target projects:
 
