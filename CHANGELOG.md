@@ -4,6 +4,14 @@
 
 - No changes yet.
 
+## 0.7.8 - 2026-04-13
+
+- Added a formal pre-action semantic gate surface through `interpretHabitForPreAction`, `buildPreActionDecision`, and HTTP `pre_action_decision` output on `POST /interpret`.
+- Added copyable host-side demos for pre-action gating, host routing, current-session before/after improvement, and a compact happy-path story.
+- Added integration docs for pre-action hosts, cross-host path selection, runtime state sharing vs isolation, demo ROI metrics, and the outward-facing happy path.
+- Updated the current-session host demos to emit lightweight ROI events and comparison summaries instead of only raw flow output.
+- Aligned the API reference, integration quickstart, README, starter generator, and package metadata with the new host-facing contract and demo surfaces.
+
 ## 0.7.7 - 2026-04-13
 
 - Replaced the PowerShell-only `manual-e2e-smoke` implementation with a Node-based cross-platform script while keeping the existing `.ps1` entrypoint as a thin compatibility wrapper.
