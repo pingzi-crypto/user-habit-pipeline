@@ -52,6 +52,54 @@ test("cli can project through the growth-hub adapter", () => {
   assert.equal(parsed.hint_requires_confirmation, false);
 });
 
+test("cli can return pre-action output for host routing", () => {
+  const userRegistryPath = createTempUserRegistryPath();
+  const result = spawnSync(process.execPath, [
+    CLI_PATH,
+    "--message",
+    "读取最新状态板",
+    "--scenario",
+    "status_board",
+    "--pre-action",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.result.normalized_intent, "refresh_latest_board_state");
+  assert.equal(parsed.pre_action_decision.next_action, "proceed");
+});
+
+test("cli can return memory conflict output when host local memory disagrees", () => {
+  const userRegistryPath = createTempUserRegistryPath();
+  const result = spawnSync(process.execPath, [
+    CLI_PATH,
+    "--message",
+    "读取最新状态板",
+    "--scenario",
+    "status_board",
+    "--external-memory-intent",
+    "close_session",
+    "--external-memory-source",
+    "host_local_memory",
+    "--external-memory-confidence",
+    "0.91",
+    "--user-registry",
+    userRegistryPath
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  const parsed = JSON.parse(result.stdout);
+  assert.equal(parsed.pre_action_decision.next_action, "proceed");
+  assert.equal(parsed.memory_conflict_decision.memory_conflict_detected, true);
+  assert.equal(parsed.memory_conflict_decision.final_next_action, "ask_clarifying_question");
+});
+
 test("cli can switch to a custom registry file", () => {
   const userRegistryPath = createTempUserRegistryPath();
   const result = spawnSync(process.execPath, [
@@ -92,4 +140,6 @@ test("cli prints help and exits zero", () => {
   assert.match(result.stdout, /Usage: user-habit-pipeline/);
   assert.match(result.stdout, /--registry <path>/);
   assert.match(result.stdout, /--user-registry <path>/);
+  assert.match(result.stdout, /--pre-action/);
+  assert.match(result.stdout, /--external-memory-intent/);
 });

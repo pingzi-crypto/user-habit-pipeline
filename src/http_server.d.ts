@@ -1,5 +1,5 @@
 import http = require("node:http");
-import type { HabitOutput, PreActionDecision } from "./habit_core/types";
+import type { HabitOutput, MemoryConflictDecision, PreActionDecision } from "./habit_core/types";
 export interface HttpServerOptions {
     host?: string;
     port?: number;
@@ -38,6 +38,7 @@ export declare function handleInterpretRequest(body: JsonObject, options?: HttpS
     ok: true;
     result: HabitOutput;
     pre_action_decision: PreActionDecision;
+    memory_conflict_decision?: MemoryConflictDecision;
 };
 export declare function handleSuggestRequest(body: JsonObject, options?: HttpServerOptions): {
     ok: true;

@@ -9,6 +9,7 @@ const cliDemoPath = path.join(rootDir, "examples", "external-consumer-node", "cl
 const httpDemoPath = path.join(rootDir, "examples", "external-consumer-node", "embedded-http-demo.js");
 const preActionGateDemoPath = path.join(rootDir, "examples", "external-consumer-node", "pre-action-gate-demo.js");
 const hostRouterDemoPath = path.join(rootDir, "examples", "external-consumer-node", "host-router-demo.js");
+const memoryConflictDemoPath = path.join(rootDir, "examples", "external-consumer-node", "memory-conflict-demo.js");
 
 function runNodeScript(scriptPath) {
   const result = spawnSync(process.execPath, [scriptPath], {
@@ -77,4 +78,16 @@ test("external consumer host-router demo runs successfully", () => {
   assert.equal(output.cases[2].host_route.target, "session.close");
   assert.equal(output.roi_metrics.ambiguous_action_prevented_count, 1);
   assert.equal(output.roi_metrics.clear_action_proceed_count, 2);
+});
+
+test("external consumer memory-conflict demo runs successfully", () => {
+  const output = runNodeScript(memoryConflictDemoPath);
+  assert.equal(output.integration_path, "memory-conflict-boundary");
+  assert.equal(Array.isArray(output.cases), true);
+  assert.equal(output.cases.length, 2);
+  assert.equal(output.cases[0].memory_conflict_detected, false);
+  assert.equal(output.cases[0].final_next_action, "proceed");
+  assert.equal(output.cases[1].memory_conflict_detected, true);
+  assert.equal(output.cases[1].final_next_action, "ask_clarifying_question");
+  assert.equal(output.cases[1].recommended_resolution, "ask_clarifying_question");
 });

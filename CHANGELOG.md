@@ -4,6 +4,15 @@
 
 - No changes yet.
 
+## 0.7.9 - 2026-04-13
+
+- Added a formal local-memory conflict boundary document that defines how host local memory should behave when it disagrees with the explicit habit overlay.
+- Added `buildMemoryConflictDecision` plus typed `ExternalMemorySignal` and `MemoryConflictDecision` exports so hosts can downgrade disagreement into `ask_clarifying_question` instead of silently overriding explicit habit meaning.
+- Extended `POST /interpret` to accept optional `external_memory_signal` input and return `memory_conflict_decision` for local HTTP hosts.
+- Extended the main CLI with `--pre-action` and optional external-memory comparison flags so non-Node hosts can use the package as a subprocess-based clarify-first gate.
+- Added Node and Python memory-conflict demos, updated the generated consumer starters to include them, and expanded regression coverage for the new starter and demo paths.
+- Updated the README, API reference, quickstart, and pre-action integration docs so the conflict-boundary contract is visible from the main integration entrypoints.
+
 ## 0.7.8 - 2026-04-13
 
 - Added a formal pre-action semantic gate surface through `interpretHabitForPreAction`, `buildPreActionDecision`, and HTTP `pre_action_decision` output on `POST /interpret`.

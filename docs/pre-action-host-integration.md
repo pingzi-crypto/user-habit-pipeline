@@ -33,6 +33,7 @@ Recommended library helper:
 Supporting helper:
 
 - `buildPreActionDecision`
+- `buildMemoryConflictDecision`
 
 The helper returns:
 
@@ -42,15 +43,24 @@ The helper returns:
 Example:
 
 ```js
-const { interpretHabitForPreAction } = require("user-habit-pipeline");
+const {
+  buildMemoryConflictDecision,
+  interpretHabitForPreAction
+} = require("user-habit-pipeline");
 
 const { result, pre_action_decision } = interpretHabitForPreAction({
   message: "继续",
   scenario: "general"
 });
 
+const memoryBoundary = buildMemoryConflictDecision(pre_action_decision, {
+  normalized_intent: "resume_last_task",
+  source_label: "host_local_memory"
+});
+
 console.log(result.normalized_intent);
 console.log(pre_action_decision.next_action);
+console.log(memoryBoundary.final_next_action);
 ```
 
 ---
@@ -81,6 +91,13 @@ Current `next_action` values:
 - `proceed`
 - `ask_clarifying_question`
 
+Optional local-memory boundary fields:
+
+- `memory_conflict_detected`
+- `final_next_action`
+- `recommended_resolution`
+- `conflict_sources`
+
 ---
 
 ## 4. Recommended Host Behavior
@@ -109,6 +126,19 @@ Good pattern:
 - one short clarification
 - then re-run interpretation on the clarified user response if needed
 
+### 4.3 If host local memory disagrees
+
+If the host also has its own local memory layer, compare that opinion with:
+
+- `buildMemoryConflictDecision` in library mode
+- or `memory_conflict_decision` from `POST /interpret` when `external_memory_signal` is supplied
+
+Expected host behavior:
+
+- do not silently trust hidden memory over the pipeline interpretation
+- if the two disagree, ask one short clarifying question
+- only update durable active habit state through explicit confirmation
+
 ---
 
 ## 5. HTTP Path
@@ -118,6 +148,10 @@ If the host uses the official local HTTP entrypoint, `POST /interpret` now retur
 - `result`
 - `pre_action_decision`
 
+If the host also sends `external_memory_signal`, the response also includes:
+
+- `memory_conflict_decision`
+
 Example request:
 
 ```powershell
@@ -125,7 +159,7 @@ Invoke-RestMethod `
   -Method Post `
   -Uri http://127.0.0.1:4848/interpret `
   -ContentType "application/json" `
-  -Body '{"message":"继续","scenario":"general"}'
+  -Body '{"message":"继续","scenario":"general","external_memory_signal":{"normalized_intent":"resume_last_task","source_label":"host_local_memory","confidence":0.84}}'
 ```
 
 This keeps the HTTP path aligned with the direct library path.

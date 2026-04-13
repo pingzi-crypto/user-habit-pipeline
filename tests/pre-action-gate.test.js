@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  buildMemoryConflictDecision,
   buildPreActionDecision,
   interpretHabit,
   interpretHabitForPreAction
@@ -41,4 +42,39 @@ test("buildPreActionDecision marks no-match cases as clarify-first", () => {
   assert.equal(decision.next_action, "ask_clarifying_question");
   assert.equal(decision.decision_basis, "no_match");
   assert.equal(decision.matched_phrase, null);
+});
+
+test("buildMemoryConflictDecision flags disagreement with host local memory", () => {
+  const output = interpretHabitForPreAction({
+    message: "读取最新状态板",
+    scenario: "status_board"
+  });
+
+  const conflict = buildMemoryConflictDecision(output.pre_action_decision, {
+    normalized_intent: "close_session",
+    source_label: "host_local_memory",
+    confidence: 0.91
+  });
+
+  assert.equal(conflict.memory_conflict_detected, true);
+  assert.equal(conflict.final_next_action, "ask_clarifying_question");
+  assert.equal(conflict.recommended_resolution, "ask_clarifying_question");
+  assert.equal(conflict.external_memory_normalized_intent, "close_session");
+});
+
+test("buildMemoryConflictDecision keeps proceed when host local memory agrees", () => {
+  const output = interpretHabitForPreAction({
+    message: "读取最新状态板",
+    scenario: "status_board"
+  });
+
+  const conflict = buildMemoryConflictDecision(output.pre_action_decision, {
+    normalized_intent: "refresh_latest_board_state",
+    source_label: "host_local_memory",
+    confidence: 0.88
+  });
+
+  assert.equal(conflict.memory_conflict_detected, false);
+  assert.equal(conflict.final_next_action, "proceed");
+  assert.equal(conflict.recommended_resolution, "use_pipeline_decision");
 });

@@ -35,6 +35,7 @@ test("init-consumer cli generates node starter files", () => {
   assert.ok(fs.existsSync(path.join(outDir, "embedded-http-demo.js")));
   assert.ok(fs.existsSync(path.join(outDir, "pre-action-gate-demo.js")));
   assert.ok(fs.existsSync(path.join(outDir, "host-router-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "memory-conflict-demo.js")));
 });
 
 test("init-consumer cli generates python starter files", () => {
@@ -58,6 +59,7 @@ test("init-consumer cli generates python starter files", () => {
   assert.ok(fs.existsSync(path.join(outDir, "README.md")));
   assert.ok(fs.existsSync(path.join(outDir, "cli-demo.py")));
   assert.ok(fs.existsSync(path.join(outDir, "http-client-demo.py")));
+  assert.ok(fs.existsSync(path.join(outDir, "memory-conflict-cli-demo.py")));
 });
 
 test("init-consumer cli generates codex starter files", () => {

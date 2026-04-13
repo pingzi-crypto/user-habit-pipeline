@@ -131,11 +131,16 @@ function handleInterpretRequest(body, options = {}) {
         userRegistryPath: resolveHttpRegistryPath(body, options),
         includeUserRegistry: body.include_user_registry !== false
     });
-    return {
+    const preActionDecision = (0, pre_action_gate_1.buildPreActionDecision)(result);
+    const response = {
         ok: true,
         result,
-        pre_action_decision: (0, pre_action_gate_1.buildPreActionDecision)(result)
+        pre_action_decision: preActionDecision
     };
+    if (body.external_memory_signal && typeof body.external_memory_signal === "object") {
+        response.memory_conflict_decision = (0, pre_action_gate_1.buildMemoryConflictDecision)(preActionDecision, body.external_memory_signal);
+    }
+    return response;
 }
 function handleSuggestRequest(body, options = {}) {
     const transcript = typeof body.transcript === "string" ? body.transcript.trim() : "";

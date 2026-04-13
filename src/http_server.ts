@@ -3,9 +3,14 @@ import http = require("node:http");
 import os = require("node:os");
 import path = require("node:path");
 import { randomUUID } from "node:crypto";
-import type { HabitOutput, PreActionDecision } from "./habit_core/types";
+import type {
+  ExternalMemorySignal,
+  HabitOutput,
+  MemoryConflictDecision,
+  PreActionDecision
+} from "./habit_core/types";
 import { interpretHabit } from "./habit_core/interpreter";
-import { buildPreActionDecision } from "./pre_action_gate";
+import { buildMemoryConflictDecision, buildPreActionDecision } from "./pre_action_gate";
 import {
   USER_REGISTRY_PATH,
   resolveDefaultUserRegistryPath
@@ -199,6 +204,7 @@ export function handleInterpretRequest(body: JsonObject, options: HttpServerOpti
   ok: true;
   result: HabitOutput;
   pre_action_decision: PreActionDecision;
+  memory_conflict_decision?: MemoryConflictDecision;
 } {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   if (!message) {
@@ -217,11 +223,26 @@ export function handleInterpretRequest(body: JsonObject, options: HttpServerOpti
     }
   );
 
-  return {
+  const preActionDecision = buildPreActionDecision(result);
+  const response: {
+    ok: true;
+    result: HabitOutput;
+    pre_action_decision: PreActionDecision;
+    memory_conflict_decision?: MemoryConflictDecision;
+  } = {
     ok: true,
     result,
-    pre_action_decision: buildPreActionDecision(result)
+    pre_action_decision: preActionDecision
   };
+
+  if (body.external_memory_signal && typeof body.external_memory_signal === "object") {
+    response.memory_conflict_decision = buildMemoryConflictDecision(
+      preActionDecision,
+      body.external_memory_signal as ExternalMemorySignal
+    );
+  }
+
+  return response;
 }
 
 export function handleSuggestRequest(body: JsonObject, options: HttpServerOptions = {}): {

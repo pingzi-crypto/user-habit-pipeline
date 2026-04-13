@@ -36,6 +36,7 @@ export interface HabitOutput {
 
 export type PreActionDecisionBasis = "no_match" | "clarification_required" | "clear_match";
 export type PreActionNextAction = "proceed" | "ask_clarifying_question";
+export type MemoryConflictRecommendedResolution = "use_pipeline_decision" | "ask_clarifying_question";
 
 export interface PreActionDecision {
   decision_basis: PreActionDecisionBasis;
@@ -46,6 +47,25 @@ export interface PreActionDecision {
   should_ask_clarifying_question: boolean;
   disambiguation_hints: string[];
   preferred_terms: string[];
+  reason: string;
+  host_guidance: string;
+}
+
+export interface ExternalMemorySignal {
+  normalized_intent: string;
+  source_label?: string | null;
+  confidence?: number | null;
+}
+
+export interface MemoryConflictDecision {
+  memory_conflict_detected: boolean;
+  conflict_sources: string[];
+  final_next_action: PreActionNextAction;
+  recommended_resolution: MemoryConflictRecommendedResolution;
+  pipeline_normalized_intent: string;
+  external_memory_normalized_intent: string | null;
+  external_memory_source_label: string | null;
+  external_memory_confidence: number | null;
   reason: string;
   host_guidance: string;
 }

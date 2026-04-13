@@ -21,6 +21,11 @@ interpret_result = post_json(
     {
         "message": "继续",
         "scenario": "general",
+        "external_memory_signal": {
+            "normalized_intent": "resume_last_task",
+            "source_label": "host_local_memory",
+            "confidence": 0.84,
+        },
     },
 )
 
@@ -36,6 +41,9 @@ print(
         {
             "integration_path": "python-http",
             "normalized_intent": interpret_result["result"]["normalized_intent"],
+            "pre_action_next_action": interpret_result["pre_action_decision"]["next_action"],
+            "memory_conflict_detected": interpret_result["memory_conflict_decision"]["memory_conflict_detected"],
+            "final_next_action": interpret_result["memory_conflict_decision"]["final_next_action"],
             "manage_action": manage_result["result"]["action"],
         },
         ensure_ascii=False,

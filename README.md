@@ -103,6 +103,7 @@ The repository CI now runs the same `release-check` flow on `windows-latest`, `m
 - a separate user overlay for add/remove habit phrases without editing shipped defaults
 - current-session habit suggestion scanning for Codex-style chat flows
 - stable structured output for downstream systems
+- optional local-memory conflict detection for clarify-first host routing
 
 Example output:
 
@@ -145,6 +146,18 @@ CLI use:
 
 ```powershell
 npx user-habit-pipeline --message "更新入板" --scenario status_board
+```
+
+Pre-action gate via CLI:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general --pre-action
+```
+
+CLI memory-conflict boundary:
+
+```powershell
+npx user-habit-pipeline --message "读取最新状态板" --scenario status_board --external-memory-intent close_session --external-memory-source host_local_memory
 ```
 
 User phrase management:
@@ -235,6 +248,7 @@ Start here if you need more than the quick start:
 - [API Reference](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
 - [Integration Quickstart](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/integration-quickstart.md)
 - [Cross-Host Integration Guide](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
+- [Local Memory Conflict Boundary](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/local-memory-conflict-boundary.md)
 - [Pre-Action Host Integration](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
 - [Happy Path Demo](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
 - [Registry Authoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md)

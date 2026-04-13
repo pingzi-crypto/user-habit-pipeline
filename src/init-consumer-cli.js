@@ -17,7 +17,8 @@ const HOST_DEFINITIONS = {
             "cli-subprocess-demo.js",
             "embedded-http-demo.js",
             "pre-action-gate-demo.js",
-            "host-router-demo.js"
+            "host-router-demo.js",
+            "memory-conflict-demo.js"
         ],
         generatedReadme: [
             "# user-habit-pipeline Node Starter",
@@ -31,6 +32,7 @@ const HOST_DEFINITIONS = {
             "- `embedded-http-demo.js`: start the official localhost HTTP server from Node.js",
             "- `pre-action-gate-demo.js`: gate a host action before execution with a stable semantic decision object",
             "- `host-router-demo.js`: simulate `interpret -> decide -> route` inside a host-owned routing layer",
+            "- `memory-conflict-demo.js`: compare host local memory with pipeline output and downgrade to clarify-first on disagreement",
             "",
             "## Install",
             "",
@@ -48,6 +50,7 @@ const HOST_DEFINITIONS = {
             "node .\\embedded-http-demo.js",
             "node .\\pre-action-gate-demo.js",
             "node .\\host-router-demo.js",
+            "node .\\memory-conflict-demo.js",
             "```",
             "",
             "## Recommended Use",
@@ -57,6 +60,7 @@ const HOST_DEFINITIONS = {
             "- Use `embedded-http-demo.js` when your host prefers a localhost HTTP contract.",
             "- Use `pre-action-gate-demo.js` when your host needs a lightweight semantic gate before running downstream actions.",
             "- Use `host-router-demo.js` when you want a copyable host-side routing pattern after semantic gating.",
+            "- Use `memory-conflict-demo.js` when your host already has local memory and disagreement should force clarification instead of a silent override.",
             "",
             "## Next Steps",
             "",
@@ -73,7 +77,8 @@ const HOST_DEFINITIONS = {
             "cli-subprocess-demo.js",
             "embedded-http-demo.js",
             "pre-action-gate-demo.js",
-            "host-router-demo.js"
+            "host-router-demo.js",
+            "memory-conflict-demo.js"
         ],
         generatedReadme: ""
     },
@@ -85,7 +90,8 @@ const HOST_DEFINITIONS = {
             "cli-subprocess-demo.js",
             "embedded-http-demo.js",
             "pre-action-gate-demo.js",
-            "host-router-demo.js"
+            "host-router-demo.js",
+            "memory-conflict-demo.js"
         ],
         generatedReadme: ""
     },
@@ -183,7 +189,8 @@ const HOST_DEFINITIONS = {
         sourceDirName: "external-consumer-python",
         filenames: [
             "cli-demo.py",
-            "http-client-demo.py"
+            "http-client-demo.py",
+            "memory-conflict-cli-demo.py"
         ],
         generatedReadme: [
             "# user-habit-pipeline Python Starter",
@@ -194,6 +201,7 @@ const HOST_DEFINITIONS = {
             "",
             "- `cli-demo.py`: call the shipped CLI from Python and parse JSON",
             "- `http-client-demo.py`: call the official localhost HTTP entrypoint from Python",
+            "- `memory-conflict-cli-demo.py`: compare host local memory with pipeline output through the CLI boundary",
             "",
             "## Install",
             "",
@@ -208,6 +216,7 @@ const HOST_DEFINITIONS = {
             "```powershell",
             "python .\\cli-demo.py",
             "python .\\http-client-demo.py",
+            "python .\\memory-conflict-cli-demo.py",
             "```",
             "",
             "The HTTP demo expects `user-habit-pipeline-http` to already be running on `http://127.0.0.1:4848`.",
@@ -216,6 +225,7 @@ const HOST_DEFINITIONS = {
             "",
             "- Use `cli-demo.py` when you want the simplest stable subprocess boundary.",
             "- Use `http-client-demo.py` when another process is already hosting the local HTTP server.",
+            "- Use `memory-conflict-cli-demo.py` when your Python host already has local memory and disagreement should downgrade to `ask_clarifying_question`.",
             "",
             "## Next Steps",
             "",
@@ -229,7 +239,8 @@ const HOST_DEFINITIONS = {
         sourceDirName: "external-consumer-python",
         filenames: [
             "cli-demo.py",
-            "http-client-demo.py"
+            "http-client-demo.py",
+            "memory-conflict-cli-demo.py"
         ],
         generatedReadme: ""
     },
@@ -238,7 +249,8 @@ const HOST_DEFINITIONS = {
         sourceDirName: "external-consumer-python",
         filenames: [
             "cli-demo.py",
-            "http-client-demo.py"
+            "http-client-demo.py",
+            "memory-conflict-cli-demo.py"
         ],
         generatedReadme: ""
     }

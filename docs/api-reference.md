@@ -126,6 +126,47 @@ Use this when:
 - the host needs a pre-action semantic gate
 - the host should ask for clarification before routing when the shorthand remains ambiguous
 
+### `buildMemoryConflictDecision(preActionDecision, externalMemorySignal?)`
+
+Build a host-facing boundary decision when a host also has its own local memory opinion.
+
+Use this when:
+
+- the host already has a local memory layer
+- the host wants to compare that hidden memory against the pipeline interpretation
+- disagreement should force clarify-first instead of a silent override
+
+Input:
+
+- `preActionDecision: PreActionDecision`
+- `externalMemorySignal.normalized_intent: string`
+- `externalMemorySignal.source_label?: string | null`
+- `externalMemorySignal.confidence?: number | null`
+
+Output fields:
+
+- `memory_conflict_detected`
+- `conflict_sources`
+- `final_next_action`
+- `recommended_resolution`
+- `pipeline_normalized_intent`
+- `external_memory_normalized_intent`
+- `external_memory_source_label`
+- `external_memory_confidence`
+- `reason`
+- `host_guidance`
+
+Current `recommended_resolution` values:
+
+- `use_pipeline_decision`
+- `ask_clarifying_question`
+
+Notes:
+
+- hidden host memory may guide clarification
+- hidden host memory must not silently override explicit pipeline meaning
+- if the two disagree, the default resolution is `ask_clarifying_question`
+
 ### `loadDefaultHabits()`
 
 Load and cache the default registry from:
@@ -367,10 +408,27 @@ Supported flags:
 - `--scenario <name>` optional
 - `--context <text>` repeatable
 - `--adapter growth-hub` optional
+- `--pre-action` optional
+- `--external-memory-intent <intent>` optional
+- `--external-memory-source <label>` optional
+- `--external-memory-confidence <0-1>` optional
 - `--registry <path>` optional
 - `--user-registry <path>` optional
 
 The CLI prints JSON only.
+
+Default output remains the plain interpretation result.
+
+If `--pre-action` is supplied, the CLI returns:
+
+- `result`
+- `pre_action_decision`
+
+If `--external-memory-intent` is supplied, the CLI also returns:
+
+- `memory_conflict_decision`
+
+This lets a non-Node host use the CLI as a clarify-first semantic gate without reimplementing conflict logic.
 
 ---
 
@@ -590,6 +648,7 @@ Request body:
 - `recent_context?: string[] | string`
 - `include_user_registry?: boolean`
 - `user_registry_path?: string`
+- `external_memory_signal?: { normalized_intent: string; source_label?: string | null; confidence?: number | null }`
 
 PowerShell example:
 
@@ -613,10 +672,13 @@ Response shape:
 - `pre_action_decision.next_action`
 - `pre_action_decision.reason`
 - `pre_action_decision.host_guidance`
+- `memory_conflict_decision?`
 
 Notes:
 
 - `POST /interpret` now mirrors the pre-action library surface by returning both the normal interpretation output and a host-facing `pre_action_decision`
+- if `external_memory_signal` is supplied, the response also includes `memory_conflict_decision`
+- disagreement between host local memory and the pipeline interpretation should resolve to `ask_clarifying_question`
 - this is intended for local hosts that want a transport-shaped semantic gate before execution
 
 ### `POST /suggest`

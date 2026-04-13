@@ -2,12 +2,13 @@
 
 This folder shows the smallest realistic way another local Node.js project can consume `user-habit-pipeline`.
 
-It demonstrates five paths:
+It demonstrates six paths:
 
 - call the library directly from application code
 - call the shipped CLI as a JSON subprocess boundary
 - start the official localhost HTTP server from application code and call it through HTTP
 - gate a host action before execution with a stable semantic decision object
+- compare host local memory with the pipeline result and force clarify-first on disagreement
 
 Use this when you want a copyable external-project example instead of isolated snippets.
 
@@ -18,6 +19,7 @@ Use this when you want a copyable external-project example instead of isolated s
 - `embedded-http-demo.js`
 - `pre-action-gate-demo.js`
 - `host-router-demo.js`
+- `memory-conflict-demo.js`
 
 ## Run From This Repository
 
@@ -29,6 +31,7 @@ node .\examples\external-consumer-node\cli-subprocess-demo.js
 node .\examples\external-consumer-node\embedded-http-demo.js
 node .\examples\external-consumer-node\pre-action-gate-demo.js
 node .\examples\external-consumer-node\host-router-demo.js
+node .\examples\external-consumer-node\memory-conflict-demo.js
 ```
 
 These scripts use `require("user-habit-pipeline")` exactly like an external consumer project would.
@@ -74,3 +77,9 @@ Use `host-router-demo.js` when:
 - you want to simulate the full host loop of `interpret -> decide -> route`
 - you need a copyable pattern for mapping `normalized_intent` into your own downstream handlers
 - you want the host to own routing and execution while the package stays semantic-only
+
+Use `memory-conflict-demo.js` when:
+
+- your host already has its own local memory layer
+- you want hidden memory disagreement to downgrade into clarify-first
+- you need a copyable pattern for a memory firewall in front of host actions

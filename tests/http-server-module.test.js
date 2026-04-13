@@ -79,12 +79,19 @@ test("embedded http server can be started from the library entrypoint", async ()
 
     const interpret = await requestJson("POST", started.url, "/interpret", {
       message: "继续",
-      scenario: "general"
+      scenario: "general",
+      external_memory_signal: {
+        normalized_intent: "resume_last_task",
+        source_label: "host_local_memory",
+        confidence: 0.84
+      }
     });
     assert.equal(interpret.statusCode, 200);
     assert.equal(interpret.body.result.normalized_intent, "continue_current_track");
     assert.equal(interpret.body.pre_action_decision.next_action, "ask_clarifying_question");
     assert.equal(interpret.body.pre_action_decision.decision_basis, "clarification_required");
+    assert.equal(interpret.body.memory_conflict_decision.memory_conflict_detected, true);
+    assert.equal(interpret.body.memory_conflict_decision.final_next_action, "ask_clarifying_question");
   } finally {
     await new Promise((resolve, reject) => (
       started.server.close((error) => (error ? reject(error) : resolve()))

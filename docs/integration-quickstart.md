@@ -38,6 +38,9 @@ npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-pytho
 npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
 ```
 
+The generated Node starter includes `memory-conflict-demo.js`.
+The generated Python starter includes `memory-conflict-cli-demo.py`.
+
 You do not need to clone the repository just to use it.
 
 ## Verified Environments
@@ -164,6 +167,8 @@ Official starter command:
 npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
 ```
 
+That generated starter includes a copyable `memory-conflict-demo.js` path for hosts that already keep their own local memory.
+
 ---
 
 ## Path 2: Any Language Via CLI
@@ -174,6 +179,18 @@ Interpret one message:
 
 ```powershell
 npx user-habit-pipeline --message "继续" --scenario general
+```
+
+Ask the CLI for a pre-action routing decision:
+
+```powershell
+npx user-habit-pipeline --message "继续" --scenario general --pre-action
+```
+
+Compare host local memory against the pipeline and downgrade to clarify-first on disagreement:
+
+```powershell
+npx user-habit-pipeline --message "读取最新状态板" --scenario status_board --external-memory-intent close_session --external-memory-source host_local_memory --external-memory-confidence 0.91
 ```
 
 Manage user-defined phrases:
@@ -195,6 +212,12 @@ Recommended host pattern:
 2. invoke `npx user-habit-pipeline` or `npx manage-user-habits`
 3. parse stdout as JSON
 4. let your host decide whether to execute any downstream action
+
+If the host needs a subprocess-based semantic gate before action:
+
+1. call `npx user-habit-pipeline --pre-action ...`
+2. if the host also has local memory, pass `--external-memory-intent ...`
+3. if `memory_conflict_decision.final_next_action = ask_clarifying_question`, ask first and stop
 
 This is usually the simplest production boundary for Python, Go, Rust, or desktop automation tools.
 

@@ -6,6 +6,7 @@ It covers two realistic paths:
 
 - `cli-demo.py` for the lowest-friction JSON subprocess boundary
 - `http-client-demo.py` for projects that prefer a localhost HTTP contract
+- `memory-conflict-cli-demo.py` for hosts that already have their own local memory layer
 
 ## Recommended Use
 
@@ -35,6 +36,15 @@ The scripts assume they are run from a project root where that package is alread
 
 - `cli-demo.py`
 - `http-client-demo.py`
+- `memory-conflict-cli-demo.py`
+
+Use `memory-conflict-cli-demo.py` when:
+
+- your Python host already stores local memory or correction history
+- disagreement with `user-habit-pipeline` should force `ask_clarifying_question`
+- you want the subprocess boundary to act like a memory firewall before action
+
+The HTTP demo now also shows the same boundary through `external_memory_signal` on `POST /interpret`.
 
 ## Suggested Flow
 

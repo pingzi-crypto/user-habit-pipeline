@@ -6,8 +6,13 @@ import {
   loadDefaultHabits,
   loadHabitsFromFile
 } from "./habit_core/interpreter";
-import { buildPreActionDecision, interpretHabitForPreAction } from "./pre_action_gate";
+import {
+  buildMemoryConflictDecision,
+  buildPreActionDecision,
+  interpretHabitForPreAction
+} from "./pre_action_gate";
 import type {
+  ExternalMemorySignal,
   GrowthHubHint,
   HabitInput,
   HabitMatch,
@@ -16,6 +21,8 @@ import type {
   InterpretedPreActionResult,
   InterpretHabitOptions,
   MatchType,
+  MemoryConflictDecision,
+  MemoryConflictRecommendedResolution,
   PreActionDecision,
   PreActionDecisionBasis,
   PreActionNextAction,
@@ -70,6 +77,7 @@ const httpServer = require("./http_server") as {
 };
 
 export type {
+  ExternalMemorySignal,
   GrowthHubHint,
   HabitInput,
   ParsedHabitManagementRequest as HabitManagementRequest,
@@ -80,6 +88,8 @@ export type {
   InterpretHabitOptions,
   CacheLoadedSuggestionSnapshot as LoadedSuggestionSnapshot,
   MatchType,
+  MemoryConflictDecision,
+  MemoryConflictRecommendedResolution,
   PreActionDecision,
   PreActionDecisionBasis,
   PreActionNextAction,
@@ -90,6 +100,7 @@ export type {
 export {
   createUnknownOutput,
   findCandidateRules,
+  buildMemoryConflictDecision,
   buildPreActionDecision,
   interpretHabit,
   interpretHabitForPreAction,
