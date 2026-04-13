@@ -3,8 +3,9 @@ import http = require("node:http");
 import os = require("node:os");
 import path = require("node:path");
 import { randomUUID } from "node:crypto";
-import type { HabitOutput } from "./habit_core/types";
+import type { HabitOutput, PreActionDecision } from "./habit_core/types";
 import { interpretHabit } from "./habit_core/interpreter";
+import { buildPreActionDecision } from "./pre_action_gate";
 import {
   USER_REGISTRY_PATH,
   resolveDefaultUserRegistryPath
@@ -197,6 +198,7 @@ export function normalizeHttpServerOptions(options: HttpServerOptions = {}): Nor
 export function handleInterpretRequest(body: JsonObject, options: HttpServerOptions = {}): {
   ok: true;
   result: HabitOutput;
+  pre_action_decision: PreActionDecision;
 } {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   if (!message) {
@@ -217,7 +219,8 @@ export function handleInterpretRequest(body: JsonObject, options: HttpServerOpti
 
   return {
     ok: true,
-    result
+    result,
+    pre_action_decision: buildPreActionDecision(result)
   };
 }
 

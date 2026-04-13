@@ -54,7 +54,8 @@ async function main() {
       url,
       normalized_intent: interpret.result.normalized_intent,
       confidence: interpret.result.confidence,
-      should_ask_clarifying_question: interpret.result.should_ask_clarifying_question
+      should_ask_clarifying_question: interpret.result.should_ask_clarifying_question,
+      pre_action_next_action: interpret.pre_action_decision.next_action
     }, null, 2)}\n`);
   } finally {
     await new Promise((resolve, reject) => (

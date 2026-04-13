@@ -44,6 +44,88 @@ Notes:
 - if neither is provided, the interpreter loads the default registry plus the user-habits overlay
 - `options.includeUserRegistry = false` forces default-registry-only behavior
 
+### `buildPreActionDecision(habitOutput)`
+
+Build a host-facing decision object from a normal interpretation result.
+
+Use this when a host wants a stable semantic gate before downstream action.
+
+Input:
+
+- one `HabitOutput`
+
+Output fields:
+
+- `decision_basis`
+- `next_action`
+- `normalized_intent`
+- `confidence`
+- `matched_phrase`
+- `should_ask_clarifying_question`
+- `disambiguation_hints`
+- `preferred_terms`
+- `reason`
+- `host_guidance`
+
+Current `decision_basis` values:
+
+- `no_match`
+- `clarification_required`
+- `clear_match`
+
+Current `next_action` values:
+
+- `proceed`
+- `ask_clarifying_question`
+
+Notes:
+
+- this helper does not execute anything
+- it exists so the host can distinguish between clear semantic proceed cases and clarify-first cases
+
+### `interpretHabitForPreAction(input, options?)`
+
+Interpret a shorthand message and return both:
+
+- the normal interpretation result
+- a host-facing `pre_action_decision`
+
+Input:
+
+- `input.message: string`
+- `input.recent_context?: string[]`
+- `input.scenario?: string | null`
+
+Options:
+
+- `options.rules?: HabitRule[]`
+- `options.registryPath?: string`
+- `options.userRegistryPath?: string`
+- `options.includeUserRegistry?: boolean`
+
+Response shape:
+
+- `result`
+- `pre_action_decision`
+
+Example:
+
+```js
+const { interpretHabitForPreAction } = require("user-habit-pipeline");
+
+const output = interpretHabitForPreAction({
+  message: "继续",
+  scenario: "general"
+});
+
+console.log(output.pre_action_decision.next_action);
+```
+
+Use this when:
+
+- the host needs a pre-action semantic gate
+- the host should ask for clarification before routing when the shorthand remains ambiguous
+
 ### `loadDefaultHabits()`
 
 Load and cache the default registry from:
@@ -527,6 +609,15 @@ Response shape:
 - `result.disambiguation_hints`
 - `result.confidence`
 - `result.should_ask_clarifying_question`
+- `pre_action_decision.decision_basis`
+- `pre_action_decision.next_action`
+- `pre_action_decision.reason`
+- `pre_action_decision.host_guidance`
+
+Notes:
+
+- `POST /interpret` now mirrors the pre-action library surface by returning both the normal interpretation output and a host-facing `pre_action_decision`
+- this is intended for local hosts that want a transport-shaped semantic gate before execution
 
 ### `POST /suggest`
 

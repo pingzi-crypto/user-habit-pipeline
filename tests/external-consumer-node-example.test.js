@@ -7,6 +7,8 @@ const rootDir = path.join(__dirname, "..");
 const directDemoPath = path.join(rootDir, "examples", "external-consumer-node", "direct-library-demo.js");
 const cliDemoPath = path.join(rootDir, "examples", "external-consumer-node", "cli-subprocess-demo.js");
 const httpDemoPath = path.join(rootDir, "examples", "external-consumer-node", "embedded-http-demo.js");
+const preActionGateDemoPath = path.join(rootDir, "examples", "external-consumer-node", "pre-action-gate-demo.js");
+const hostRouterDemoPath = path.join(rootDir, "examples", "external-consumer-node", "host-router-demo.js");
 
 function runNodeScript(scriptPath) {
   const result = spawnSync(process.execPath, [scriptPath], {
@@ -50,4 +52,29 @@ test("external consumer embedded-http demo runs successfully", () => {
   assert.match(output.url, /^http:\/\/127\.0\.0\.1:\d+$/u);
   assert.equal(output.normalized_intent, "continue_current_track");
   assert.equal(typeof output.confidence, "number");
+  assert.equal(output.pre_action_next_action, "ask_clarifying_question");
+});
+
+test("external consumer pre-action-gate demo runs successfully", () => {
+  const output = runNodeScript(preActionGateDemoPath);
+  assert.equal(output.integration_path, "pre-action-gate");
+  assert.equal(Array.isArray(output.cases), true);
+  assert.equal(output.cases.length, 2);
+  assert.equal(output.cases[0].next_action, "ask_clarifying_question");
+  assert.equal(output.cases[0].decision_basis, "clarification_required");
+  assert.equal(output.cases[1].next_action, "proceed");
+  assert.equal(output.cases[1].normalized_intent, "refresh_latest_board_state");
+});
+
+test("external consumer host-router demo runs successfully", () => {
+  const output = runNodeScript(hostRouterDemoPath);
+  assert.equal(output.integration_path, "host-router");
+  assert.equal(Array.isArray(output.cases), true);
+  assert.equal(output.cases.length, 3);
+  assert.equal(output.cases[0].host_route.host_action, "ask_clarifying_question");
+  assert.equal(output.cases[1].host_route.host_action, "route_to_downstream_handler");
+  assert.equal(output.cases[1].host_route.target, "status-board.refresh");
+  assert.equal(output.cases[2].host_route.target, "session.close");
+  assert.equal(output.roi_metrics.ambiguous_action_prevented_count, 1);
+  assert.equal(output.roi_metrics.clear_action_proceed_count, 2);
 });

@@ -72,5 +72,11 @@ process.stdout.write(`${JSON.stringify({
   candidate_count: payload.candidate_count,
   top_phrase: payload.candidates?.[0]?.phrase || null,
   top_candidate_preview: payload.candidate_previews?.[0] || null,
-  suggested_follow_ups: payload.suggested_follow_ups
+  suggested_follow_ups: payload.suggested_follow_ups,
+  roi_event: {
+    event_type: "candidate_scan_completed",
+    scan_runs: 1,
+    scan_runs_with_candidates: payload.candidate_count > 0 ? 1 : 0,
+    candidate_count_total: Number(payload.candidate_count || 0)
+  }
 }, null, 2)}\n`);

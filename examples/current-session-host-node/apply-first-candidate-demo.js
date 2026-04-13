@@ -64,5 +64,10 @@ process.stdout.write(`${JSON.stringify({
   action: payload.action,
   phrase: payload.applied_rule?.phrase || null,
   normalized_intent: payload.applied_rule?.normalized_intent || null,
-  next_step_level: payload.next_step_assessment?.level || null
+  next_step_level: payload.next_step_assessment?.level || null,
+  roi_event: {
+    event_type: "candidate_accepted",
+    durable_write_explicit: payload.action === "apply-candidate",
+    accepted_candidate_count: payload.action === "apply-candidate" ? 1 : 0
+  }
 }, null, 2)}\n`);

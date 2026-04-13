@@ -34,6 +34,27 @@ export interface HabitOutput {
   notes: string[];
 }
 
+export type PreActionDecisionBasis = "no_match" | "clarification_required" | "clear_match";
+export type PreActionNextAction = "proceed" | "ask_clarifying_question";
+
+export interface PreActionDecision {
+  decision_basis: PreActionDecisionBasis;
+  next_action: PreActionNextAction;
+  normalized_intent: string;
+  confidence: number;
+  matched_phrase: string | null;
+  should_ask_clarifying_question: boolean;
+  disambiguation_hints: string[];
+  preferred_terms: string[];
+  reason: string;
+  host_guidance: string;
+}
+
+export interface InterpretedPreActionResult {
+  result: HabitOutput;
+  pre_action_decision: PreActionDecision;
+}
+
 export interface GrowthHubHint {
   hint_intent: string;
   hint_confidence: number;

@@ -8,6 +8,10 @@ If you only need one recommendation, use this:
 - non-Node project: call the CLI and read JSON
 - chat host / assistant UI: call `codex-session-habits`
 
+If you need help choosing across hosts or deciding whether runtime state should be shared or isolated, see:
+
+- [cross-host-integration-guide.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
+
 The package is an interpretation layer, not a workflow server.
 It now also ships an optional localhost HTTP entrypoint for local integration.
 
@@ -80,6 +84,8 @@ Best fit:
 Useful exports:
 
 - `interpretHabit`
+- `interpretHabitForPreAction`
+- `buildPreActionDecision`
 - `suggestSessionHabitCandidates`
 - `addUserHabitRule`
 - `removeUserHabitPhrase`
@@ -87,6 +93,24 @@ Useful exports:
 - `parseHabitManagementRequest`
 
 This is the cleanest integration path when you want function calls instead of subprocesses.
+
+If the host is about to execute a downstream action and needs a stable semantic gate first, use:
+
+```js
+const { interpretHabitForPreAction } = require("user-habit-pipeline");
+
+const { pre_action_decision } = interpretHabitForPreAction({
+  message: "继续",
+  scenario: "general"
+});
+
+console.log(pre_action_decision.next_action);
+```
+
+Use this when:
+
+- the host needs `proceed` vs `ask_clarifying_question` before selecting tools
+- the package should remain an interpretation layer instead of embedding workflow execution
 
 If the target project prefers an API-shaped localhost boundary but still runs on Node.js, you can also embed the shipped HTTP server directly instead of spawning the CLI:
 
@@ -129,6 +153,10 @@ Copyable external-project demo files:
 - [examples/external-consumer-node/direct-library-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/direct-library-demo.js)
 - [examples/external-consumer-node/cli-subprocess-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/cli-subprocess-demo.js)
 - [examples/external-consumer-node/embedded-http-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/embedded-http-demo.js)
+- [examples/external-consumer-node/host-router-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/host-router-demo.js)
+- [docs/pre-action-host-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
+- [docs/demo-roi-metrics.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/demo-roi-metrics.md)
+- [docs/cross-host-integration-guide.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
 
 Official starter command:
 
@@ -267,6 +295,10 @@ Copyable current-session host starter files:
 - [examples/current-session-host-node/README.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/README.md)
 - [examples/current-session-host-node/scan-current-session-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/scan-current-session-demo.js)
 - [examples/current-session-host-node/apply-first-candidate-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/apply-first-candidate-demo.js)
+- [examples/current-session-host-node/scan-apply-interpret-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/scan-apply-interpret-demo.js)
+- [examples/current-session-host-node/happy-path-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/current-session-host-node/happy-path-demo.js)
+- [docs/happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
+- [docs/cross-host-integration-guide.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
 
 Official starter command:
 
@@ -288,6 +320,10 @@ You can override the runtime data root with:
 - `USER_HABIT_PIPELINE_HOME`
 
 That is useful when another application wants a project-local or sandbox-local state directory.
+
+For a decision framework on when to share state vs isolate it, see:
+
+- [cross-host-integration-guide.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
 
 ---
 
@@ -339,6 +375,11 @@ Available endpoints:
 - `POST /interpret`
 - `POST /suggest`
 - `POST /manage`
+
+`POST /interpret` now returns:
+
+- `result`
+- `pre_action_decision`
 
 Optional flags:
 

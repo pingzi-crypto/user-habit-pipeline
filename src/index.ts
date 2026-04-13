@@ -6,14 +6,19 @@ import {
   loadDefaultHabits,
   loadHabitsFromFile
 } from "./habit_core/interpreter";
+import { buildPreActionDecision, interpretHabitForPreAction } from "./pre_action_gate";
 import type {
   GrowthHubHint,
   HabitInput,
   HabitMatch,
   HabitOutput,
   HabitRule,
+  InterpretedPreActionResult,
   InterpretHabitOptions,
   MatchType,
+  PreActionDecision,
+  PreActionDecisionBasis,
+  PreActionNextAction,
   UserRegistryState
 } from "./habit_core/types";
 import {
@@ -71,9 +76,13 @@ export type {
   HabitMatch,
   HabitOutput,
   HabitRule,
+  InterpretedPreActionResult,
   InterpretHabitOptions,
   CacheLoadedSuggestionSnapshot as LoadedSuggestionSnapshot,
   MatchType,
+  PreActionDecision,
+  PreActionDecisionBasis,
+  PreActionNextAction,
   CacheSuggestionSnapshotRecord as SuggestionSnapshotRecord,
   UserRegistryState
 };
@@ -81,7 +90,9 @@ export type {
 export {
   createUnknownOutput,
   findCandidateRules,
+  buildPreActionDecision,
   interpretHabit,
+  interpretHabitForPreAction,
   loadDefaultHabits,
   loadHabitsFromFile,
   toGrowthHubHint,

@@ -36,6 +36,7 @@ This checklist validates:
 - suggestion cache reuse
 - user overlay add/remove/ignore flows
 - Codex-facing chat-ready output fields
+- minimal ROI evidence capture for the current-session and pre-action flows
 
 It does not validate:
 
@@ -327,6 +328,41 @@ Expected:
 
 ---
 
+## 12. ROI Evidence Capture
+
+For at least one realistic evaluation pass, record these yes/no signals:
+
+- `ambiguous_action_prevented`
+  - Did the host or demo stop an ambiguous shorthand from routing directly into a downstream action?
+- `clarification_triggered`
+  - Did a phrase such as `继续` or `收口` correctly result in clarification instead of confident action?
+- `candidate_surfaced`
+  - Did current-session scan return at least one credible candidate worth review?
+- `candidate_accepted`
+  - Did one candidate become an active habit through explicit confirmation?
+- `candidate_ignored`
+  - Did one noisy candidate get suppressed explicitly?
+- `candidate_removed_after_accept`
+  - If you tested a correction path, could an accepted habit be removed cheaply afterward?
+
+Recommended lightweight capture format:
+
+```json
+{
+  "ambiguous_action_prevented": true,
+  "clarification_triggered": true,
+  "candidate_surfaced": true,
+  "candidate_accepted": true,
+  "candidate_ignored": true,
+  "candidate_removed_after_accept": false
+}
+```
+
+This should stay local to the test run.
+Do not turn it into hidden background telemetry.
+
+---
+
 ## Pass Criteria
 
 Treat the manual acceptance as passing when:
@@ -340,6 +376,7 @@ Treat the manual acceptance as passing when:
 - list output reflects additions / removals / ignored suggestions clearly
 - interpretation reflects the applied rule
 - low-ROI stop guidance is present in both project and skill guidance
+- the run captures enough evidence to answer whether ambiguity was reduced and review flow value was real
 
 If any step fails, record:
 

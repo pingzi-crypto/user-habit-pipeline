@@ -71,6 +71,7 @@ npm install user-habit-pipeline
 Fastest external demo:
 
 - [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo) shows a clean outside project using the published package, auto-scaffolding the Codex host starter, and running a local `scan -> apply` flow with isolated runtime state.
+- local in-repo happy path: [docs/happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
 
 Generate a copyable starter for another project:
 
@@ -126,12 +127,17 @@ Example output:
 Node.js / TypeScript library use:
 
 ```ts
-import { interpretHabit } from "user-habit-pipeline";
+import { interpretHabit, interpretHabitForPreAction } from "user-habit-pipeline";
 
 const result = interpretHabit({
   message: "继续",
   scenario: "general",
   recent_context: ["继续当前评审"]
+});
+
+const gated = interpretHabitForPreAction({
+  message: "继续",
+  scenario: "general"
 });
 ```
 
@@ -228,6 +234,9 @@ Start here if you need more than the quick start:
 
 - [API Reference](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
 - [Integration Quickstart](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/integration-quickstart.md)
+- [Cross-Host Integration Guide](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
+- [Pre-Action Host Integration](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
+- [Happy Path Demo](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
 - [Registry Authoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md)
 - [User Habit Management](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
 - [Session Habit Suggestions](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)

@@ -71,9 +71,13 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("docs/registry.schema.json"));
   assert.ok(pkg.files.includes("docs/api-reference.md"));
   assert.ok(pkg.files.includes("docs/versioning.md"));
+  assert.ok(pkg.files.includes("docs/demo-roi-metrics.md"));
+  assert.ok(pkg.files.includes("docs/cross-host-integration-guide.md"));
+  assert.ok(pkg.files.includes("docs/happy-path-demo.md"));
   assert.ok(pkg.files.includes("docs/release-checklist.md"));
   assert.ok(pkg.files.includes("docs/cross-repo-release-checklist.md"));
   assert.ok(pkg.files.includes("docs/cross-repo-release-runbook.md"));
+  assert.ok(pkg.files.includes("docs/pre-action-host-integration.md"));
   assert.ok(pkg.files.includes("docs/release-notes-v0.4.0.md"));
   assert.ok(pkg.files.includes("docs/release-notes-v0.4.3.md"));
   assert.ok(pkg.files.includes("docs/session-habit-suggestions.md"));
@@ -84,12 +88,16 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("examples/project-registry/README.md"));
   assert.ok(pkg.files.includes("examples/project-registry/smoke-test.js"));
   assert.ok(pkg.files.includes("examples/external-consumer-node/cli-subprocess-demo.js"));
+  assert.ok(pkg.files.includes("examples/external-consumer-node/pre-action-gate-demo.js"));
+  assert.ok(pkg.files.includes("examples/external-consumer-node/host-router-demo.js"));
   assert.ok(pkg.files.includes("examples/external-consumer-python/README.md"));
   assert.ok(pkg.files.includes("examples/external-consumer-python/cli-demo.py"));
   assert.ok(pkg.files.includes("examples/external-consumer-python/http-client-demo.py"));
   assert.ok(pkg.files.includes("examples/current-session-host-node/README.md"));
   assert.ok(pkg.files.includes("examples/current-session-host-node/scan-current-session-demo.js"));
   assert.ok(pkg.files.includes("examples/current-session-host-node/apply-first-candidate-demo.js"));
+  assert.ok(pkg.files.includes("examples/current-session-host-node/scan-apply-interpret-demo.js"));
+  assert.ok(pkg.files.includes("examples/current-session-host-node/happy-path-demo.js"));
 });
 
 test("package types expose the public API surface", () => {
@@ -97,6 +105,8 @@ test("package types expose the public API surface", () => {
 
   assert.match(declaration, /USER_REGISTRY_PATH/u);
   assert.match(declaration, /interpretHabit/u);
+  assert.match(declaration, /interpretHabitForPreAction/u);
+  assert.match(declaration, /buildPreActionDecision/u);
   assert.match(declaration, /validateHabitRules/u);
   assert.doesNotMatch(declaration.trim(), /^export \{\};?$/u);
 });

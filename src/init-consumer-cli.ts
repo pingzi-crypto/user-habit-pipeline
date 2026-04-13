@@ -31,7 +31,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     filenames: [
       "direct-library-demo.js",
       "cli-subprocess-demo.js",
-      "embedded-http-demo.js"
+      "embedded-http-demo.js",
+      "pre-action-gate-demo.js",
+      "host-router-demo.js"
     ],
     generatedReadme: [
       "# user-habit-pipeline Node Starter",
@@ -43,6 +45,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "- `direct-library-demo.js`: call the package as a normal Node.js library",
       "- `cli-subprocess-demo.js`: invoke the shipped CLI and read JSON",
       "- `embedded-http-demo.js`: start the official localhost HTTP server from Node.js",
+      "- `pre-action-gate-demo.js`: gate a host action before execution with a stable semantic decision object",
+      "- `host-router-demo.js`: simulate `interpret -> decide -> route` inside a host-owned routing layer",
       "",
       "## Install",
       "",
@@ -58,6 +62,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "node .\\direct-library-demo.js",
       "node .\\cli-subprocess-demo.js",
       "node .\\embedded-http-demo.js",
+      "node .\\pre-action-gate-demo.js",
+      "node .\\host-router-demo.js",
       "```",
       "",
       "## Recommended Use",
@@ -65,6 +71,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "- Use `direct-library-demo.js` when the host is already Node.js and you want the smallest integration surface.",
       "- Use `cli-subprocess-demo.js` when you want an explicit JSON subprocess boundary.",
       "- Use `embedded-http-demo.js` when your host prefers a localhost HTTP contract.",
+      "- Use `pre-action-gate-demo.js` when your host needs a lightweight semantic gate before running downstream actions.",
+      "- Use `host-router-demo.js` when you want a copyable host-side routing pattern after semantic gating.",
       "",
       "## Next Steps",
       "",
@@ -79,7 +87,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     filenames: [
       "direct-library-demo.js",
       "cli-subprocess-demo.js",
-      "embedded-http-demo.js"
+      "embedded-http-demo.js",
+      "pre-action-gate-demo.js",
+      "host-router-demo.js"
     ],
     generatedReadme: ""
   },
@@ -89,7 +99,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     filenames: [
       "direct-library-demo.js",
       "cli-subprocess-demo.js",
-      "embedded-http-demo.js"
+      "embedded-http-demo.js",
+      "pre-action-gate-demo.js",
+      "host-router-demo.js"
     ],
     generatedReadme: ""
   },
@@ -98,7 +110,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     sourceDirName: "current-session-host-node",
     filenames: [
       "scan-current-session-demo.js",
-      "apply-first-candidate-demo.js"
+      "apply-first-candidate-demo.js",
+      "scan-apply-interpret-demo.js",
+      "happy-path-demo.js"
     ],
     generatedReadme: [
       "# user-habit-pipeline Current-Session Host Starter",
@@ -109,6 +123,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "",
       "- `scan-current-session-demo.js`: pass a visible role-prefixed transcript into `codex-session-habits` and return chat-ready suggestion data",
       "- `apply-first-candidate-demo.js`: confirm the latest cached candidate with a short follow-up request",
+      "- `scan-apply-interpret-demo.js`: prove the same shorthand becomes easier to interpret after an explicit current-session apply step",
+      "- `happy-path-demo.js`: run the shortest outward-facing story for scan -> apply -> interpretation improvement",
       "",
       "## Install",
       "",
@@ -125,6 +141,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "```powershell",
       "node .\\scan-current-session-demo.js",
       "node .\\apply-first-candidate-demo.js",
+      "node .\\scan-apply-interpret-demo.js",
+      "node .\\happy-path-demo.js",
       "```",
       "",
       "## Recommended Use",
@@ -132,6 +150,8 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
       "- Use this starter when your host already has access to visible chat or Codex conversation text.",
       "- Keep transcript gathering on the host side; do not make users locate private thread files on disk.",
       "- Reuse the latest local suggestion cache for short follow-up actions such as `添加第1条`.",
+      "- Use `scan-apply-interpret-demo.js` when you want a compact before/after ROI proof instead of only isolated scan/apply steps.",
+      "- Use `happy-path-demo.js` when you need one short recording or README demo path.",
       "- For project-local testing or multi-project isolation, set `USER_HABIT_PIPELINE_HOME` to a host-owned runtime directory before running the starter scripts.",
       "",
       "## Next Steps",
@@ -146,7 +166,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     sourceDirName: "current-session-host-node",
     filenames: [
       "scan-current-session-demo.js",
-      "apply-first-candidate-demo.js"
+      "apply-first-candidate-demo.js",
+      "scan-apply-interpret-demo.js",
+      "happy-path-demo.js"
     ],
     generatedReadme: ""
   },
@@ -155,7 +177,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     sourceDirName: "current-session-host-node",
     filenames: [
       "scan-current-session-demo.js",
-      "apply-first-candidate-demo.js"
+      "apply-first-candidate-demo.js",
+      "scan-apply-interpret-demo.js",
+      "happy-path-demo.js"
     ],
     generatedReadme: ""
   },
@@ -164,7 +188,9 @@ const HOST_DEFINITIONS: Record<string, TemplateHostDefinition> = {
     sourceDirName: "current-session-host-node",
     filenames: [
       "scan-current-session-demo.js",
-      "apply-first-candidate-demo.js"
+      "apply-first-candidate-demo.js",
+      "scan-apply-interpret-demo.js",
+      "happy-path-demo.js"
     ],
     generatedReadme: ""
   },

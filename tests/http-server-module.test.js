@@ -83,10 +83,11 @@ test("embedded http server can be started from the library entrypoint", async ()
     });
     assert.equal(interpret.statusCode, 200);
     assert.equal(interpret.body.result.normalized_intent, "continue_current_track");
+    assert.equal(interpret.body.pre_action_decision.next_action, "ask_clarifying_question");
+    assert.equal(interpret.body.pre_action_decision.decision_basis, "clarification_required");
   } finally {
     await new Promise((resolve, reject) => (
       started.server.close((error) => (error ? reject(error) : resolve()))
     ));
   }
 });
-

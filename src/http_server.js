@@ -17,6 +17,7 @@ const os = require("node:os");
 const path = require("node:path");
 const node_crypto_1 = require("node:crypto");
 const interpreter_1 = require("./habit_core/interpreter");
+const pre_action_gate_1 = require("./pre_action_gate");
 const user_registry_1 = require("./habit_registry/user_registry");
 const cache_1 = require("./session_suggestions/cache");
 const { executeRequestAction } = require("./manage-habits-cli");
@@ -132,7 +133,8 @@ function handleInterpretRequest(body, options = {}) {
     });
     return {
         ok: true,
-        result
+        result,
+        pre_action_decision: (0, pre_action_gate_1.buildPreActionDecision)(result)
     };
 }
 function handleSuggestRequest(body, options = {}) {

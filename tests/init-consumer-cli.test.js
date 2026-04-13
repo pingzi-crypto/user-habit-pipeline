@@ -33,6 +33,8 @@ test("init-consumer cli generates node starter files", () => {
   assert.ok(fs.existsSync(path.join(outDir, "direct-library-demo.js")));
   assert.ok(fs.existsSync(path.join(outDir, "cli-subprocess-demo.js")));
   assert.ok(fs.existsSync(path.join(outDir, "embedded-http-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "pre-action-gate-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "host-router-demo.js")));
 });
 
 test("init-consumer cli generates python starter files", () => {
@@ -79,6 +81,8 @@ test("init-consumer cli generates codex starter files", () => {
   assert.ok(fs.existsSync(path.join(outDir, "README.md")));
   assert.ok(fs.existsSync(path.join(outDir, "scan-current-session-demo.js")));
   assert.ok(fs.existsSync(path.join(outDir, "apply-first-candidate-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "scan-apply-interpret-demo.js")));
+  assert.ok(fs.existsSync(path.join(outDir, "happy-path-demo.js")));
 });
 
 test("init-consumer cli refuses to overwrite existing files without force", () => {
