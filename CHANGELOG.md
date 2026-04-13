@@ -4,6 +4,12 @@
 
 - No changes yet.
 
+## 0.7.7 - 2026-04-13
+
+- Replaced the PowerShell-only `manual-e2e-smoke` implementation with a Node-based cross-platform script while keeping the existing `.ps1` entrypoint as a thin compatibility wrapper.
+- Updated `npm run release-check` to use the new cross-platform manual E2E path automatically through `npm run manual-e2e-smoke`.
+- Added packaged `scripts/manual-e2e-smoke.js` metadata and refreshed the manual E2E acceptance doc to clarify that the shortest bundled smoke path no longer requires PowerShell.
+
 ## 0.7.6 - 2026-04-13
 
 - Added structured `candidate_previews` to `codex-session-habits` scan results so hosts can render confidence, evidence, and risk summaries without parsing markdown.
