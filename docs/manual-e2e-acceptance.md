@@ -16,11 +16,14 @@ Use a temporary registry path so these checks do not disturb your normal local s
 
 If you want the shortest path, run the bundled smoke script first:
 
-```powershell
+```bash
 npm run manual-e2e-smoke
 ```
 
 Then use the checklist below only when you need to inspect one step manually.
+
+The bundled smoke script is now a Node-based cross-platform path.
+The manual command-by-command examples below still use PowerShell because they are easier to read for multiline stdin cases.
 
 ---
 
@@ -52,11 +55,11 @@ Required:
 
 - Node.js on `PATH`
 - npm available
-- PowerShell
 
 Recommended:
 
 - a clean working tree
+- PowerShell when following the manual step-by-step examples below exactly
 
 ---
 
@@ -309,6 +312,12 @@ If the local skill repo is installed and configured, you can also run:
 
 ```powershell
 & <path-to-manage-current-session-habits>\scripts\check-install.ps1 -SmokeTest
+```
+
+or on a shell-first path:
+
+```bash
+node <path-to-manage-current-session-habits>/scripts/check-install.js --smoke-test
 ```
 
 Expected:

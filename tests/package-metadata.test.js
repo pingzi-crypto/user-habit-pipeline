@@ -42,7 +42,7 @@ test("package metadata exposes the expected entrypoints and scripts", () => {
   );
   assert.equal(pkg.scripts.test, "npm run build && node --test");
   assert.equal(pkg.scripts.demo, "node ./src/demo.js");
-  assert.equal(pkg.scripts["manual-e2e-smoke"], "pwsh -File ./scripts/manual-e2e-smoke.ps1");
+  assert.equal(pkg.scripts["manual-e2e-smoke"], "node ./scripts/manual-e2e-smoke.js");
   assert.equal(pkg.scripts["manage-habits"], "node ./src/manage-habits-cli.js");
   assert.equal(pkg.scripts.prepublishOnly, "npm run release-check");
   assert.equal(pkg.scripts["package-smoke"], "npm pack --dry-run");
@@ -64,6 +64,7 @@ test("package metadata documents the expected engine and packaged files", () => 
   assert.ok(pkg.files.includes("src/**/*.js"));
   assert.ok(pkg.files.includes("src/**/*.d.ts"));
   assert.ok(pkg.files.includes("src/habit_registry/default_habits.json"));
+  assert.ok(pkg.files.includes("scripts/manual-e2e-smoke.js"));
   assert.ok(pkg.files.includes("scripts/manual-e2e-smoke.ps1"));
   assert.ok(pkg.files.includes("data/.gitkeep"));
   assert.ok(pkg.files.includes("CHANGELOG.md"));
