@@ -235,6 +235,13 @@ function stripWrappingQuotes(value: string | null | undefined): string {
     .replace(/^["'“”‘’](.*)["'“”‘’]$/u, "$1");
 }
 
+function normalizeExplicitDefinitionMessage(message: string): string {
+  return String(message || "").replace(
+    /^(?:另外|还有|然后|顺便说一下|补充一下|再补一句)\s*[，,]\s*/u,
+    ""
+  );
+}
+
 function toStringArray(value: string | null | undefined): string[] {
   if (!value) {
     return [];
@@ -366,6 +373,7 @@ function addOrReplaceCandidate(
 }
 
 function extractExplicitDefinitionRule(message: string): ExplicitDefinitionMatch | null {
+  const normalizedMessage = normalizeExplicitDefinitionMessage(message);
   const patterns = [
     {
       pattern:
@@ -403,7 +411,7 @@ function extractExplicitDefinitionRule(message: string): ExplicitDefinitionMatch
   ];
 
   for (const entry of patterns) {
-    const match = String(message || "").match(entry.pattern);
+    const match = normalizedMessage.match(entry.pattern);
     if (!match) {
       continue;
     }

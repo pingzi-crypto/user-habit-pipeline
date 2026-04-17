@@ -96,6 +96,68 @@ test("suggestSessionHabitCandidates handles a realistic Codex transcript with a 
   assert.match(result.candidates[0].confidence_details.summary, /纠正式/u);
 });
 
+test("suggestSessionHabitCandidates prioritizes correction-style definitions over noisy repeated phrases in a realistic transcript", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = loadFixtureText("codex_session_realistic_correction_with_noise.txt");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.transcript_stats.message_count, 14);
+  assert.equal(result.transcript_stats.user_message_count, 6);
+  assert.equal(result.candidates.length, 2);
+
+  assert.equal(result.candidates[0].phrase, "收工啦");
+  assert.equal(result.candidates[0].source_type, "explicit_definition");
+  assert.equal(result.candidates[0].action, "suggest_add");
+  assert.equal(result.candidates[0].confidence, 0.91);
+  assert.deepEqual(result.candidates[0].risk_flags, []);
+  assert.equal(result.candidates[0].evidence.occurrence_count, 2);
+  assert.equal(result.candidates[0].evidence.correction_count, 1);
+
+  assert.equal(result.candidates[1].phrase, "先那样");
+  assert.equal(result.candidates[1].source_type, "repeated_phrase");
+  assert.equal(result.candidates[1].action, "review_only");
+  assert.deepEqual(result.candidates[1].risk_flags, ["single_thread_only", "missing_intent"]);
+  assert.equal(result.candidates[1].evidence.occurrence_count, 2);
+});
+
+test("suggestSessionHabitCandidates can extract multiple correction-style definitions from one realistic transcript", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = loadFixtureText("codex_session_realistic_double_correction.txt");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.transcript_stats.message_count, 13);
+  assert.equal(result.transcript_stats.user_message_count, 5);
+  assert.equal(result.candidates.length, 2);
+
+  const closeSessionCandidate = result.candidates.find((item) => item.phrase === "收尾一下");
+  const reviewCandidate = result.candidates.find((item) => item.phrase === "过一遍");
+
+  assert.ok(closeSessionCandidate);
+  assert.ok(reviewCandidate);
+
+  assert.equal(closeSessionCandidate.source_type, "explicit_definition");
+  assert.equal(closeSessionCandidate.action, "suggest_add");
+  assert.equal(closeSessionCandidate.suggested_rule.normalized_intent, "close_session");
+  assert.equal(closeSessionCandidate.confidence, 0.91);
+  assert.equal(closeSessionCandidate.evidence.correction_count, 1);
+  assert.deepEqual(closeSessionCandidate.risk_flags, []);
+
+  assert.equal(reviewCandidate.source_type, "explicit_definition");
+  assert.equal(reviewCandidate.action, "suggest_add");
+  assert.equal(reviewCandidate.suggested_rule.normalized_intent, "review_acceptance");
+  assert.equal(reviewCandidate.confidence, 0.91);
+  assert.equal(reviewCandidate.evidence.correction_count, 1);
+  assert.deepEqual(reviewCandidate.risk_flags, []);
+});
+
 test("suggestSessionHabitCandidates extracts explicit add and definition candidates", () => {
   const userRegistryPath = createTempRegistryPath();
   const transcript = [
@@ -222,6 +284,25 @@ test("suggestSessionHabitCandidates detects correction-style definitions with �
   assert.equal(result.candidates[0].confidence, 0.87);
   assert.equal(result.candidates[0].evidence.correction_count, 1);
   assert.equal(result.candidates[0].suggested_rule.normalized_intent, "close_session");
+});
+
+test("suggestSessionHabitCandidates ignores leading discourse markers before a correction-style definition", () => {
+  const userRegistryPath = createTempRegistryPath();
+  const transcript = [
+    "user: 另外，我这里的“过一遍”不是继续执行，是 review_acceptance 场景=reviewer",
+    "assistant: 收到。",
+    "user: 过一遍"
+  ].join("\n");
+
+  const result = suggestSessionHabitCandidates(transcript, {
+    userRegistryPath,
+    maxCandidates: 5
+  });
+
+  assert.equal(result.candidates.length, 1);
+  assert.equal(result.candidates[0].phrase, "过一遍");
+  assert.equal(result.candidates[0].suggested_rule.normalized_intent, "review_acceptance");
+  assert.deepEqual(result.candidates[0].suggested_rule.scenario_bias, ["reviewer"]);
 });
 
 test("correction-style definitions still require an explicit normalized intent token", () => {

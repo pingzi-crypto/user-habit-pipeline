@@ -104,6 +104,9 @@ function stripWrappingQuotes(value) {
         .trim()
         .replace(/^["'“”‘’](.*)["'“”‘’]$/u, "$1");
 }
+function normalizeExplicitDefinitionMessage(message) {
+    return String(message || "").replace(/^(?:另外|还有|然后|顺便说一下|补充一下|再补一句)\s*[，,]\s*/u, "");
+}
 function toStringArray(value) {
     if (!value) {
         return [];
@@ -205,6 +208,7 @@ function addOrReplaceCandidate(candidates, phrase, candidate) {
     }
 }
 function extractExplicitDefinitionRule(message) {
+    const normalizedMessage = normalizeExplicitDefinitionMessage(message);
     const patterns = [
         {
             pattern: /(?:以后|下次|之后)?(?:如果|当)?我说\s*["“]?(.+?)["”]?\s*(?:的时候)?(?:，|,|\s)*(?:就是|指的是|表示|默认表示|意思是)\s*([a-z][a-z0-9_]*)\b/iu,
@@ -236,7 +240,7 @@ function extractExplicitDefinitionRule(message) {
         }
     ];
     for (const entry of patterns) {
-        const match = String(message || "").match(entry.pattern);
+        const match = normalizedMessage.match(entry.pattern);
         if (!match) {
             continue;
         }

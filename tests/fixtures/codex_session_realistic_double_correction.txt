@@ -1,0 +1,13 @@
+system: 你是 Codex，需要把显式纠正看得比隐含猜测更重要。
+user: 我先看当前项目方向指导文件和 todo。
+assistant: 我先读取 guidebook 和 roadmap。
+tool: 已读取 docs/project-principles.md, docs/agent-era-roadmap-30-days.md
+assistant: 当前主链已经打通，后面更像是收口和验收。
+user: 先别把“收尾一下”理解成 general_summary，按 close_session 理解 场景=session_close
+assistant: 收到，后面我会按 close_session 理解。
+user: 另外，我这里的“过一遍”不是继续执行，是 review_acceptance 场景=reviewer
+assistant: 明白，我会把“过一遍”按 review_acceptance 来看。
+user: 过一遍
+assistant: 如果你要的话，我可以先按验收视角检查。
+user: 收尾一下
+assistant: 好，我先按收口理解。
