@@ -1,0 +1,121 @@
+[
+  {
+    "name": "one-time current item override stays narrow",
+    "input": {
+      "raw_user_text": "这次别自动推",
+      "context_type": "policy_override",
+      "current_action_candidate": "push_approval_result"
+    },
+    "expected": {
+      "match_status": "matched",
+      "interpreted_intent": "disable_auto_push_once",
+      "scope": "current_item",
+      "override_mode": "one_time",
+      "should_ask_clarifying_question": false,
+      "matched_phrase": "这次别自动推",
+      "suggested_preference_write": null,
+      "confidence_gte": 0.9
+    }
+  },
+  {
+    "name": "legacy shorthand remains clarify-first when scope and mode are unknown",
+    "input": {
+      "raw_user_text": "按老规矩",
+      "context_type": "policy_override",
+      "current_action_candidate": "approve_current_item"
+    },
+    "expected": {
+      "match_status": "ambiguous",
+      "interpreted_intent": "reuse_previous_policy",
+      "scope": "unknown",
+      "override_mode": "unknown",
+      "should_ask_clarifying_question": true,
+      "matched_phrase": "按老规矩",
+      "clarifying_question_includes": "当前这一条临时处理",
+      "suggested_preference_write": null
+    }
+  },
+  {
+    "name": "current project risk routing can become a durable candidate only when scope is explicit",
+    "input": {
+      "raw_user_text": "当前项目风险类都给我看",
+      "context_type": "policy_override",
+      "current_action_candidate": "auto_approve_risk_item",
+      "project_policy_summary": "Current project still auto-approves low-risk work by default."
+    },
+    "expected": {
+      "match_status": "matched",
+      "interpreted_intent": "route_risk_items_to_manual_review",
+      "scope": "current_project",
+      "override_mode": "durable_candidate",
+      "should_ask_clarifying_question": false,
+      "matched_phrase": "风险类都给我看",
+      "suggested_preference_write": {
+        "intent": "route_risk_items_to_manual_review",
+        "scope": "current_project",
+        "source_phrase": "风险类都给我看"
+      }
+    }
+  },
+  {
+    "name": "global default reuse is allowed only when the user makes global scope explicit",
+    "input": {
+      "raw_user_text": "以后所有项目默认按之前口径",
+      "context_type": "policy_override",
+      "current_action_candidate": "apply_project_default_policy"
+    },
+    "expected": {
+      "match_status": "matched",
+      "interpreted_intent": "reuse_previous_policy_default",
+      "scope": "global",
+      "override_mode": "durable_candidate",
+      "should_ask_clarifying_question": false,
+      "matched_phrase": "默认按之前口径",
+      "suggested_preference_write": {
+        "intent": "reuse_previous_policy_default",
+        "scope": "global",
+        "source_phrase": "默认按之前口径"
+      }
+    }
+  },
+  {
+    "name": "conflicting preference summary forces clarify instead of silent exception",
+    "input": {
+      "raw_user_text": "这次例外",
+      "context_type": "policy_override",
+      "current_action_candidate": "reject_current_item",
+      "confirmed_preferences": [
+        "exceptions_forbidden",
+        "use_new_policy_default"
+      ]
+    },
+    "expected": {
+      "match_status": "ambiguous",
+      "interpreted_intent": "allow_policy_exception_once",
+      "scope": "current_item",
+      "override_mode": "one_time",
+      "should_ask_clarifying_question": true,
+      "matched_phrase": "这次例外",
+      "clarifying_question_includes": "现有偏好可能冲突",
+      "suggested_preference_write": null
+    }
+  },
+  {
+    "name": "non-whitelist text stays quiet and cheap",
+    "input": {
+      "raw_user_text": "这个你先记一下，不用现在改策略",
+      "context_type": "policy_override",
+      "current_action_candidate": "no_policy_change"
+    },
+    "expected": {
+      "match_status": "no_match",
+      "interpreted_intent": null,
+      "scope": "unknown",
+      "override_mode": "unknown",
+      "should_ask_clarifying_question": false,
+      "matched_phrase": null,
+      "suggested_preference_write": null,
+      "confidence_eq": 0
+    }
+  }
+]

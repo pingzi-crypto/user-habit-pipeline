@@ -25,6 +25,13 @@ Today the project supports three primary host integration styles:
 
 There is also a localhost HTTP path, but that is best understood as an alternate transport for a local host, not a fourth product category.
 
+There are also repo-only experimental adapter notes for host-specific trials:
+
+- control-hub `policy_override`
+
+This is not a new main integration path.
+It is not part of the package's supported public API surface.
+
 ---
 
 ## 2. Which Path To Choose
@@ -204,6 +211,37 @@ If these boundaries blur, the project loses its main advantage.
 
 ---
 
+## 4.1 Host-Specific Adapter Rule
+
+Experimental, repo-only guidance.
+Use this section for architecture direction, not as a promise of packaged public APIs.
+
+If one host needs workflow-specific semantics that do not belong in the shared package core, isolate them as an adapter.
+
+Current example:
+
+- control-hub `policy_override`
+
+Use this pattern when:
+
+- one host has a narrow workflow-specific shorthand problem
+- the host can explicitly decide when to invoke the adapter
+- ambiguity should downgrade to clarify-first
+
+Do not use this pattern to:
+
+- replace the core interpreter
+- add generic workflow orchestration
+- add execution behavior to the package
+- make the shared core depend on one product surface
+
+Reference docs:
+
+- [workflow-adapter-modularization.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/workflow-adapter-modularization.md)
+- [control-hub-policy-override-adapter-blueprint.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/control-hub-policy-override-adapter-blueprint.md)
+
+---
+
 ## 5. Runtime State Strategy
 
 The most important cross-host decision is not transport.
@@ -366,6 +404,7 @@ Use these together:
 - [pre-action-host-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
 - [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
 - [local-memory-conflict-boundary.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/local-memory-conflict-boundary.md)
+- [workflow-adapter-modularization.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/workflow-adapter-modularization.md)
 - [happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
 
 Use this guide when the question is:
@@ -373,6 +412,7 @@ Use this guide when the question is:
 - which host path should I choose
 - should this host share or isolate runtime state
 - how should host local memory behave when it disagrees with explicit habit state
+- where should host-specific workflow trial logic live without polluting the core package
 
 ---
 

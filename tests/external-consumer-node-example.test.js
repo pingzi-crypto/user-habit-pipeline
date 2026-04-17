@@ -10,6 +10,7 @@ const httpDemoPath = path.join(rootDir, "examples", "external-consumer-node", "e
 const preActionGateDemoPath = path.join(rootDir, "examples", "external-consumer-node", "pre-action-gate-demo.js");
 const hostRouterDemoPath = path.join(rootDir, "examples", "external-consumer-node", "host-router-demo.js");
 const memoryConflictDemoPath = path.join(rootDir, "examples", "external-consumer-node", "memory-conflict-demo.js");
+const controlHubHostContractDemoPath = path.join(rootDir, "examples", "control-hub", "host-contract-demo.js");
 
 function runNodeScript(scriptPath) {
   const result = spawnSync(process.execPath, [scriptPath], {
@@ -90,4 +91,19 @@ test("external consumer memory-conflict demo runs successfully", () => {
   assert.equal(output.cases[1].memory_conflict_detected, true);
   assert.equal(output.cases[1].final_next_action, "ask_clarifying_question");
   assert.equal(output.cases[1].recommended_resolution, "ask_clarifying_question");
+});
+
+test("control-hub host-contract demo runs successfully", () => {
+  const output = runNodeScript(controlHubHostContractDemoPath);
+  assert.equal(output.integration_path, "control-hub-host-contract");
+  assert.equal(output.contract_boundary.adapter_is_optional, true);
+  assert.equal(output.contract_boundary.host_owns_execution, true);
+  assert.equal(Array.isArray(output.cases), true);
+  assert.equal(output.cases.length, 3);
+  assert.equal(output.cases[0].host_decision.host_action, "apply_interpretation");
+  assert.equal(output.cases[1].host_decision.host_action, "ask_clarifying_question");
+  assert.equal(output.cases[2].host_decision.host_action, "ignore_adapter");
+  assert.equal(output.summary.apply_count, 1);
+  assert.equal(output.summary.clarify_count, 1);
+  assert.equal(output.summary.ignore_count, 1);
 });

@@ -311,3 +311,27 @@ Short form:
 
 - low-value next steps should be challenged early
 - stopping should be cheaper than continuing
+
+---
+
+## 14. Host-Specific Workflow Logic Must Stay Isolated
+
+When a new feature is clearly tied to one host, one workflow, or one product surface, prefer an isolated adapter module instead of expanding the shared core.
+
+Required behavior:
+
+- keep host-specific business language out of the generic core when possible
+- keep core interpretation primitives host-agnostic
+- avoid changing default CLI, HTTP, or library behavior for one host's trial needs
+- prefer small internal adapter modules before creating broad generic frameworks
+
+This principle exists to protect the package's lightweight state.
+
+The goal is:
+
+- modularize to isolate
+- not modularize to over-abstract
+
+See:
+
+- [workflow-adapter-modularization.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/workflow-adapter-modularization.md)
