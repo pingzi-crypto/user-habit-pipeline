@@ -2,6 +2,10 @@
 
 This checklist is for manually validating the current end-to-end user flow of `user-habit-pipeline`.
 
+If you want to turn one run into a reusable evaluation note instead of a pass/fail checklist only, also use:
+
+- [manual-evaluation-template.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-evaluation-template.md)
+
 It is intentionally focused on the paths that matter most in real usage:
 
 - scan the current session

@@ -219,6 +219,10 @@ After one realistic evaluation run, answer these questions:
 
 If the answer is mostly no, more polish work is probably low ROI.
 
+If you want to record one run in a consistent format, use:
+
+- [manual-evaluation-template.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-evaluation-template.md)
+
 ---
 
 ## 5. What To Compare Over Time
