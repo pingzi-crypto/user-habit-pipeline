@@ -172,7 +172,6 @@ See the copyable Node example:
 
 - [examples/external-consumer-node/pre-action-gate-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/pre-action-gate-demo.js)
 - [examples/external-consumer-node/host-router-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/host-router-demo.js)
-- [docs/demo-roi-metrics.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/demo-roi-metrics.md)
 
 This demo shows two outcomes:
 

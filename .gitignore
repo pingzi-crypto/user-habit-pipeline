@@ -10,4 +10,6 @@ data/tmp-*.txt
 .codex/
 docs/public-copy-kit.md
 docs/project-principles.md
+docs/demo-roi-metrics.md
+docs/manual-e2e-acceptance.md
 docs/manual-evaluation-*.md

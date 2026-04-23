@@ -7,7 +7,7 @@ Use this checklist before cutting a package or internal milestone from this repo
 - Confirm [mvp-spec.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/mvp-spec.md) still matches the shipped runtime behavior.
 - Confirm [examples.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/examples.md) still reflects the current fixture source.
 - Confirm [registry-authoring.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md) still matches the runtime validator and schema.
-- Run the critical path in [manual-e2e-acceptance.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/manual-e2e-acceptance.md) when the bridge, skill-facing output, or user overlay flow changed.
+- Run `npm run manual-e2e-smoke` when the bridge, skill-facing output, or user overlay flow changed.
 - If the Codex bridge request/response shape changed, update [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md) in the same change set.
 - If the release needs to hold together with the Codex skill repo, also run [cross-repo-release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-repo-release-checklist.md).
 - If low-ROI stop behavior changed, confirm the one-word stop path still works in the E2E smoke flow.

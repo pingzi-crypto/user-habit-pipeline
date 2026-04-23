@@ -158,7 +158,6 @@ Copyable external-project demo files:
 - [examples/external-consumer-node/embedded-http-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/embedded-http-demo.js)
 - [examples/external-consumer-node/host-router-demo.js](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/examples/external-consumer-node/host-router-demo.js)
 - [docs/pre-action-host-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
-- [docs/demo-roi-metrics.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/demo-roi-metrics.md)
 - [docs/cross-host-integration-guide.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
 
 Official starter command:
