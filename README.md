@@ -1,56 +1,53 @@
 # User Habit Pipeline
 
-`user-habit-pipeline` is a local-first AI shorthand interpreter for Codex, local AI tools, and app workflows that need to turn repeated user phrases into structured, reviewable intent hints.
+`user-habit-pipeline` is a local-first shorthand interpreter for AI assistants and local apps that need to turn repeated user phrases into structured, reviewable intent.
 
-Use it when a host keeps seeing phrases like `继续`, `收尾一下`, or `验收` and you want explicit, inspectable interpretation instead of brittle regex glue or hidden memory.
+Use it when a host keeps seeing phrases like `继续`, `收尾一下`, or `验收` and you want explicit interpretation instead of brittle regex glue or hidden memory.
 
 ![Current-session demo](assets/readme-short-demo.gif)
 
-Fastest entrypoints:
+## What It Gives You
 
-- npm package: `npm install user-habit-pipeline`
-- outside-project demo: [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
+- shorthand interpretation with structured JSON output
+- user-managed phrase add/remove without editing shipped defaults
+- current-session habit suggestion scanning for chat-style hosts
+- clarify-first routing support before downstream actions
+- local-only runtime state, with no hidden workflow execution
+
+## Fastest Ways To Use It
+
+Install:
+
+```powershell
+npm install user-habit-pipeline
+```
+
+Pick one entrypoint:
+
+- Node / TypeScript host: call the library directly
+- any language: call the CLI and parse JSON
+- conversation UI or Codex-style host: use `codex-session-habits`
+
+If you want the fastest outside-project proof first, use:
+
+- demo repo: [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
 - Codex skill: [manage-current-session-habits](https://github.com/pingzi-crypto/manage-current-session-habits)
 
-It works well for AI assistant user-habit interpretation, chat command normalization, current-session habit scanning, and prompt or workflow hinting without hidden execution.
+## Quick Examples
 
-## In One Line
-
-Use `user-habit-pipeline` when an AI assistant or local app keeps seeing repeated user phrases and you want explicit, inspectable interpretation instead of brittle regex glue or hidden memory.
-
-## Who It Is For
-
-Use this package if you are building:
-
-- an AI assistant that needs explicit user-habit memory with confirmation controls
-- a Node.js product that needs stable shorthand interpretation
-- a local tool that wants JSON output instead of brittle regex glue
-- a chat or assistant host that wants current-session habit suggestions
-- a workflow layer that needs hints, not auto-executed actions
-
-## Search-Friendly Use Cases
-
-- local AI assistant memory for repeated user shorthand
-- Codex skill backend for current-session habit suggestions
-- prompt parser for follow-up commands like `继续`, `停`, `收尾一下`
-- reviewable user preference interpretation without auto-executing workflows
-- localhost intent service for desktop tools, Electron apps, and local automation
-
-## Common Use Cases
-
-Interpret one ambiguous shorthand message into structured intent data:
+Interpret one shorthand message:
 
 ```powershell
 npx user-habit-pipeline --message "继续" --scenario general
 ```
 
-Add one user-defined phrase without editing shipped defaults:
+Add one user-defined phrase:
 
 ```powershell
 npx manage-user-habits --request "添加用户习惯短句: phrase=收尾一下; intent=close_session; 场景=session_close; 置信度=0.86"
 ```
 
-Scan a current conversation for candidate habit phrases:
+Scan the current conversation for candidate habit phrases:
 
 ```powershell
 @'
@@ -60,52 +57,41 @@ user: 收尾一下
 '@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
 ```
 
-## Quick Start
-
-Install from npm:
+Pre-action gate before the host executes anything:
 
 ```powershell
-npm install user-habit-pipeline
+npx user-habit-pipeline --message "继续" --scenario general --pre-action
 ```
 
-Fastest external demo:
-
-- [user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo) shows a clean outside project using the published package, auto-scaffolding the Codex host starter, and running a local `scan -> apply` flow with isolated runtime state.
-- local in-repo happy path: [docs/happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
-
-Generate a copyable starter for another project:
+Optional localhost HTTP entrypoint:
 
 ```powershell
-npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
+npx user-habit-pipeline-http --port 4848
 ```
 
-Interpret a shorthand phrase:
+## Choose Your Integration Path
 
-```powershell
-npx user-habit-pipeline --message "收尾一下" --scenario session_close
-```
+Use the library if:
 
-## Platform Support
+- your host is already Node.js
+- you want direct function calls
 
-The package is designed for local-first use across major desktop/server environments.
+Use the CLI if:
 
-Current verified matrix:
+- your host is Python, Go, Rust, shell, or another non-Node stack
+- you want the simplest stable boundary
 
-- Windows with Node.js 18+
-- macOS with Node.js 18+
-- Linux with Node.js 18+
+Use `codex-session-habits` if:
 
-The repository CI now runs the same `release-check` flow on `windows-latest`, `macos-latest`, and `ubuntu-latest`, including packaging smoke and installed-package validation.
+- your host is a conversation UI
+- the user should trigger scans and applies with natural prompts inside the current thread
 
-## What You Get
+Use the local HTTP entrypoint if:
 
-- a CLI and library for shorthand interpretation
-- a separate user overlay for add/remove habit phrases without editing shipped defaults
-- current-session habit suggestion scanning for Codex-style chat flows
-- stable structured output for downstream systems
-- optional local-memory conflict detection for clarify-first host routing
+- another local tool strongly prefers an API-shaped boundary
+- you still want the package to stay local-first
 
-Example output:
+## Example Output
 
 ```json
 {
@@ -123,110 +109,6 @@ Example output:
 }
 ```
 
-## Integration Paths
-
-Node.js / TypeScript library use:
-
-```ts
-import { interpretHabit, interpretHabitForPreAction } from "user-habit-pipeline";
-
-const result = interpretHabit({
-  message: "继续",
-  scenario: "general",
-  recent_context: ["继续当前评审"]
-});
-
-const gated = interpretHabitForPreAction({
-  message: "继续",
-  scenario: "general"
-});
-```
-
-CLI use:
-
-```powershell
-npx user-habit-pipeline --message "更新入板" --scenario status_board
-```
-
-Pre-action gate via CLI:
-
-```powershell
-npx user-habit-pipeline --message "继续" --scenario general --pre-action
-```
-
-CLI memory-conflict boundary:
-
-```powershell
-npx user-habit-pipeline --message "读取最新状态板" --scenario status_board --external-memory-intent close_session --external-memory-source host_local_memory
-```
-
-User phrase management:
-
-```powershell
-npx manage-user-habits --list
-npx manage-user-habits --request "删除用户习惯短句: 收尾一下"
-```
-
-Current-session scan for chat or assistant hosts:
-
-```powershell
-@'
-user: 以后我说“收尾一下”就是 close_session
-assistant: 收到。
-user: 收尾一下
-'@ | npx codex-session-habits --request "扫描这次会话里的习惯候选" --thread-stdin
-```
-
-Copyable external-project templates:
-
-- Node: `examples/external-consumer-node/`
-- Python: `examples/external-consumer-python/`
-- Current-session host: `examples/current-session-host-node/`
-- Public external demo repo: [pingzi-crypto/user-habit-pipeline-codex-demo](https://github.com/pingzi-crypto/user-habit-pipeline-codex-demo)
-
-Starter generator for target projects:
-
-```powershell
-npx user-habit-pipeline-init-consumer --host node --out .\habit-pipeline-starter
-npx user-habit-pipeline-init-consumer --host python --out .\habit-pipeline-python-starter
-npx user-habit-pipeline-init-consumer --host codex --out .\habit-pipeline-codex-starter
-```
-
-Official local HTTP entrypoint for localhost integration:
-
-```powershell
-npx user-habit-pipeline-http --port 4848
-```
-
-Embedded HTTP server from Node.js:
-
-```js
-const { startHttpServer } = require("user-habit-pipeline");
-
-const { url, server } = await startHttpServer({
-  host: "127.0.0.1",
-  port: 4848
-});
-
-console.log(url);
-// later: server.close()
-```
-
-Generate a custom project-registry starter:
-
-```powershell
-npx user-habit-pipeline-init-registry --out .\my-project-registry
-```
-
-## Runtime State
-
-Runtime user state is stored outside the package directory by default:
-
-- Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
-- non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
-
-This keeps installed package files read-only and makes local npm installs safer to reuse across projects.
-
 ## Product Boundary
 
 This package:
@@ -241,21 +123,31 @@ This package does not:
 - auto-learn into active habits during scan-only flows
 - silently write durable user rules without explicit confirmation
 
-## Docs
+Runtime user state is stored outside the package directory by default:
 
-Start here if you need more than the quick start:
+- Windows: `%APPDATA%\user-habit-pipeline\user_habits.json`
+- non-Windows: `~/.config/user-habit-pipeline/user_habits.json`
 
-- [API Reference](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
-- [Integration Quickstart](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/integration-quickstart.md)
-- [Cross-Host Integration Guide](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
-- [Local Memory Conflict Boundary](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/local-memory-conflict-boundary.md)
-- [Pre-Action Host Integration](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
-- [Happy Path Demo](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
-- [Registry Authoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/registry-authoring.md)
-- [User Habit Management](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
-- [Session Habit Suggestions](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)
-- [Codex Current-Session Contract](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
-- [Confidence Scoring](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/confidence-scoring.md)
+Verified environments:
+
+- Windows with Node.js 18+
+- macOS with Node.js 18+
+- Linux with Node.js 18+
+
+## Start Here
+
+If you only open one doc, open:
+
+- [Start Here](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/README.md)
+
+Then choose the next doc by task:
+
+- install and first integration: [Integration Quickstart](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/integration-quickstart.md)
+- choose host path and runtime strategy: [Cross-Host Integration Guide](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/cross-host-integration-guide.md)
+- current-session scan / apply flow: [Session Habit Suggestions](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/session-habit-suggestions.md)
+- Codex-facing thread contract: [Codex Current-Session Contract](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
+- phrase management: [User Habit Management](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/user-habit-management.md)
+- API details: [API Reference](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
 
 ## License
 

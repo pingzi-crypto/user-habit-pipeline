@@ -53,6 +53,7 @@
     "docs/registry-authoring.md",
     "docs/editor-integration.md",
     "docs/api-reference.md",
+    "docs/README.md",
     "docs/integration-quickstart.md",
     "docs/cross-host-integration-guide.md",
     "docs/pre-action-host-integration.md",
