@@ -19,3 +19,5 @@ docs/cross-repo-release-*.md
 docs/release-notes-v*.md
 docs/freeze-assessment-*.md
 docs/agent-era-*.md
+docs/control-hub-policy-override-adapter-blueprint.md
+docs/workflow-adapter-modularization.md

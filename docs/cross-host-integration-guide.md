@@ -235,10 +235,7 @@ Do not use this pattern to:
 - add execution behavior to the package
 - make the shared core depend on one product surface
 
-Reference docs:
-
-- [workflow-adapter-modularization.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/workflow-adapter-modularization.md)
-- [control-hub-policy-override-adapter-blueprint.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/control-hub-policy-override-adapter-blueprint.md)
+Internal adapter-specific design notes are intentionally kept outside the public integration surface.
 
 ---
 
@@ -404,7 +401,6 @@ Use these together:
 - [pre-action-host-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/pre-action-host-integration.md)
 - [codex-current-session-contract.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-current-session-contract.md)
 - [local-memory-conflict-boundary.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/local-memory-conflict-boundary.md)
-- [workflow-adapter-modularization.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/workflow-adapter-modularization.md)
 - [happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
 
 Use this guide when the question is:
