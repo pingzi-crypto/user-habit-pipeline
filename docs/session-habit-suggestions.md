@@ -14,7 +14,7 @@ The current overlay remains the source of truth for active user-specific rules.
 
 ## Why This Exists
 
-Users often repeat short phrases or explicitly correct the meaning of a shorthand during a session.
+Users often repeat short phrases or explicitly define the meaning of a shorthand during a session.
 
 This suggestion flow helps surface those patterns without turning the interpreter into a hidden auto-learning system.
 
@@ -26,6 +26,7 @@ The scanner can currently suggest candidates from:
 
 - explicit add-style prompts already present in the transcript
 - explicit phrase-to-intent definitions in the transcript
+- reusable correction-style shorthand definitions in the transcript
 - repeated short user phrases that are not already registered
 
 The scanner does not:
@@ -33,7 +34,13 @@ The scanner does not:
 - automatically add new rules
 - scan unrelated workspaces by itself
 - infer a stable long-term meaning from weak evidence
+- learn arbitrary answer corrections as durable habits
 - replace explicit registry management
+
+Important boundary:
+
+- a correction-style candidate is valid only when it defines a reusable phrase-to-intent mapping
+- a user sending a clearer replacement prompt after a misread is useful evaluation evidence, but is not by itself a durable habit candidate
 
 ---
 
@@ -151,11 +158,42 @@ Detected when the transcript contains a phrase-to-intent definition such as:
 
 These candidates also usually contain a usable `suggested_rule`.
 
+This includes reusable correction-style definitions such as:
+
+- `我这里的“收工啦”不是结束线程，是 close_session`
+- `以后我说“按老规矩”指的是沿用上一次审批口径`
+
+These are in scope only when the transcript defines a stable mapping that is likely to be reused.
+
 ### `repeated_phrase`
 
 Detected when a short user phrase repeats in the current transcript but is not already registered.
 
 These candidates are returned as review-only observations by default.
+
+---
+
+## Correction Boundary
+
+The suggestion layer does not try to learn from every correction the user makes.
+
+Keep in scope:
+
+- stable shorthand definitions
+- explicit phrase meaning corrections
+- reusable correction phrases with a clear future invocation pattern
+
+Keep out of scope by default:
+
+- one-off content corrections to a specific answer
+- task-specific rewrites that are unlikely to repeat
+- broad style preferences inferred only from the user sending a different prompt next turn
+- generic "reply was wrong, regenerate differently" behavior
+
+Practical rule:
+
+- if the transcript answers "what future phrase should map to what meaning?", it may be a candidate
+- if the transcript only shows "the previous answer was not what I wanted this time", it should stay out of the durable suggestion path
 
 ---
 

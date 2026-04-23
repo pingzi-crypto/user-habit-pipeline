@@ -9,3 +9,5 @@ data/tmp-session-transcript.txt
 data/tmp-*.txt
 .codex/
 docs/public-copy-kit.md
+docs/project-principles.md
+docs/manual-evaluation-*.md
