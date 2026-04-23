@@ -357,4 +357,3 @@ If the bridge contract changes materially, update all of these together:
 - [api-reference.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/api-reference.md)
 - [codex-skill-integration.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/codex-skill-integration.md)
 - [happy-path-demo.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/happy-path-demo.md)
-- [release-checklist.md](https://github.com/pingzi-crypto/user-habit-pipeline/blob/main/docs/release-checklist.md)
