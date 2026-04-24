@@ -65,6 +65,20 @@ test("resolveDefaultUserRegistryPath prefers the user data path once it exists",
   assert.equal(resolved, preferredPath);
 });
 
+test("resolveDefaultUserRegistryPath respects explicit override even when the legacy file exists", () => {
+  const preferredPath = path.join("D:\\custom-uhp-home", "user_habits.json");
+  const resolved = resolveDefaultUserRegistryPath({
+    env: {
+      [USER_HOME_OVERRIDE_ENV]: "D:\\custom-uhp-home"
+    },
+    preferredPath,
+    legacyPath: LEGACY_USER_REGISTRY_PATH,
+    fileExists: (targetPath) => targetPath === LEGACY_USER_REGISTRY_PATH
+  });
+
+  assert.equal(resolved, preferredPath);
+});
+
 test("package entrypoint re-exports runtime path helpers and constants", () => {
   assert.equal(packageExports.PACKAGE_NAME, "user-habit-pipeline");
   assert.equal(packageExports.USER_HOME_OVERRIDE_ENV, USER_HOME_OVERRIDE_ENV);

@@ -30,10 +30,14 @@ function resolveUserDataRoot(options = {}) {
 }
 function resolveDefaultUserRegistryPath(options = {}) {
     const fileExists = options.fileExists || ((targetPath) => require("node:fs").existsSync(targetPath));
+    const env = options.env || process.env;
     const preferredRoot = options.preferredRoot || resolveUserDataRoot(options);
     const preferredPath = options.preferredPath || path.join(preferredRoot, "user_habits.json");
     const legacyPath = options.legacyPath || exports.LEGACY_USER_REGISTRY_PATH;
     const preferLegacyFallback = options.preferLegacyFallback !== false;
+    if (env[exports.USER_HOME_OVERRIDE_ENV]) {
+        return preferredPath;
+    }
     if (preferLegacyFallback && !fileExists(preferredPath) && fileExists(legacyPath)) {
         return legacyPath;
     }
