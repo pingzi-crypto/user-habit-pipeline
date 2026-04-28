@@ -98,7 +98,8 @@ function main() {
   const nodeCommand = process.execPath;
   const codexCliPath = path.join(repoRoot, "src", "codex-session-habits-cli.js");
   const interpretCliPath = path.join(repoRoot, "src", "cli.js");
-  const projectPrinciplesPath = path.join(repoRoot, "docs", "project-principles.md");
+  const codexSkillIntegrationPath = path.join(repoRoot, "docs", "codex-skill-integration.md");
+  const codexSessionContractPath = path.join(repoRoot, "docs", "codex-current-session-contract.md");
   const workspaceRoot = path.dirname(repoRoot);
   const skillRepoPath = path.resolve(options.skillRepoPath || path.join(workspaceRoot, "manage-current-session-habits"));
   const tempRoot = path.resolve(options.tempRoot || path.join(os.tmpdir(), "uhp-e2e-smoke"));
@@ -238,9 +239,11 @@ function main() {
     });
 
     testStep(results, "low_roi_guidance_present", () => {
-      const projectPrinciples = fs.readFileSync(projectPrinciplesPath, "utf8");
-      assertTrue(/停|跳过/u.test(projectPrinciples), "Expected stop word guidance in project principles.");
-      assertTrue(/低 ROI|low ROI|不太划算/u.test(projectPrinciples), "Expected low-ROI wording in project principles.");
+      const codexSkillIntegration = fs.readFileSync(codexSkillIntegrationPath, "utf8");
+      const codexSessionContract = fs.readFileSync(codexSessionContractPath, "utf8");
+      const publicGuidance = `${codexSkillIntegration}\n${codexSessionContract}`;
+      assertTrue(/停|跳过/u.test(publicGuidance), "Expected stop word guidance in public Codex docs.");
+      assertTrue(/低 ROI|low ROI|low_roi|不太划算/u.test(publicGuidance), "Expected low-ROI wording in public Codex docs.");
 
       if (fs.existsSync(skillRepoPath)) {
         const skillPath = path.join(skillRepoPath, "SKILL.md");
